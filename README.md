@@ -19,10 +19,10 @@ limitations under the License.
 -->
 
 <h1 align="center">
-  <i>de</i><b>FF</b><i>code</i>
+  <img src="docs/overrides/assets/images/deffcode.png" alt="VidGear" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" width="80%"/>
 </h1>
-<p align="center">Performant ⚡️ Pythonic FFmpeg Decoder with easy to adapt flexible API 🐍.</p>
 <h2 align="center">
+  <img src="docs/overrides/assets/images/deffcode-tagline.png" alt="VidGear tagline" width="40%"/>
 </h2>
 
 
@@ -192,6 +192,19 @@ pip install deffcode-0.1.0-py3-none-any.whl
 
 &nbsp;
 
+## Roadmap
+
+- [ ] Add clean and elegant documentation.
+- [ ] Add related pytests.
+- [ ] Automate stuff with Continuous Integration.
+- [ ] Add preliminary benchmarks.
+- [ ] Introduce buffer and audio pass-through modes.
+- [ ] Add more examples and use cases.
+- [ ] Add examples with WriteGear API.
+- [ ] Fix any related bugs along the way. 
+
+&nbsp;
+
 ----
 
-<p align="center"><i><b>deffcode</b> is <a href="https://github.com/abhiTronix/deffcode/blob/master/LICENSE.md">Apache 2.0 Licensed</a> code.<br/>Designed & crafted with care.</i></br>⭐️</p>
+<p align="center"><i><b>deffcode</b> is <a href="https://github.com/abhiTronix/deffcode/blob/master/LICENSE.md">Apache 2.0 Licensed</a> code.<br/>Designed & crafted with care.</i> ⭐️</p>
