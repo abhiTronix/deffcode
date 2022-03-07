@@ -28,7 +28,9 @@ limitations under the License.
 
 &nbsp;
 
-**deffcode** is a Performant and Robust FFmpeg Pythonic Wrapper that aimed at decoding any stream that you throw at it. Requiring minimal efforts, deffcode provides an easy-to-adapt flexible API to read a wide range of streams, and can ingest video using any decoder(even hardware ones) into any pixel format ffmpeg supports. It also provides pin-point accurate seeking for extracting only a specific part of your input as required. 
+> **DeFFcode** is a Performant and Robust FFmpeg Pythonic Library that aimed at decoding any stream that you throw at it. 
+
+Requiring minimal efforts, it aims at providing an easy-to-adapt flexible API for reading frames from a wide range of streams, and can ingest video using any specified decoder(even hardware ones) into any pixel format FFmpeg supports. It also enables accurate seeking for extracting only a specific part of your input as desired. 
 
 It is cross-platform, runs on Python 3.7+, and is easy to install.
 
