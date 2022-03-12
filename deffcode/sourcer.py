@@ -24,7 +24,12 @@ import numpy as np
 
 # import helper packages
 from .utils import logger_handler
-from .ffhelper import check_sp_output, is_valid_url, is_valid_image_seq
+from .ffhelper import (
+    check_sp_output,
+    is_valid_url,
+    is_valid_image_seq,
+    get_valid_ffmpeg_path,
+)
 
 # define logger
 logger = logging.getLogger("Sourcer")
@@ -36,89 +41,162 @@ logger.setLevel(logging.DEBUG)
 class Sourcer:
     """ """
 
-    def __init__(self, source, verbose=False, ffmpeg_path=None, **sourcer_params):
+    def __init__(self, source, verbose=False, custom_ffmpeg="", **sourcer_params):
         """
         This constructor method initializes the object state and attributes of the Sourcer.
 
         Parameters:
             source (str): defines the source for the input stream.
             verbose (bool): enables/disables verbose.
-            ffmpeg_path (str): assigns the location of custom path/directory for custom FFmpeg executables.
+            custom_ffmpeg (str): assigns the location of custom path/directory for custom FFmpeg executable.
             sourcer_params (dict): provides the flexibility to control supported internal Sourcer parameters.
         """
+        # checks if machine in-use is running windows os or not
+        self.__os_windows = True if os.name == "nt" else False
+
         # define internal parameters
-        self.__verbose = (  # enable verbose if specified
+        self.__verbose_logs = (  # enable verbose if specified
             verbose if (verbose and isinstance(verbose, bool)) else False
         )
-        self.__metadata = None  # handles metadata recieved
-        self.__ffmpeg = ffmpeg_path  # handles FFmpeg executable path
-        self.__sourcer_params = {  # No use yet (Reserved for future) [TODO]
+        self.__ffsp_output = None  # handles metadata recieved
+        self.__sourcer_params = {
             str(k).strip(): str(v).strip()
             if not isinstance(v, (dict, list, int, float))
             else v
             for k, v in sourcer_params.items()
         }
 
+        # handle where to save the downloaded FFmpeg Static assets on Windows(if specified)
+        __ffmpeg_download_path = self.__sourcer_params.pop("-ffmpeg_download_path", "")
+        if not isinstance(__ffmpeg_download_path, str):
+            # reset improper values
+            __ffmpeg_download_path = ""
+
+        # validate the FFmpeg assets and return location (also downloads static assets on windows)
+        self.__ffmpeg = get_valid_ffmpeg_path(
+            str(custom_ffmpeg),
+            self.__os_windows,
+            ffmpeg_download_path=__ffmpeg_download_path,
+            verbose=self.__verbose_logs,
+        )
+
+        # check if valid FFmpeg path returned
+        if self.__ffmpeg:
+            self.__verbose_logs and logger.debug(
+                "Found valid FFmpeg executable: `{}`.".format(self.__ffmpeg)
+            )
+        else:
+            # else raise error
+            raise RuntimeError(
+                "[Deffcode:ERROR] :: Failed to find FFmpeg assets on this system. Kindly compile/install FFmpeg or provide a valid custom FFmpeg binary path!"
+            )
+
         # define externally accessible parameters
-        self.source = source  # handles source stream
-        self.source_extension = os.path.splitext(source)[
+        self.__source = source  # handles source stream
+        self.__source_extension = os.path.splitext(source)[
             -1
         ]  # handles source stream extension
-        self.default_video_resolution = None  # handle stream resolution
-        self.default_video_framerate = 0  # handle stream framerate
-        self.default_video_bitrate = 0  # handle stream's video bitrate
-        self.default_video_pixfmt = None  # handle stream's video pixfmt
-        self.default_video_decoder = None  # handle stream's video decoder
-        self.default_source_duration = 0  # handle stream's video duration
-        self.approx_video_nframes = 0  # handle approx stream frame number
-        self.default_audio_bitrate = None  # handle stream's audio bitrate
+        self.__default_video_resolution = ""  # handle stream resolution
+        self.__default_video_framerate = ""  # handle stream framerate
+        self.__default_video_bitrate = ""  # handle stream's video bitrate
+        self.__default_video_pixfmt = ""  # handle stream's video pixfmt
+        self.__default_video_decoder = ""  # handle stream's video decoder
+        self.__default_source_duration = ""  # handle stream's video duration
+        self.__approx_video_nframes = ""  # handle approx stream frame number
+        self.__default_audio_bitrate = ""  # handle stream's audio bitrate
 
         # handle flags
-        self.contains_video = False  # contain video
-        self.contains_audio = False  # contain audio
-        self.contains_images = False  # contain image-sequence
+        self.__contains_video = False  # contain video
+        self.__contains_audio = False  # contain audio
+        self.__contains_images = False  # contain image-sequence
 
-    def decode_stream(self):
+    def probe_stream(self, default_stream_indexes=(0, 0)):
         """
-        Parses Source's FFmpeg Metadata and stores them in externally accessible parameters
+        Parses Source's FFmpeg Output and populates metadata in private class variables
+
+        Parameters:
+            default_stream_indexes (list, tuple): selects specific video and audio stream index in case of multiple ones. Value can be of format: (int,int). For example (0,1) is ("0th video stream", "1st audio stream").
+
+        **Returns:** Reference to the instance object.
         """
+        assert (
+            isinstance(default_stream_indexes, (list, tuple))
+            and len(default_stream_indexes) == 2
+            and all(isinstance(x, int) for x in default_stream_indexes)
+        ), "Invalid default_stream_indexes value!"
         # validate source and extract metadata
-        self.__metadata = self.__validate_source(self.source)
+        self.__ffsp_output = self.__validate_source(self.__source)
         # parse resolution and framerate
-        video_rfparams = self.extract_resolution_framerate()
+        video_rfparams = self.__extract_resolution_framerate(
+            default_stream=default_stream_indexes[0]
+        )
         if video_rfparams:
-            self.default_video_resolution = video_rfparams["resolution"]
-            self.default_video_framerate = video_rfparams["framerate"]
+            self.__default_video_resolution = video_rfparams["resolution"]
+            self.__default_video_framerate = video_rfparams["framerate"]
         # parse pixel format
-        self.default_video_pixfmt = self.extract_video_pixfmt()
+        self.__default_video_pixfmt = self.__extract_video_pixfmt(
+            default_stream=default_stream_indexes[0]
+        )
         # parse video decoder
-        self.default_video_decoder = self.extract_video_decoder()
+        self.__default_video_decoder = self.__extract_video_decoder(
+            default_stream=default_stream_indexes[0]
+        )
         # parse rest of metadata
-        if not self.contains_images:
+        if not self.__contains_images:
             # parse video bitrate
-            self.default_video_bitrate = self.extract_video_bitrate()
+            self.__default_video_bitrate = self.__extract_video_bitrate(
+                default_stream=default_stream_indexes[0]
+            )
             # parse audio bitrate
-            self.default_audio_bitrate = self.extract_audio_bitrate()
+            self.__default_audio_bitrate = self.__extract_audio_bitrate(
+                default_stream=default_stream_indexes[1]
+            )
             # parse video duration
-            self.default_source_duration = self.extract_duration()
+            self.__default_source_duration = self.__extract_duration()
             # calculate all flags
-            if self.default_video_bitrate and self.default_audio_bitrate:
-                self.contains_video = True
-                self.contains_audio = True
-            elif self.default_video_bitrate:
-                self.contains_video = True
-            elif self.default_audio_bitrate:
-                self.contains_audio = True
+            if self.__default_video_bitrate and self.__default_audio_bitrate:
+                self.__contains_video = True
+                self.__contains_audio = True
+            elif self.__default_video_bitrate:
+                self.__contains_video = True
+            elif self.__default_audio_bitrate:
+                self.__contains_audio = True
             else:
                 raise IOError(
                     "Invalid source provided. No usable Audio/Video stream detected. Aborting!!!"
                 )
         # calculate approximate number of video frame
-        if self.default_video_framerate and self.default_source_duration:
-            self.approx_video_nframes = np.rint(
-                self.default_video_framerate * self.default_source_duration
+        if self.__default_video_framerate and self.__default_source_duration:
+            self.__approx_video_nframes = np.rint(
+                self.__default_video_framerate * self.__default_source_duration
             ).astype(int, casting="unsafe")
+        # return reference to the instance object.
         return self
+
+    def retrieve_metadata(self):
+        """
+        Returns Source metadata formatted as python dictionary.
+
+        **Returns:** A dictionary value containing metadata.
+        """
+        self.__verbose_logs and logger.debug("Retrieving Metadata...")
+        metadata = {
+            "ffmpeg_binary_path": self.__ffmpeg,
+            "source": self.__source,
+            "source_extension": self.__source_extension,
+            "source_video_resolution": self.__default_video_resolution,
+            "source_video_framerate": self.__default_video_framerate,
+            "source_video_pixfmt": self.__default_video_pixfmt,
+            "source_video_decoder": self.__default_video_decoder,
+            "source_duration_sec": self.__default_source_duration,
+            "approx_video_nframes": int(self.__approx_video_nframes),
+            "source_video_bitrate": self.__default_video_bitrate,
+            "source_audio_bitrate": self.__default_audio_bitrate,
+            "source_has_video": self.__contains_video,
+            "source_has_audio": self.__contains_audio,
+            "source_has_image_sequence": self.__contains_images,
+        }
+        return metadata
 
     def __validate_source(self, source):
         """
@@ -129,35 +207,37 @@ class Sourcer:
         # Differentiate input
         if os.path.isfile(source):
             self.__video_source = os.path.abspath(source)
-        elif is_valid_image_seq(self.__ffmpeg, source=source, verbose=self.__verbose):
+        elif is_valid_image_seq(
+            self.__ffmpeg, source=source, verbose=self.__verbose_logs
+        ):
             self.__video_source = source
-            self.contains_images = True
-        elif is_valid_url(self.__ffmpeg, url=source, verbose=self.__verbose):
+            self.__contains_images = True
+        elif is_valid_url(self.__ffmpeg, url=source, verbose=self.__verbose_logs):
             self.__video_source = source
         else:
-            logger.error("`source` value is unusuable or unsupported!")
+            logger.error("`source` value is unusable or unsupported!")
             # discard the value otherwise
             raise ValueError("Input source is invalid. Aborting!")
         # extract metadata
         metadata = check_sp_output(
             [self.__ffmpeg, "-hide_banner", "-i", source], force_retrieve_stderr=True
         )
+        # filter and return
         return metadata.decode("utf-8").strip()
 
-    def extract_video_bitrate(self, default_stream=0):
+    def __extract_video_bitrate(self, default_stream=0):
         """
         Parses default video-stream bitrate from metadata.
 
         Parameters:
-            default_stream (int): selects particular video-stream in case of multiple ones.
+            default_stream (int): selects specific video-stream in case of multiple ones.
 
         **Returns:** A string value.
         """
-        assert isinstance(default_stream, int), "Invalid input!"
         identifiers = ["Video:", "Stream #"]
         video_bitrate_text = [
             line.strip()
-            for line in self.__metadata.split("\n")
+            for line in self.__ffsp_output.split("\n")
             if all(x in line for x in identifiers)
         ]
         if video_bitrate_text:
@@ -178,12 +258,12 @@ class Sourcer:
         else:
             return ""
 
-    def extract_video_decoder(self, default_stream=0):
+    def __extract_video_decoder(self, default_stream=0):
         """
         Parses default video-stream decoder from metadata.
 
         Parameters:
-            default_stream (int): selects particular video-stream in case of multiple ones.
+            default_stream (int): selects specific video-stream in case of multiple ones.
 
         **Returns:** A string value.
         """
@@ -191,7 +271,7 @@ class Sourcer:
         identifiers = ["Video:", "Stream #"]
         meta_text = [
             line.strip()
-            for line in self.__metadata.split("\n")
+            for line in self.__ffsp_output.split("\n")
             if all(x in line for x in identifiers)
         ]
         if meta_text:
@@ -205,22 +285,21 @@ class Sourcer:
             )
             return filtered_pixfmt[0].split(" ")[-1]
         else:
-            return None
+            return ""
 
-    def extract_video_pixfmt(self, default_stream=0):
+    def __extract_video_pixfmt(self, default_stream=0):
         """
         Parses default video-stream pixel format from metadata.
 
         Parameters:
-            default_stream (int): selects particular video-stream in case of multiple ones.
+            default_stream (int): selects specific video-stream in case of multiple ones.
 
         **Returns:** A string value.
         """
-        assert isinstance(default_stream, int), "Invalid input!"
         identifiers = ["Video:", "Stream #"]
         meta_text = [
             line.strip()
-            for line in self.__metadata.split("\n")
+            for line in self.__ffsp_output.split("\n")
             if all(x in line for x in identifiers)
         ]
         if meta_text:
@@ -234,25 +313,26 @@ class Sourcer:
             )
             return filtered_pixfmt[0].split(" ")[-1]
         else:
-            return None
+            return ""
 
-    def extract_audio_bitrate(self, default_stream=0):
+    def __extract_audio_bitrate(self, default_stream=0):
         """
         Parses default audio-stream bitrate from metadata.
 
         Parameters:
-            default_stream (int): selects particular audio-stream in case of multiple ones.
+            default_stream (int): selects specific audio-stream in case of multiple ones.
 
         **Returns:** A string value.
         """
-        assert isinstance(default_stream, int), "Invalid input!"
-        default_audio_bitrate = re.findall(r"fltp,\s[0-9]+\s\w\w[/]s", self.__metadata)
+        default_audio_bitrate = re.findall(
+            r"fltp,\s[0-9]+\s\w\w[/]s", self.__ffsp_output
+        )
         sample_rate_identifiers = ["Audio", "Hz"] + (
-            ["fltp"] if isinstance(self.source, str) else []
+            ["fltp"] if isinstance(self.__source, str) else []
         )
         audio_sample_rate = [
             line.strip()
-            for line in self.__metadata.split("\n")
+            for line in self.__ffsp_output.split("\n")
             if all(x in line for x in sample_rate_identifiers)
         ]
         if default_audio_bitrate:
@@ -282,30 +362,44 @@ class Sourcer:
             )
             return str(samplerate_2_bitrate) + "k"
         else:
-            return None
+            return ""
 
-    def extract_resolution_framerate(self):
+    def __extract_resolution_framerate(self, default_stream=0):
         """
         Parses default video-stream resolution and framerate from metadata.
 
         **Returns:** A dictionary value.
         """
-        self.__verbose and logger.debug(stripped_data)
+        identifiers = ["Video:", "Stream #"]
+        meta_text = [
+            line.strip()
+            for line in self.__ffsp_output.split("\n")
+            if all(x in line for x in identifiers)
+        ]
         result = {}
-        stripped_data = [x.strip() for x in self.__metadata.split("\n")]
-        for data in stripped_data:
-            output_a = re.findall(r"([1-9]\d+)x([1-9]\d+)", data)
-            output_b = re.findall(r"\d+(?:\.\d+)?\sfps", data)
-            if len(result) == 2:
-                break
-            if output_b and not "framerate" in result:
-                result["framerate"] = float(re.findall(r"[\d\.\d]+", output_b[0])[0])
-            if output_a and not "resolution" in result:
-                result["resolution"] = [int(x) for x in output_a[-1]]
-        # return values
-        return result if (len(result) == 2) else None
+        if meta_text:
+            selected_stream = meta_text[
+                default_stream
+                if default_stream > 0 and default_stream < len(meta_text)
+                else 0
+            ]
+            # filter data
+            filtered_resolution = re.findall(
+                r"([1-9]\d+)x([1-9]\d+)", selected_stream.strip()
+            )
+            filtered_framerate = re.findall(
+                r"\d+(?:\.\d+)?\sfps", selected_stream.strip()
+            )
+            # get framerate and resolution metadata
+            if filtered_framerate:
+                result["framerate"] = float(
+                    re.findall(r"[\d\.\d]+", filtered_framerate[0])[0]
+                )
+            if filtered_resolution:
+                result["resolution"] = [int(x) for x in filtered_resolution[0]]
+        return result if result and (len(result) == 2) else {}
 
-    def extract_duration(self, inseconds=True):
+    def __extract_duration(self, inseconds=True):
         """
         Parses stream duration from metadata.
 
@@ -314,7 +408,7 @@ class Sourcer:
         identifiers = ["Duration:"]
         stripped_data = [
             line.strip()
-            for line in self.__metadata.split("\n")
+            for line in self.__ffsp_output.split("\n")
             if all(x in line for x in identifiers)
         ]
         if stripped_data:
