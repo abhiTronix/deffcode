@@ -19,7 +19,8 @@ limitations under the License.
 """
 
 # import the necessary packages
-import logging, os
+import logging
+import json
 import numpy as np
 import subprocess as sp
 from collections import OrderedDict
@@ -28,7 +29,6 @@ from collections import OrderedDict
 from .utils import dict2Args, logger_handler
 from .sourcer import Sourcer
 from .ffhelper import (
-    get_valid_ffmpeg_path,
     get_supported_pixfmts,
     get_supported_vdecoders,
 )
@@ -56,8 +56,6 @@ class FFdecoder:
             verbose (bool): enables/disables verbose.
             extraparams (dict): provides the flexibility to control supported internal parameters and FFmpeg properties.
         """
-        # checks if machine in-use is running windows os or not
-        self.__os_windows = True if os.name == "nt" else False
 
         # enable verbose if specified
         self.__verbose_logs = (
@@ -108,57 +106,62 @@ class FFdecoder:
             for k, v in extraparams.items()
         }
 
-        # handle where to save the downloaded FFmpeg Static assets on Windows(if specified)
-        __ffmpeg_download_path = self.__extra_params.pop("-ffmpeg_download_path", "")
-        if not isinstance(__ffmpeg_download_path, str):
-            # reset improper values
-            __ffmpeg_download_path = ""
-
-        # validate the FFmpeg assets and return location (also downloads static assets on windows)
-        self.__ffmpeg = get_valid_ffmpeg_path(
-            str(custom_ffmpeg),
-            self.__os_windows,
-            ffmpeg_download_path=__ffmpeg_download_path,
-            verbose=self.__verbose_logs,
-        )
-
-        # check if valid FFmpeg path returned
-        if self.__ffmpeg:
-            self.__verbose_logs and logger.debug(
-                "Found valid FFmpeg executables: `{}`.".format(self.__ffmpeg)
-            )
-        else:
-            # else raise error
-            raise RuntimeError(
-                "[StreamGear:ERROR] :: Failed to find FFmpeg assets on this system. Kindly compile/install FFmpeg or provide a valid custom FFmpeg binary path!"
-            )
-
-        # handle where to save the downloaded FFmpeg Static assets on Windows(if specified)
+        # handle custom Sourcer API params
         sourcer_params = self.__extra_params.pop("-custom_source_params", {})
         # reset improper values
         sourcer_params = {} if not isinstance(sourcer_params, dict) else sourcer_params
 
-        # handle input source metadata(extracts all required data)
-        self.__source_metadata = Sourcer(
-            source=source, verbose=False, ffmpeg_path=self.__ffmpeg, **sourcer_params
-        ).decode_stream()
+        # pass parameter(if specified) to Sourcer API, specifying where to save the downloaded FFmpeg Static
+        # assets on Windows(if specified)
+        sourcer_params["-ffmpeg_download_path"] = self.__extra_params.pop(
+            "-ffmpeg_download_path", ""
+        )
+
+        # handle video and audio stream indexes in case of multiple ones.
+        default_stream_indexes = self.__extra_params.pop(
+            "-default_stream_indexes", (0, 0)
+        )
+        # reset improper values
+        default_stream_indexes = (
+            (0, 0)
+            if not isinstance(default_stream_indexes, (list, tuple))
+            else default_stream_indexes
+        )
+
+        # extract and assign source metadata as dict
+        self.__source_metadata = (
+            Sourcer(
+                source=source,
+                verbose=verbose,
+                ffmpeg_path=self.__ffmpeg,
+                **sourcer_params
+            )
+            .probe_stream(default_stream_indexes=default_stream_indexes)
+            .retrieve_metadata()
+        )
+
+        # get valid ffmpeg path
+        self.__ffmpeg = self.__source_metadata["ffmpeg_binary_path"]
+
         # handle pass-through audio mode works in conjunction with WriteGear [WIP]
         self.__passthrough_mode = self.__extra_params.pop("-passthrough_audio", False)
         if not (isinstance(self.__passthrough_mode, bool)):
             self.__passthrough_mode = False
         # handle mode of operation
-        if self.__source_metadata.contains_images:
+        if self.__source_metadata["source_has_image_sequence"]:
             # image-sequence mode
             self.__opmode = "imgseq"
         elif (
-            self.__source_metadata.contains_video  # audio is only for pass-through, not really for audio decoding yet.
-            and self.__source_metadata.contains_audio
+            self.__source_metadata[
+                "source_has_video"
+            ]  # audio is only for pass-through, not really for audio decoding yet.
+            and self.__source_metadata["source_has_audio"]
             and self.__passthrough_mode  # [WIP]
         ):
             self.__opmode = "av"
         # elif __defop_mode == "ao" and self.__source_metadata.contains_audio: # [TODO]
         #    self.__opmode = "ao"
-        elif self.__source_metadata.contains_video:
+        elif self.__source_metadata["source_has_video"]:
             # video-only mode
             self.__opmode = "vo"
         else:
@@ -166,7 +169,11 @@ class FFdecoder:
             raise ValueError(
                 "Unable to find suitable/usable video stream in the given source!"
             )
-        # log it
+        # store as metadata
+        self.__source_metadata["operational_mode"] = self.__supported_opmodes[
+            self.__opmode
+        ]
+        # and log it
         self.__verbose_logs and logger.critical(
             "Activating {} Mode of Operation.".format(
                 self.__supported_opmodes[self.__opmode]
@@ -217,8 +224,8 @@ class FFdecoder:
             # dynamically pre-assign a default video-decoder (if not assigned by user).
             supported_vdecodecs = get_supported_vdecoders(self.__ffmpeg)
             default_vdecodec = (
-                self.__source_metadata.default_video_decoder
-                if self.__source_metadata.default_video_decoder in supported_vdecodecs
+                self.__source_metadata["source_video_decoder"]
+                if self.__source_metadata["source_video_decoder"] in supported_vdecodecs
                 else "unknown"
             )
             if "-c:v" in self.__extra_params:
@@ -284,7 +291,7 @@ class FFdecoder:
             default_pixfmt = (
                 "rgb24"
                 if "rgb24" in supported_pixfmts
-                else self.__source_metadata.default_video_pixfmt
+                else self.__source_metadata["source_video_pixfmt"]
             )
             if "-vf" in self.__extra_params:
                 self.__extra_params["-pix_fmt"] = self.__extra_params.pop("-vf", None)
@@ -299,7 +306,7 @@ class FFdecoder:
             ):
                 # reset to default if not supported
                 not (self.__frame_format is None) and logger.critical(
-                    "Provided FFmpeg does not support `{}` frame format(pix_fmt). Switching to default `{}`!".format(
+                    "Provided FFmpeg does not support `{}` pixel format(pix_fmt). Switching to default `{}`!".format(
                         self.__frame_format, "rgb24"
                     )
                 )
@@ -339,7 +346,7 @@ class FFdecoder:
             self.__raw_frame_resolution = (
                 self.__custom_resolution
                 if not (self.__custom_resolution is None)
-                else self.__source_metadata.default_video_resolution
+                else self.__source_metadata["source_video_resolution"]
             )
             dimensions = "{}x{}".format(
                 self.__raw_frame_resolution[0], self.__raw_frame_resolution[1]
@@ -350,7 +357,7 @@ class FFdecoder:
             framerate = (
                 self.__constantframerate
                 if self.__constantframerate > 0.0
-                else self.__source_metadata.default_video_framerate
+                else self.__source_metadata["source_video_framerate"]
             )
             output_params["-framerate"] = str(framerate)
 
@@ -360,8 +367,8 @@ class FFdecoder:
             # dynamically calculate raw-frame numbers based on source (if not assigned by user).
             if "-frames:v" in input_params:
                 self.__raw_frame_num = input_params["-frames:v"]
-            elif self.__source_metadata.approx_video_nframes:
-                self.__raw_frame_num = self.__source_metadata.approx_video_nframes
+            elif self.__source_metadata["approx_video_nframes"]:
+                self.__raw_frame_num = self.__source_metadata["approx_video_nframes"]
             else:
                 self.__raw_frame_num = None
                 # log that number of frames are unknown
@@ -484,6 +491,29 @@ class FFdecoder:
         """
         self.close()
 
+    @property
+    def metadata(self):
+        """
+        A property object that dumps Source metadata dict as JSON for pretty printing.
+
+        **Returns:** A `json.dumps` containing source metadata.
+        """
+        return json.dumps(self.__source_metadata, indent=2)
+
+    @metadata.setter
+    def metadata(self, value):
+        """
+        A property object that updates source metadata with user-defined dictionary.
+
+        Parameters:
+            value (dict): User-defined dictionary.
+        """
+        self.__verbose_logs and logger.info("Updating Metadata...")
+        if value and isinstance(value, dict):
+            self.__source_metadata.update(value)
+        else:
+            raise ValueError("Invalid value specified.")
+
     def __launch_FFdecoderline(self, input_params, output_params):
 
         """
@@ -506,7 +536,7 @@ class FFdecoder:
             + input_parameters
             + self.__ffmpeg_postfixes
             + ["-i"]
-            + [self.__source_metadata.source]
+            + [self.__source_metadata["source"]]
             + output_parameters
             + ["-f", "rawvideo", "-"]
         )
