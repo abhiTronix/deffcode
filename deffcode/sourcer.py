@@ -1,6 +1,6 @@
 """
 ===============================================
-deffcode library source-code is deployed under the Apache 2.0 License:
+DeFFcode library source-code is deployed under the Apache 2.0 License:
 
 Copyright (c) 2021 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
 
@@ -41,12 +41,12 @@ logger.setLevel(logging.DEBUG)
 class Sourcer:
     """ """
 
-    def __init__(self, source, verbose=False, custom_ffmpeg="", **sourcer_params):
+    def __init__(self, source, custom_ffmpeg="", verbose=False, **sourcer_params):
         """
         This constructor method initializes the object state and attributes of the Sourcer.
 
         Parameters:
-            source (str): defines the source for the input stream.
+            source (str): defines the default input source.
             verbose (bool): enables/disables verbose.
             custom_ffmpeg (str): assigns the location of custom path/directory for custom FFmpeg executable.
             sourcer_params (dict): provides the flexibility to control supported internal Sourcer parameters.
@@ -58,13 +58,21 @@ class Sourcer:
         self.__verbose_logs = (  # enable verbose if specified
             verbose if (verbose and isinstance(verbose, bool)) else False
         )
-        self.__ffsp_output = None  # handles metadata recieved
+        self.__ffsp_output = None  # handles metadata received
         self.__sourcer_params = {
             str(k).strip(): str(v).strip()
             if not isinstance(v, (dict, list, int, float))
             else v
             for k, v in sourcer_params.items()
         }
+
+        # handle whether to force validate source
+        self.__forcevalidatesource = self.__sourcer_params.pop(
+            "-force_validate_source", False
+        )
+        if not isinstance(self.__forcevalidatesource, bool):
+            # reset improper values
+            self.__forcevalidatesource = False
 
         # handle where to save the downloaded FFmpeg Static assets on Windows(if specified)
         __ffmpeg_download_path = self.__sourcer_params.pop("-ffmpeg_download_path", "")
@@ -88,7 +96,7 @@ class Sourcer:
         else:
             # else raise error
             raise RuntimeError(
-                "[Deffcode:ERROR] :: Failed to find FFmpeg assets on this system. Kindly compile/install FFmpeg or provide a valid custom FFmpeg binary path!"
+                "[DeFFcode:ERROR] :: Failed to find FFmpeg assets on this system. Kindly compile/install FFmpeg or provide a valid custom FFmpeg binary path!"
             )
 
         # define externally accessible parameters
@@ -109,6 +117,9 @@ class Sourcer:
         self.__contains_video = False  # contain video
         self.__contains_audio = False  # contain audio
         self.__contains_images = False  # contain image-sequence
+
+        # check whether metadata probed or not
+        self.__metadata_probed = False
 
     def probe_stream(self, default_stream_indexes=(0, 0)):
         """
@@ -170,6 +181,10 @@ class Sourcer:
             self.__approx_video_nframes = np.rint(
                 self.__default_video_framerate * self.__default_source_duration
             ).astype(int, casting="unsafe")
+
+        # signal metadata has been probed
+        self.__metadata_probed = True
+
         # return reference to the instance object.
         return self
 
@@ -179,6 +194,11 @@ class Sourcer:
 
         **Returns:** A dictionary value containing metadata.
         """
+        # check if metadata has been probed or not
+        assert (
+            self.__metadata_probed
+        ), "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
+
         self.__verbose_logs and logger.debug("Retrieving Metadata...")
         metadata = {
             "ffmpeg_binary_path": self.__ffmpeg,
@@ -189,7 +209,9 @@ class Sourcer:
             "source_video_pixfmt": self.__default_video_pixfmt,
             "source_video_decoder": self.__default_video_decoder,
             "source_duration_sec": self.__default_source_duration,
-            "approx_video_nframes": int(self.__approx_video_nframes),
+            "approx_video_nframes": int(self.__approx_video_nframes)
+            if self.__approx_video_nframes
+            else None,
             "source_video_bitrate": self.__default_video_bitrate,
             "source_audio_bitrate": self.__default_audio_bitrate,
             "source_has_video": self.__contains_video,
@@ -213,6 +235,9 @@ class Sourcer:
             self.__video_source = source
             self.__contains_images = True
         elif is_valid_url(self.__ffmpeg, url=source, verbose=self.__verbose_logs):
+            self.__video_source = source
+        elif self.__forcevalidatesource:
+            logger.critical("Forcefully passing validation test for given source!")
             self.__video_source = source
         else:
             logger.error("`source` value is unusable or unsupported!")

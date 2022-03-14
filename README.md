@@ -1,6 +1,6 @@
 <!--
 ===============================================
-deffcode library source-code is deployed under the Apache 2.0 License:
+DeFFcode library source-code is deployed under the Apache 2.0 License:
 
 Copyright (c) 2021 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
 

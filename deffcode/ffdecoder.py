@@ -1,6 +1,6 @@
 """
 ===============================================
-deffcode library source-code is deployed under the Apache 2.0 License:
+DeFFcode library source-code is deployed under the Apache 2.0 License:
 
 Copyright (c) 2021 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
 
@@ -50,7 +50,7 @@ class FFdecoder:
         This constructor method initializes the object state and attributes of the FFdecoder.
 
         Parameters:
-            source (str): defines the source for the input stream.
+            source (str): defines the default input source.
             frame_format (str): sets pixel format(-pix_fmt) of the decoded frames.
             custom_ffmpeg (str): assigns the location of custom path/directory for custom FFmpeg executable.
             verbose (bool): enables/disables verbose.
@@ -107,7 +107,7 @@ class FFdecoder:
         }
 
         # handle custom Sourcer API params
-        sourcer_params = self.__extra_params.pop("-custom_source_params", {})
+        sourcer_params = self.__extra_params.pop("-custom_sourcer_params", {})
         # reset improper values
         sourcer_params = {} if not isinstance(sourcer_params, dict) else sourcer_params
 
@@ -181,14 +181,22 @@ class FFdecoder:
         )
 
         # handle user-defined framerate
-        self.__constantframerate = self.__extra_params.pop("-constant_framerate", 0.0)
-        if isinstance(self.__constantframerate, (float, int)):
+        self.__inputframerate = self.__extra_params.pop("-framerate", 0.0)
+        if (
+            isinstance(self.__inputframerate, (float, int))
+            and self.__inputframerate > 0.0
+        ):
             # must be float
-            self.__constantframerate = float(self.__constantframerate)
+            self.__inputframerate = float(self.__inputframerate)
         else:
             # reset improper values
-            self.__constantframerate = 0.0
+            self.__inputframerate = 0.0
 
+        # FFmpeg parameter `-s` is unsupported
+        if not (self.__extra_params.pop("-s", None) is None):
+            logger.warning(
+                "Discarding user-defined `-s` FFmpeg parameter as it can only be assigned with `-custom_resolution`!"
+            )
         # handle user defined decoded frame resolution(must be a tuple or list)
         self.__custom_resolution = self.__extra_params.pop("-custom_resolution", None)
         if self.__custom_resolution is None or not (
@@ -237,18 +245,12 @@ class FFdecoder:
                 # -vcodec is discarded by default
                 # (This is correct or maybe -vcodec required in some unknown case) [TODO]
                 self.__extra_params.pop("-vcodec", None)
-                # handle exclusive input sequence framerate
-                sequence_framerate = self.__extra_params.pop("-r", 1.0)
-                if (
-                    isinstance(sequence_framerate, (float, int))
-                    and sequence_framerate > 1.0
-                ):
-                    # must be float
-                    sequence_framerate = float(sequence_framerate)
-                else:
-                    # reset improper values
-                    sequence_framerate = 1.0
-                input_params["-r"] = sequence_framerate
+            elif (
+                "-vcodec" in self.__extra_params
+                and self.__extra_params["-vcodec"] is None
+            ):
+                # special case when -vcodec is not needed intentionally
+                self.__extra_params.pop("-vcodec", None)
             else:
                 # assign video decoder selected here.
                 if not "-vcodec" in self.__extra_params:
@@ -293,11 +295,9 @@ class FFdecoder:
                 if "rgb24" in supported_pixfmts
                 else self.__source_metadata["source_video_pixfmt"]
             )
-            if "-vf" in self.__extra_params:
-                self.__extra_params["-pix_fmt"] = self.__extra_params.pop("-vf", None)
             if "-pix_fmt" in self.__extra_params:
                 logger.warning(
-                    "Discarding user-defined `-pix_fmt/-vf` value as it can only be assigned with `frame_format` parameter!"
+                    "Discarding user-defined `-pix_fmt` value as it can only be assigned with `frame_format` parameter!"
                 )
                 self.__extra_params.pop("-pix_fmt", None)
             if (
@@ -355,8 +355,8 @@ class FFdecoder:
 
             # dynamically calculate raw-frame frame-rate based on source (if not assigned by user).
             framerate = (
-                self.__constantframerate
-                if self.__constantframerate > 0.0
+                self.__inputframerate
+                if self.__inputframerate > 0.0
                 else self.__source_metadata["source_video_framerate"]
             )
             output_params["-framerate"] = str(framerate)
@@ -392,7 +392,7 @@ class FFdecoder:
         """
         assert not (
             self.__process is None
-        ), "Pipeline is not running! Did you called `create()`?"
+        ), "Pipeline is not running! Check if you called `create()` method."
 
         # formulated raw frame size
         raw_frame_size = (
@@ -494,9 +494,9 @@ class FFdecoder:
     @property
     def metadata(self):
         """
-        A property object that dumps Source metadata dict as JSON for pretty printing.
+        A property object that dumps Source metadata dict as JSON for pretty printing. As well as can be used to update source metadata with user-defined dictionary.
 
-        **Returns:** A `json.dumps` containing source metadata.
+        **Returns:** A [`json.dumps`](https://docs.python.org/3/library/json.html#json.dumps) output.
         """
         return json.dumps(self.__source_metadata, indent=2)
 

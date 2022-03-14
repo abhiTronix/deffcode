@@ -1,4 +1,4 @@
-"""deffcode - Performant Pythonic FFmpeg Decoder with easy to adapt flexible API."""
+"""DeFFcode - High-performance Real-time Video frames Generator for generating blazingly fast video frames in python."""
 
 __author__ = "Abhishek Thakur (@abhiTronix) <abhi.una12@gmail.com>"
 

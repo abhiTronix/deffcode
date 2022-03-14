@@ -1,6 +1,6 @@
 """
 ===============================================
-deffcode library source-code is deployed under the Apache 2.0 License:
+DeFFcode library source-code is deployed under the Apache 2.0 License:
 
 Copyright (c) 2021 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
 
@@ -82,7 +82,7 @@ logger.propagate = False
 logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
 # log current version for debugging
-logger.info("Running FFdecoder Version: {}".format(str(__version__)))
+logger.info("Running DeFFcode Version: {}".format(str(__version__)))
 
 
 def dict2Args(param_dict):
