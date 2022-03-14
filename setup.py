@@ -1,6 +1,6 @@
 """
 ===============================================
-deffcode library source-code is deployed under the Apache 2.0 License:
+DeFFcode library source-code is deployed under the Apache 2.0 License:
 
 Copyright (c) 2021 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
 
@@ -41,7 +41,7 @@ setup(
     name="deffcode",
     packages=["deffcode"],
     version=pkg_version["__version__"],
-    description="Performant Pythonic FFmpeg Decoder with easy to adapt flexible API.",
+    description="High-performance Real-time Video frames Generator for generating blazingly fast video frames in python",
     license="Apache License 2.0",
     author="Abhishek Thakur",
     install_requires=[

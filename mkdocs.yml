@@ -1,0 +1,185 @@
+# Copyright (c) 2021 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#    http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Project information
+site_name: DeFFcode
+site_url: https://abhitronix.github.io/deffcode/
+site_author: Abhishek Thakur
+site_description: >-
+  A High-performance Real-time Video frames Generator for generating blazingly fast video frames in python 🔥
+
+# Repository
+repo_name: abhiTronix/deffcode
+repo_url: https://github.com/abhiTronix/deffcode
+edit_uri: ""
+
+# Copyright
+copyright: Copyright &copy; 2021 Abhishek Thakur(@abhiTronix)
+
+# Configuration
+theme:
+  name: material
+  custom_dir: docs/overrides
+
+  # Default values, taken from mkdocs_theme.yml
+  language: en
+  features:
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.annotate
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: green
+      accent: dark green
+      toggle:
+        icon: material/home-lightning-bolt-outline
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: light green
+      toggle:
+        icon: material/home-lightning-bolt
+        name: Switch to light mode
+  font: # font
+    text: Quicksand
+    code: Fira Code
+  icon: # icon
+    logo: logo
+  logo: assets/images/android-chrome-192x192.png
+  favicon: assets/images/favicon-32x32.png
+
+# Plugins
+plugins:
+  - search
+  - git-revision-date-localized
+  - minify:
+      minify_html: true
+  - mkdocstrings:
+      custom_templates: ""
+      default_handler: python
+      handlers:
+        python:
+          rendering:
+            show_root_heading: false
+            show_root_toc_entry: false
+            show_source: true
+            heading_level: 3
+  - exclude:
+      glob:
+        - overrides/assets/README.md
+
+# Customization
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/abhiTronix
+    - icon: fontawesome/brands/gitter
+      link: https://gitter.im/deffcode/community
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/abhishek-singh-thakur-a37845a5
+    - icon: fontawesome/brands/dev
+      link: https://dev.to/abhitronix
+  version:
+    provider: mike
+  analytics: # Google analytics
+    provider: google
+    property: UA-131929464-1
+extra_css:
+    - assets/stylesheets/custom.css
+extra_javascript:
+    - assets/javascripts/extra.js
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - abbr
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - meta
+  - toc:
+      permalink: true
+      permalink_title: Anchor link to this section for reference
+  - codehilite:
+      guess_lang: false
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: abhiTronix
+      repo: deffcode
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - pymdownx.striphtml:
+      strip_comments: true
+  - pymdownx.magiclink
+
+# Page tree
+nav:
+  - Getting Started: 
+    - Introduction: index.md
+    - Installation Notes: 
+      - Introduction: installation/index.md
+      - FFmpeg Installation: installation/ffmpeg_install.md
+    - Basic Recipies: examples/basic.md
+  - Advanced Recipies: examples/advanced.md
+  - API References:
+    - deffcode.FFdecoder: 
+      - API: reference/ffdecoder/index.md
+      - API Parameters: reference/ffdecoder/params.md
+    - deffcode.Sourcer: 
+      - API: reference/sourcer/index.md
+      - API Parameters: reference/sourcer/params.md
+    - deffcode.ffhelper: reference/ffhelper.md
+    - deffcode.utils: reference/utils.md
+  - Help:
+    - Help Section: 
+      - Helping Us: help/index.md
+      - Getting Help: help/get_help.md 
+    - Contribution:
+      - Overview: contribution/index.md
+      - Issue Guidelines: contribution/issue.md
+      - Pull Request(PR) Guidelines: contribution/PR.md
+  - Extras:
+    - Changelog: changelog.md
+    - License: license.md
+

@@ -1,6 +1,6 @@
 """
 ===============================================
-deffcode library source-code is deployed under the Apache 2.0 License:
+DeFFcode library source-code is deployed under the Apache 2.0 License:
 
 Copyright (c) 2021 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
 
@@ -350,7 +350,7 @@ def get_supported_demuxers(path):
     return [o.strip() for o in outputs]
 
 
-def validate_imgseqdir(source, extension="jpg"):
+def validate_imgseqdir(source, extension="jpg", verbose=False):
     """
     ## validate_imgseqdir
 
@@ -366,7 +366,7 @@ def validate_imgseqdir(source, extension="jpg"):
     dirpath = Path(source).parent
     try:
         if not (dirpath.exists() and dirpath.is_dir()):
-            logger.warning(
+            verbose and logger.warning(
                 "Specified path `{}` doesn't exists or valid.".format(dirpath)
             )
             return False
@@ -462,7 +462,13 @@ def check_sp_output(*args, **kwargs):
     """
     ## check_sp_output
 
-    Returns stdin output from subprocess module
+    Returns FFmpeg `stdout` output from subprocess module
+
+    Parameters:
+        args (based on input): Non Keyword Arguments
+        kwargs (based on input): Keyword Arguments
+
+    **Returns:** A string value.
     """
     # workaround for python bug: https://bugs.python.org/issue37380
     if platform.system() == "Windows":
