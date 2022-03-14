@@ -27,7 +27,7 @@ limitations under the License.
 
     * ==All DeFFcode APIs will raise `RuntimeError` if they fails to detect valid FFmpeg executable on your system!==
 
-    * Always use `terminate()` function at the end to avoid undesired behavior.
+    * Always use [`terminate()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.terminate) function at the end with FFdecoder API to avoid undesired behavior.
 
 &thinsp;
 
