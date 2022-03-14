@@ -19,7 +19,7 @@ limitations under the License.
 -->
 
 
-<img src="../assets/images/contribute.webp" alt="DeFFcode Contribution" loading="lazy" class="center-small" />
+<img src="../assets/images/contribute.webp" alt="DeFFcode Contribution" loading="lazy" class="center-small" width="80%"/>
 
 
 # Contribution Overview
@@ -40,7 +40,7 @@ We'd love your contribution to DeFFcode in order to fix bugs or to implement new
 
 ### Got a question or problem?
 
-For quick questions, please refrain from opening an issue, instead read our [FAQ & Troubleshooting](../help/get_help/#frequently-asked-questions) section or you can reach us on [Gitter](https://gitter.im/deffcode-python/community) community channel.
+For quick questions, please refrain from opening an issue, instead you can reach us on [Gitter](https://gitter.im/deffcode-python/community) community channel.
 
 
 ### Found a typo?

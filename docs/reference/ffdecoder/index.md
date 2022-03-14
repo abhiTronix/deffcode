@@ -30,9 +30,9 @@ Furthermore, DeFFcode can **extract frames with any specification** such as Fram
 
 &thinsp;
 
-!!! example "Comprehensive Usage Examples can be found [here ➶](../../../gears/camgear/usage/)"
+!!! example "For more in-depth usage, please refer our **[Basic Recipes :pie:](../../examples/basic)** and **[Advanced Recipes :microscope:](../../examples/advanced)**"
 
-!!! info "FFdecoder API parameters are explained [here ➶](../../../gears/camgear/params/)"
+!!! info "FFdecoder API parameters are explained [here ➶](params/)"
 
 ::: deffcode.FFdecoder
 

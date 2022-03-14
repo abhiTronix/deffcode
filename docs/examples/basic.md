@@ -122,7 +122,7 @@ Here's a example for seeking to `00:00:01.45`_(or 1045msec)_ in time, and get on
     # initialize and formulate the decode with suitable source
     decoder = FFdecoder("foo.mp4", **extraparams).formulate()
 
-    # grab single Grayscale frame from the decoder
+    # grab the RGB24(default) frame from the decoder
     frame = next(decoder.generateFrame(), None)
 
     # check if frame is None

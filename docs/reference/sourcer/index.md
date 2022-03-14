@@ -53,9 +53,10 @@ All parameter available with Sourcer API extracted as Pretty JSON(On :fontawesom
 ```
 
 
-!!! example "Comprehensive Usage Examples can be found [here ➶](../../../gears/camgear/usage/)"
+!!! example "For more in-depth usage, please refer our **[Basic Recipes :pie:](../../examples/basic)** and **[Advanced Recipes :microscope:](../../examples/advanced)**"
 
-!!! info "Sourcer API parameters are explained [here ➶](../../../gears/camgear/params/)"
+
+!!! info "Sourcer API parameters are explained [here ➶](params/)"
 
 ::: deffcode.Sourcer
 

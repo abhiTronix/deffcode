@@ -19,7 +19,7 @@ limitations under the License.
 -->
 
 <figure>
-  <img src="../assets/images/installation.png" loading="lazy" alt="DeFFcode Installation" class="center"/>
+  <img src="../assets/images/installation.png" loading="lazy" alt="DeFFcode Installation" class="center" width="85%"/>
 </figure>
 
 &emsp; 

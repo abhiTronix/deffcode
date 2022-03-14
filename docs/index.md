@@ -20,7 +20,7 @@ limitations under the License.
 
 # Introduction
 
-<img src="assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" loading="lazy" width="85%" class="shadow" />
+<img src="assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" loading="lazy" width="85%" class="shadow2" />
 
 > DeFFcode is a High-performance Real-time **Video frames Generator** that wraps FFmpeg pipeline inside a subprocess module for generating blazingly fast video frames in python :fire:
 
@@ -56,11 +56,11 @@ DeFFcode API is built upon ==[**FFmpeg**][ffmpeg] - a leading multimedia framewo
 
 !!! tip "In case you're run into any problems, consult our [Help](help/get_help) section."
 
-If this is your first time using DeFFcode, head straight to the [**Installation Notes**](installation.md) to install DeFFcode.
+If this is your first time using DeFFcode, head straight to the [**Installation Notes**](installation/) to install DeFFcode.
 
-The default function of DeFFcode's [FFdecoder API](reference/ffdecoder/#ffdecoder-api) is to generate 24-bit RGB (3D [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray)) frames from the given source:
+The default function of DeFFcode's [**FFdecoder API**](reference/ffdecoder/#ffdecoder-api) is to generate 24-bit RGB (3D [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray)) frames from the given source:
 
-```py title="grab_frames.py"
+```py
 # import the necessary packages
 from deffcode import FFdecoder
 
@@ -79,7 +79,7 @@ print(decoder.metadata)
 decoder.terminate()
 ```
 
-!!! example "For more in-depth usage, please refer our **[Basic Recipes :pie:](../examples/basic)** and **[Advanced Recipes :microscope:](../examples/advanced)**"
+!!! example "For more in-depth usage, please refer our **[Basic Recipes :pie:](examples/basic)** and **[Advanced Recipes :microscope:](examples/advanced)**"
 
 &thinsp;
 
@@ -87,7 +87,7 @@ decoder.terminate()
 
 > Contributions are welcome, and greatly appreciated!  
 
-Please read our [**Contribution Guidelines**](contribution.md) for more details.
+Please read our [**Contribution Guidelines**](contribution/) for more details.
 
 &thinsp;
 
