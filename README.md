@@ -122,7 +122,7 @@ For more in-depth usage, please refer our **[Basic Recipes :pie:](https://abhitr
 
 ## Roadmap
 
-- [ ] Add clean and elegant documentation. **[WIP :construction:]**
+- [x] Add clean and elegant documentation.
 - [ ] Add related pytests.
 - [ ] Automate stuff with Continuous Integration. **[WIP :construction:]**
 - [ ] Add preliminary benchmarks.
