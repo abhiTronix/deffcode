@@ -31,8 +31,15 @@ limitations under the License.
 
 <div align="center">
   <img src="docs/overrides/assets/images/deffcode-tagline.png" alt="DeFFcode tagline" width="40%"/>
-</div>
 
+
+----
+
+[Releases][release]&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;[Documentation][docs]&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;[Installation][install]&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;[License](#copyright)
+
+----
+
+</div>
 
 &thinsp;
 
@@ -86,14 +93,20 @@ Simply use
 $ (sudo) pip install deffcode
 ```
 
-:bulb: For details, see [installation notes](https://abhitronix.github.io/deffcode/latest/installation/).
+:bulb: For details, see [installation notes][install].
 
 &nbsp;
 
 
 ## Getting Started
 
+---
+
+**:books: Documentation: https://abhitronix.github.io/deffcode**
+
 **:bulb: In case you're run into any problems, consult our [Help](help/get_help) section.**
+
+---
 
 The default function of DeFFcode's [FFdecoder API](https://abhitronix.github.io/deffcode/latest/reference/ffdecoder/#ffdecoder-api) is to generate 24-bit RGB (3D [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray)) frames from the given source:
 
@@ -116,24 +129,23 @@ print(decoder.metadata)
 decoder.terminate()
 ```
 
-For more in-depth usage, please refer our **[Basic Recipes :pie:](https://abhitronix.github.io/deffcode/latest/examples/basic)** and **[Advanced Recipes :microscope:](https://abhitronix.github.io/deffcode/latest/examples/advanced)**
+For more examples and in-depth usage guide, kindly refer our **[Basic Recipes :pie:](https://abhitronix.github.io/deffcode/latest/examples/basic)** and **[Advanced Recipes :microscope:](https://abhitronix.github.io/deffcode/latest/examples/advanced)**
 
 &nbsp;
 
 ## Roadmap
 
 - [x] Add clean and elegant documentation.
-- [ ] Add related pytests.
+- [ ] Add related pytests. **[WIP :construction:]**
 - [ ] Automate stuff with Continuous Integration. **[WIP :construction:]**
 - [ ] Add preliminary benchmarks.
 - [ ] Make Frame Seeking dynamic. 
-- [ ] Add multiple source inputs support.
+- [ ] Add Multiple Source Inputs support.
 - [ ] Add Devices and Screen Capture support.
-- [ ] Add more entries to Sourcer API's metadata. 
-- [ ] Implement buffer and audio pass-through modes.
+- [ ] Add more parameters to Sourcer API's metadata. 
+- [ ] Implement Buffer and Audio pass-through modes.
 - [ ] Resolve High CPU usage issue with WriteGear API.
-- [ ] Add more advanced recipes and use cases.
-- [ ] Fix any related bugs along the way. 
+- [ ] Add more Advanced Recipes and use cases.
 
 &nbsp;
 
@@ -194,6 +206,8 @@ Badges
 <!--
 Internal URLs
 -->
+[docs]:https://abhitronix.github.io/deffcode/latest/
+[install]:https://abhitronix.github.io/deffcode/latest/installation/
 [release]:https://github.com/abhiTronix/deffcode/releases/latest
 [license]:https://github.com/abhiTronix/deffcode/blob/master/LICENSE
 [github-flow]:https://github.com/abhiTronix/deffcode/actions?query=workflow%3A%22Run+Linux+CI-Tests+for+deffcode%22
