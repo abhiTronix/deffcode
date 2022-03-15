@@ -18,13 +18,9 @@ limitations under the License.
 ===============================================
 -->
 
-<h1 align="center">
-  <img src="docs/overrides/assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" width="75%"/>
-</h1>
-
-<h2 align="center">
-  <img src="docs/overrides/assets/images/deffcode-tagline.png" alt="DeFFcode tagline" width="40%"/>
-</h2>
+<div align="center">
+  <img src="docs/overrides/assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" width="80%"/>
+</div>
 
 <div align="center">
 
@@ -33,8 +29,12 @@ limitations under the License.
 
 </div>
 
+<div align="center">
+  <img src="docs/overrides/assets/images/deffcode-tagline.png" alt="DeFFcode tagline" width="40%"/>
+</div>
 
-&nbsp;
+
+&thinsp;
 
 
 ## Overview
