@@ -4,3 +4,4 @@ __author__ = "Abhishek Thakur (@abhiTronix) <abhi.una12@gmail.com>"
 
 from .ffdecoder import FFdecoder
 from .sourcer import Sourcer
+from .version import __version__

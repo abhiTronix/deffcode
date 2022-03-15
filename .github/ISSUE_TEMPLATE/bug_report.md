@@ -40,7 +40,7 @@ _Kindly briefly explain the issue here._
 * My DeFFcode version: <!-- Run command `python -c "import deffcode; print(deffcode.__version__)"` -->
 * My Python version: <!---Run command `python -V` -->
 * My Pip version: <!-- Run command `python -c "import pip; print(pip.__version__)"` -->
-* My Operating System and its version: <!--- `Windows 10` | `Ubuntu 18,04` | `macOS big slur` etc. -->
+* My Operating System and its version: <!--- `Windows 10` | `Ubuntu 18.04` | `macOS big slur` etc. -->
 
 ### Expected Behavior
 <!-- Tell us what should happen -->

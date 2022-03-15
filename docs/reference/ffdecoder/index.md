@@ -30,7 +30,7 @@ Furthermore, DeFFcode can **extract frames with any specification** such as Fram
 
 &thinsp;
 
-!!! example "For more in-depth usage, please refer our **[Basic Recipes :pie:](../../examples/basic)** and **[Advanced Recipes :microscope:](../../examples/advanced)**"
+!!! example "For usage, kindly refer our **[Basic Recipes :pie:](../../examples/basic)** and **[Advanced Recipes :microscope:](../../examples/advanced)**"
 
 !!! info "FFdecoder API parameters are explained [here ➶](params/)"
 
