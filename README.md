@@ -136,8 +136,8 @@ For more examples and in-depth usage guide, kindly refer our **[Basic Recipes :p
 ## Roadmap
 
 - [x] Add clean and elegant documentation.
-- [ ] Add project issue and PR templates. **[WIP :construction:]**
-- [ ] Add related pytests. 
+- [x] Add project Issue and PR templates. 
+- [ ] Add related unit tests with `pytests`. **[WIP :construction:]**
 - [ ] Automate stuff with Continuous Integration. **[WIP :construction:]**
 - [ ] Add preliminary benchmarks.
 - [ ] Make Frame Seeking dynamic. 
