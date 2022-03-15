@@ -87,13 +87,13 @@ DeFFcode API is built upon [**FFmpeg**][ffmpeg] - a leading multimedia framework
 
 ## Installation
 
-Simply use
+Installation is as simple as:
 
 ```sh
 $ (sudo) pip install deffcode
 ```
 
-:bulb: For details, see [installation notes][install].
+:bulb: For more details, see [installation notes][install].
 
 &nbsp;
 

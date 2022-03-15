@@ -26,8 +26,8 @@ Sourcer API also acts as a **Metadata Extraction Tool** that extracts metadata o
 
 All parameter available with Sourcer API extracted as Pretty JSON(On :fontawesome-brands-windows:Windows), are as follows:
 
-??? tip "Extracting Source Video Metadata in DeFFcode"
-      Metadata can be easily extracted as a dictionary in Sourcer API using its [`retrieve_metadata()`](../../reference/sourcer/#deffcode.sourcer.Sourcer.retrieve_metadata) method. Moreover, you can also use `metadata` property object in FFdecoder API to extract metadata as Pretty JSON, and update it directly as desired. More information can be found in [this usage example]().  
+???+ info "Extracting Source Video Metadata in DeFFcode"
+      Metadata can be easily extracted as a dictionary in Sourcer API using its [`retrieve_metadata()`](#deffcode.sourcer.Sourcer.retrieve_metadata) method. Moreover, you can also use [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object in FFdecoder API to extract metadata as Pretty JSON, and update it directly as desired. **More information can be found in [this usage example ➶](../../examples/basic/#generate-source-video-metadata)**.  
 
 ```sh
 {
@@ -53,8 +53,7 @@ All parameter available with Sourcer API extracted as Pretty JSON(On :fontawesom
 ```
 
 
-!!! example "For more in-depth usage, please refer our **[Basic Recipes :pie:](../../examples/basic)** and **[Advanced Recipes :microscope:](../../examples/advanced)**"
-
+!!! example "For usage, kindly refer our **[Basic Recipes :pie:](../../examples/basic)** and **[Advanced Recipes :microscope:](../../examples/advanced)**"
 
 !!! info "Sourcer API parameters are explained [here ➶](params/)"
 

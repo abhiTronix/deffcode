@@ -79,7 +79,7 @@ print(decoder.metadata)
 decoder.terminate()
 ```
 
-!!! example "For more in-depth usage, please refer our **[Basic Recipes :pie:](examples/basic)** and **[Advanced Recipes :microscope:](examples/advanced)**"
+**For more in-depth usage, kindly refer our [Basic Recipes :pie:](examples/basic) and [Advanced Recipes :microscope:](examples/advanced)**
 
 &thinsp;
 
