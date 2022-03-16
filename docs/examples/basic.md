@@ -31,8 +31,6 @@ limitations under the License.
 
 &thinsp;
 
-
-
 ## Saving Keyframes as Image
 
 > In Python, there are many libraries available in Python that allow us to store [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames as images. And in combination with DeFFcode's **effortless and precise FFmpeg Frame Seeking** with `-ss` parameter, we can save any frame from a specific part of our input source. 
