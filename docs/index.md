@@ -20,11 +20,11 @@ limitations under the License.
 
 # Introduction
 
-<img src="assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" loading="lazy" width="85%" class="shadow2" />
+<img src="assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" loading="lazy" width="87%" class="shadow2" />
 
 > DeFFcode is a High-performance Real-time **Video frames Generator** that wraps FFmpeg pipeline inside a subprocess module for generating blazingly fast video frames in python :fire:
 
-The primary purpose of DeFFcode is to provide a one-stop solution for low-memory overhead and faster decoding of a wide range of video streams into 3D NumPy's [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames while providing **complete control over the underlying FFmpeg pipeline** without the need to go deeper into hefty documentation and in just a few lines of python code.
+The primary purpose of DeFFcode is to provide a one-stop cross-platform solution for low-memory overhead and faster decoding of a wide range of video streams into 3D NumPy's [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames while providing **complete control over the underlying FFmpeg pipeline** without the need to go deeper into hefty documentation and in just a few lines of python code.
 
 Furthermore, DeFFcode can **extract frames with any custom specification** such as Framerate, Resolution, Hardware decoder, Complex Filter into any pixel format and gives users complete freedom to apply almost any desired FFmpeg supported parameter. 
 
@@ -35,7 +35,7 @@ DeFFcode APIs are designed for **modularity** with clean API separation for buil
 
 ## Key Features
 
-DeFFcode API is built upon ==[**FFmpeg**][ffmpeg] - a leading multimedia framework==, that gives you the following:
+DeFFcode APIs are build on ==[**FFmpeg**][ffmpeg] - a leading multimedia framework==, that gives you the following:
 
 - [x] Extremely exceptional real-time performance :zap: with low-memory footprints.
 - [x] Flexible API with access to almost every parameter available within FFmpeg.

@@ -287,10 +287,11 @@ In this example we will generate all metadata parameters available within `foo.m
           "approx_video_nframes": 133,
           "source_video_bitrate": "1205k",
           "source_audio_bitrate": "384k",
+          "source_audio_samplerate": "48000 Hz",
           "source_has_video": true,
           "source_has_audio": true,
           "source_has_image_sequence": false,
-          "operational_mode": "Video-Only"
+          "ffdecoder_operational_mode": "Video-Only"
         }
         ```
 
@@ -309,7 +310,7 @@ In this example we will generate all metadata parameters available within `foo.m
     
     ???+ quote "After running above python code, the resultant Terminal Output will look something as following on :fontawesome-brands-windows:Windows machine:"
         ```py
-        {'ffmpeg_binary_path': 'C:\\Users\\foo\\AppData\\Local\\Temp\\ffmpeg-static-win64-gpl/bin/ffmpeg.exe', 'source': 'foo.mp4', 'source_extension': '.mp4', 'source_video_resolution': [1280, 720], 'source_video_framerate': 25.0, 'source_video_pixfmt': 'yuv420p', 'source_video_decoder': 'h264', 'source_duration_sec': 5.31, 'approx_video_nframes': 133, 'source_video_bitrate': '1205k', 'source_audio_bitrate': '384k', 'source_has_video': True, 'source_has_audio': True, 'source_has_image_sequence': False}
+        {'ffmpeg_binary_path': 'C:\\Users\\foo\\AppData\\Local\\Temp\\ffmpeg-static-win64-gpl/bin/ffmpeg.exe', 'source': 'foo.mp4', 'source_extension': '.mp4', 'source_video_resolution': [1280, 720], 'source_video_framerate': 25.0, 'source_video_pixfmt': 'yuv420p', 'source_video_decoder': 'h264', 'source_duration_sec': 5.31, 'approx_video_nframes': 133, 'source_video_bitrate': '1205k', 'source_audio_bitrate': '384k', 'source_audio_samplerate': '48000 Hz', 'source_has_video': True, 'source_has_audio': True, 'source_has_image_sequence': False}
     
         ```
 

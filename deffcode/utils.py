@@ -52,7 +52,7 @@ def logger_handler():
         style="{",
     )
     # check if FFdecoder_LOGFILE defined
-    file_mode = os.environ.get("FFRAVEL_LOGFILE", False)
+    file_mode = os.environ.get("DEFFCODE_LOGFILE", False)
     # define handler
     handler = logging.StreamHandler()
     if file_mode and isinstance(file_mode, str):
@@ -61,7 +61,7 @@ def logger_handler():
             os.path.dirname(file_path), os.W_OK
         ):
             file_path = (
-                os.path.join(file_path, "FFdecoder.log")
+                os.path.join(file_path, "deffcode.log")
                 if os.path.isdir(file_path)
                 else file_path
             )

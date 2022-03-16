@@ -112,6 +112,7 @@ class Sourcer:
         self.__default_source_duration = ""  # handle stream's video duration
         self.__approx_video_nframes = ""  # handle approx stream frame number
         self.__default_audio_bitrate = ""  # handle stream's audio bitrate
+        self.__default_audio_samplerate = ""  # handle stream's audio samplerate
 
         # handle flags
         self.__contains_video = False  # contain video
@@ -158,19 +159,24 @@ class Sourcer:
             self.__default_video_bitrate = self.__extract_video_bitrate(
                 default_stream=default_stream_indexes[0]
             )
-            # parse audio bitrate
-            self.__default_audio_bitrate = self.__extract_audio_bitrate(
+            # parse audio bitrate and samplerate
+            audio_params = self.__extract_audio_bitrate_nd_samplerate(
                 default_stream=default_stream_indexes[1]
             )
+            if audio_params:
+                self.__default_audio_bitrate = audio_params["bitrate"]
+                self.__default_audio_samplerate = audio_params["samplerate"]
             # parse video duration
             self.__default_source_duration = self.__extract_duration()
             # calculate all flags
-            if self.__default_video_bitrate and self.__default_audio_bitrate:
+            if (self.__default_video_bitrate or self.__default_video_framerate) and (
+                self.__default_audio_bitrate or self.__default_audio_samplerate
+            ):
                 self.__contains_video = True
                 self.__contains_audio = True
-            elif self.__default_video_bitrate:
+            elif self.__default_video_bitrate or self.__default_video_framerate:
                 self.__contains_video = True
-            elif self.__default_audio_bitrate:
+            elif self.__default_audio_bitrate or self.__default_audio_samplerate:
                 self.__contains_audio = True
             else:
                 raise IOError(
@@ -214,6 +220,7 @@ class Sourcer:
             else None,
             "source_video_bitrate": self.__default_video_bitrate,
             "source_audio_bitrate": self.__default_audio_bitrate,
+            "source_audio_samplerate": self.__default_audio_samplerate,
             "source_has_video": self.__contains_video,
             "source_has_audio": self.__contains_audio,
             "source_has_image_sequence": self.__contains_images,
@@ -272,16 +279,16 @@ class Sourcer:
                 else 0
             ]
             filtered_bitrate = re.findall(
-                r",\s[0-9]+\s\w\w[/]s", selected_stream.strip()
+                r",\s[0-9]+\s\w\w[\/]s", selected_stream.strip()
             )
-            default_video_bitrate = filtered_bitrate[0].split(" ")[1:3]
-            final_bitrate = "{}{}".format(
-                int(default_video_bitrate[0].strip()),
-                "k" if (default_video_bitrate[1].strip().startswith("k")) else "M",
-            )
-            return final_bitrate
-        else:
-            return ""
+            if len(filtered_bitrate):
+                default_video_bitrate = filtered_bitrate[0].split(" ")[1:3]
+                final_bitrate = "{}{}".format(
+                    int(default_video_bitrate[0].strip()),
+                    "k" if (default_video_bitrate[1].strip().startswith("k")) else "M",
+                )
+                return final_bitrate
+        return ""
 
     def __extract_video_decoder(self, default_stream=0):
         """
@@ -308,9 +315,9 @@ class Sourcer:
             filtered_pixfmt = re.findall(
                 r"Video:\s[a-z0-9_-]*", selected_stream.strip()
             )
-            return filtered_pixfmt[0].split(" ")[-1]
-        else:
-            return ""
+            if filtered_pixfmt:
+                return filtered_pixfmt[0].split(" ")[-1]
+        return ""
 
     def __extract_video_pixfmt(self, default_stream=0):
         """
@@ -336,58 +343,53 @@ class Sourcer:
             filtered_pixfmt = re.findall(
                 r",\s[a-z][a-z0-9_-]*", selected_stream.strip()
             )
-            return filtered_pixfmt[0].split(" ")[-1]
-        else:
-            return ""
+            if filtered_pixfmt:
+                return filtered_pixfmt[0].split(" ")[-1]
+        return ""
 
-    def __extract_audio_bitrate(self, default_stream=0):
+    def __extract_audio_bitrate_nd_samplerate(self, default_stream=0):
         """
-        Parses default audio-stream bitrate from metadata.
+        Parses default audio-stream bitrate and samplerate from metadata.
 
         Parameters:
             default_stream (int): selects specific audio-stream in case of multiple ones.
 
         **Returns:** A string value.
         """
-        default_audio_bitrate = re.findall(
-            r"fltp,\s[0-9]+\s\w\w[/]s", self.__ffsp_output
-        )
-        sample_rate_identifiers = ["Audio", "Hz"] + (
-            ["fltp"] if isinstance(self.__source, str) else []
-        )
-        audio_sample_rate = [
+        identifiers = ["Audio:", "Stream #"]
+        meta_text = [
             line.strip()
             for line in self.__ffsp_output.split("\n")
-            if all(x in line for x in sample_rate_identifiers)
+            if all(x in line for x in identifiers)
         ]
-        if default_audio_bitrate:
-            selected_stream = (
+        result = {}
+        if meta_text:
+            selected_stream = meta_text[
                 default_stream
-                if default_stream > 0 and default_stream < len(default_audio_bitrate)
+                if default_stream > 0 and default_stream < len(meta_text)
                 else 0
-            )
-            filtered = default_audio_bitrate[selected_stream].split(" ")[1:3]
-            final_bitrate = "{}{}".format(
-                int(filtered[0].strip()),
-                "k" if (filtered[1].strip().startswith("k")) else "M",
-            )
-            return final_bitrate
-        elif audio_sample_rate:
-            selected_stream = (
-                default_stream
-                if default_stream > 0 and default_stream < len(audio_sample_rate)
-                else 0
-            )
-            sample_rate = re.findall(r"[0-9]+\sHz", audio_sample_rate[selected_stream])[
-                0
             ]
-            sample_rate_value = int(sample_rate.split(" ")[0])
-            samplerate_2_bitrate = int(
-                (sample_rate_value - 44100) * (320 - 96) / (48000 - 44100) + 96
+            # filter data
+            filtered_audio_bitrate = re.findall(
+                r"fltp,\s[0-9]+\s\w\w[\/]s", selected_stream.strip()
             )
-            return str(samplerate_2_bitrate) + "k"
-        else:
-            return ""
+            filtered_audio_samplerate = re.findall(
+                r",\s[0-9]+\sHz", selected_stream.strip()
+            )
+            # get audio bitrate and samplerate metadata
+            if filtered_audio_bitrate:
+                filtered = filtered_audio_bitrate[0].split(" ")[1:3]
+                result["bitrate"] = "{}{}".format(
+                    int(filtered[0].strip()),
+                    "k" if (filtered[1].strip().startswith("k")) else "M",
+                )
+            else:
+                result["bitrate"] = ""
+            if filtered_audio_samplerate:
+                result["samplerate"] = filtered_audio_samplerate[0].split(", ")[1]
+            else:
+                result["samplerate"] = ""
+        return result if result and (len(result) == 2) else {}
 
     def __extract_resolution_framerate(self, default_stream=0):
         """
@@ -444,7 +446,7 @@ class Sourcer:
             if t_duration:
                 return (
                     sum(
-                        float(x) * 60 ** i
+                        float(x) * 60**i
                         for i, x in enumerate(reversed(t_duration[0].split(":")))
                     )
                     if inseconds

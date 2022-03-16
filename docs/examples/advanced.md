@@ -94,6 +94,183 @@ writer.release()
 
 &nbsp;
 
+## Generating Video from Image sequence
+
+FFdecoder API provides out-of-the-box support for image sequence such as Sequential(`'img%03d.png'`), Glob pattern(`'*.png'`), and even Single(looping) image as input to its [`source`](../../reference/sourcer/params/#source) parameter.
+
+In this example we will generate grayscale video from Image Sequence using FFdecoder(Decoder), and generate output video using OpenCV Library's `VideoWriter()` class.
+
+!!! info "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps Source Metadata as JSON to retrieve source framerate and frame-size."
+
+!!! alert "OpenCV expects `BGR` format frames in its `write(frame)` function."
+
+??? tip "Extracting Image Sequence from a video"
+    
+    **You can use following command to extract frames from a given video:**
+    
+    ```sh
+    ffmpeg -i foo.mp4 image-%03d.png
+    ```
+    This will extract `25` images per second from the file video.webm and save them as `image-000.png`, `image-001.png`, `image-002.png` up to `image-999.png`. If there are more than `1000` frames then the last image will be overwritten with the remaining frames leaving only the last frame. The encoding of the images and of the video is inferred from the extensions. The framerate is `25` fps by default. The images width and height is taken from the video.
+
+    **Extract one image per second:**
+
+    ```sh
+    ffmpeg -i video.webm -framerate 1 image-%03d.png #
+    ```
+
+!!! note "To learn about exclusive `-ffprefixes` parameter. See [Exclusive Parameters ➶](../../reference/ffdecoder/params/#b-exclusive-parameters)"
+
+=== "Sequential"
+
+    ??? tip "Start with specific number image"
+        You can use `-start_number` FFmpeg parameter if you want to start with specific number image:
+
+        ```python
+        # define `-start_number` such as `5`
+        extraparams = {"-ffpostfixes":["-start_number", "5"]}
+
+        # initialize and formulate the decoder with define parameters
+        decoder = FFdecoder('img%03d.png', verbose=True, **extraparams).formulate()
+        ```
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import cv2, json
+
+    # initialize and formulate the decode with suitable source
+    decoder = FFdecoder("/path/to/pngs/img%03d.png", frame_format="bgr24", verbose=True).formulate()
+
+    # retrieve JSON Metadata and convert it to dict
+    metadata_dict = json.loads(decoder.metadata)
+
+    # prepare OpenCV parameters
+    FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+    FRAMERATE = metadata_dict["source_video_framerate"]
+    FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+
+    # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
+    writer = cv2.VideoWriter("output_foo.avi", FOURCC, FRAMERATE, FRAMESIZE)
+
+    # grab the BGR24 frame from the decoder
+    for frame in decoder.generateFrame():
+
+        # check if frame is None
+        if frame is None:
+            break
+
+        # {do something with the frame here}
+
+        # writing BGR24 frame to writer
+        writer.write(frame)
+
+    # terminate the decoder
+    decoder.terminate()
+
+    # safely close writer
+    writer.release()
+    ```
+
+    
+
+=== "Glob pattern"
+
+    !!! abstract "Bash-style globbing _(`*` represents any number of any characters)_ is useful if your images are sequential but not necessarily in a numerically sequential order."
+
+    !!! warning "The glob pattern is not available on Windows FFmpeg builds."
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import cv2, json
+
+    # define `-pattern_type glob` for accepting glob pattern
+    extraparams = {"-ffprefixes":["-pattern_type", "glob"]}
+
+    # initialize and formulate the decode with suitable source
+    decoder = FFdecoder("/path/to/pngs/img*.png", frame_format="bgr24", verbose=True, **extraparams).formulate()
+
+    # retrieve JSON Metadata and convert it to dict
+    metadata_dict = json.loads(decoder.metadata)
+
+    # prepare OpenCV parameters
+    FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+    FRAMERATE = metadata_dict["source_video_framerate"]
+    FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+
+    # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
+    writer = cv2.VideoWriter("output_foo_gray.avi", FOURCC, FRAMERATE, FRAMESIZE)
+
+    # grab the GRAYSCALE frame from the decoder
+    for frame in decoder.generateFrame():
+
+        # check if frame is None
+        if frame is None:
+            break
+
+        # {do something with the frame here}
+        # lets convert frame to gray for this case
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # writing GRAYSCALE frame to writer
+        writer.write(gray)
+
+    # terminate the decoder
+    decoder.terminate()
+
+    # safely close writer
+    writer.close()
+    ```
+
+=== "Single image(looping)"
+
+    You can use a single looping image as follows:
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import cv2, json
+
+    # define `-loop 1` for looping
+    extraparams = {"-ffprefixes":["-loop", "1"]}
+
+    # initialize and formulate the decode with suitable source
+    decoder = FFdecoder("img.png", frame_format="bgr24", verbose=True, **extraparams).formulate()
+
+    # retrieve JSON Metadata and convert it to dict
+    metadata_dict = json.loads(decoder.metadata)
+
+    # prepare OpenCV parameters
+    FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+    FRAMERATE = 25.0
+    FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+
+    # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
+    writer = cv2.VideoWriter("output_foo.avi", FOURCC, FRAMERATE, FRAMESIZE)
+
+    # grab the BGR24 frame from the decoder
+    for frame in decoder.generateFrame():
+
+        # check if frame is None
+        if frame is None:
+            break
+
+        # {do something with the frame here}
+
+        # writing BGR24 frame to writer
+        writer.write(frame)
+
+    # terminate the decoder
+    decoder.terminate()
+
+    # safely close writer
+    writer.release()
+    ```
+
+
+&nbsp;
+
 ## Generating Lossless Video using VidGear Library
 
 !!! danger "==WriteGear's FFmpeg support for FFdecoder API is still in beta and can cause very high CPU usage.== Kindly use [**OpenCV's VideoWriter Class**](../basic/#generating-video-from-frames-using-opencv-library) until this issue is resolved."
@@ -239,195 +416,6 @@ In this example we will generate lossless video with controlled framerate:
 
 &nbsp;
 
-## Generating Video from Image sequence
-
-!!! danger "==WriteGear's FFmpeg support for FFdecoder API is still in beta and can cause very high CPU usage.== Kindly use [**OpenCV's VideoWriter Class**](../basic/#generating-video-from-frames-using-opencv-library) until this issue is resolved."
-
-FFdecoder API provides out-of-the-box support for image sequence such as Sequential(`'img%03d.png'`), Glob pattern(`'*.png'`), and even Single(looping) image as input to its [`source`](../../reference/sourcer/params/#source) parameter.
-
-In this example we will generate grayscale video from Image Sequence using FFdecoder(Decoder) and WriteGear(Encoder) APIs:
-
-??? abstract "Reasons to use VidGear and its WriteGear API?"
-    >  [VidGear](https://abhitronix.github.io/vidgear/latest/) is a cross-platform High-Performance Video-Processing Framework for building complex real-time media applications in python 🔥 
-
-    VidGear with its [**WriteGear API**](https://abhitronix.github.io/vidgear/latest/gears/writegear/introduction/) implements a complete, flexible, and robust wrapper around FFmpeg in [compression mode](https://abhitronix.github.io/vidgear/latest/gears/writegear/compression/overview/) that can process real-time NumPy frames into a lossless compressed video-files.
-
-??? tip "Extracting Image Sequence from a video"
-    
-    **You can use following command to extract frames from a given video:**
-    
-    ```sh
-    ffmpeg -i foo.mp4 image-%03d.png
-    ```
-    This will extract `25` images per second from the file video.webm and save them as `image-000.png`, `image-001.png`, `image-002.png` up to `image-999.png`. If there are more than `1000` frames then the last image will be overwritten with the remaining frames leaving only the last frame. The encoding of the images and of the video is inferred from the extensions. The framerate is `25` fps by default. The images width and height is taken from the video.
-
-    **Extract one image per second:**
-
-    ```sh
-    ffmpeg -i video.webm -framerate 1 image-%03d.png #
-    ```
-
-!!! note "To learn about exclusive `-ffprefixes` parameter. See [Exclusive Parameters ➶](../../reference/ffdecoder/params/#b-exclusive-parameters)"
-
-=== "Sequential"
-
-    ??? tip "Start with specific number image"
-        You can use `-start_number` FFmpeg parameter if you want to start with specific number image:
-
-        ```python
-        # define `-start_number` such as `5`
-        extraparams = {"-ffpostfixes":["-start_number", "5"]}
-
-        # initialize and formulate the decoder with define parameters
-        decoder = FFdecoder('img%03d.png', verbose=True, **extraparams).formulate()
-        ```
-
-    ```python
-    # import the necessary packages
-    from deffcode import FFdecoder
-    from vidgear.gears import WriteGear
-    import cv2
-
-    # initialize and formulate the decode with suitable source
-    decoder = FFdecoder("/path/to/pngs/img%03d.png", verbose=True).formulate()
-
-    # pass controlled input framerate
-    # `-framerate 25` means each image is taken at 1/25^th of a second
-    # Or images are extracted from video at 25fps
-    output_params = {
-        "-ffpreheaders": ["-framerate", "25"], 
-        "-clones": ["-shortest"],
-    }
-
-    # Define writer with default parameters and suitable
-    # output filename for e.g. `output_foo_gray.mp4`
-    writer = WriteGear(output_filename="output_foo_gray.mp4", **output_params)
-
-    # grab the GRAYSCALE frame from the decoder
-    for frame in decoder.generateFrame():
-
-        # check if frame is None
-        if frame is None:
-            break
-
-        # {do something with the frame here}
-        # lets convert frame to gray for this example
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        # writing GRAYSCALE frame to writer
-        writer.write(gray)
-
-    # terminate the decoder
-    decoder.terminate()
-
-    # safely close writer
-    writer.close()
-    ```
-
-    
-
-=== "Glob pattern"
-
-    !!! abstract "Bash-style globbing _(`*` represents any number of any characters)_ is useful if your images are sequential but not necessarily in a numerically sequential order."
-
-    !!! warning "The glob pattern is not available on Windows builds."
-
-    ```python
-    # import the necessary packages
-    from deffcode import FFdecoder
-    from vidgear.gears import WriteGear
-    import cv2
-
-    # define `-pattern_type glob` for accepting glob pattern
-    extraparams = {"-ffprefixes":["-pattern_type", "glob"]}
-
-    # initialize and formulate the decode with suitable source
-    decoder = FFdecoder("/path/to/pngs/img*.png", verbose=True, **extraparams).formulate()
-
-    # pass controlled input framerate
-    # `-framerate 25` means each image is taken at 1/25^th of a second
-    # Or images are extracted from video at 25fps
-    output_params = {
-        "-ffpreheaders": ["-framerate", "25"], 
-        "-clones": ["-shortest"],
-    }
-
-    # Define writer with default parameters and suitable
-    # output filename for e.g. `output_foo_gray.mp4`
-    writer = WriteGear(output_filename="output_foo_gray.mp4", **output_params)
-
-    # grab the GRAYSCALE frame from the decoder
-    for frame in decoder.generateFrame():
-
-        # check if frame is None
-        if frame is None:
-            break
-
-        # {do something with the frame here}
-        # lets convert frame to gray for this example
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        # writing GRAYSCALE frame to writer
-        writer.write(gray)
-
-    # terminate the decoder
-    decoder.terminate()
-
-    # safely close writer
-    writer.close()
-    ```
-
-=== "Single image(looping)"
-
-    You can use a single looping image as follows:
-
-    ```python
-    # import the necessary packages
-    from deffcode import FFdecoder
-    from vidgear.gears import WriteGear
-    import cv2
-
-    # define `-loop 1` for looping
-    extraparams = {"-ffprefixes":["-loop", "1"]}
-
-    # initialize and formulate the decode with suitable source
-    decoder = FFdecoder("img.png", verbose=True, **extraparams).formulate()
-
-    # pass controlled input framerate
-    # `-framerate 25` means each image is taken at 1/25^th of a second
-    # Or images are extracted from video at 25fps
-    output_params = {
-        "-ffpreheaders": ["-framerate", "25"], 
-        "-clones": ["-shortest"],
-    }
-
-    # Define writer with default parameters and suitable
-    # output filename for e.g. `output_foo_gray.mp4`
-    writer = WriteGear(output_filename="output_foo_gray.mp4", **output_params)
-
-    # grab the GRAYSCALE frame from the decoder
-    for frame in decoder.generateFrame():
-
-        # check if frame is None
-        if frame is None:
-            break
-
-        # {do something with the frame here}
-        # lets convert frame to gray for this example
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        # writing GRAYSCALE frame to writer
-        writer.write(gray)
-
-    # terminate the decoder
-    decoder.terminate()
-
-    # safely close writer
-    writer.close()
-    ```
-
-
-&nbsp;
 
 ## GPU enabled Hardware-Accelerated Decoding
 
@@ -463,12 +451,15 @@ import cv2
 
 # define suitable FFmpeg parameter
 extraparams = {
+    "-vcodec": "h264_cuvid",
     "-ffprefixes": ["–hwaccel", "cuvid"],
     "-ffpostfixes": ["-vf", "fade,hwupload_cuda,scale_npp=1280:720"],
 }
 
 # initialize and formulate the decode with suitable source and params
-decoder = FFdecoder("foo.mp4", frame_format="bgr24", verbose=True, **extraparams).formulate()
+decoder = FFdecoder(
+    "foo.mp4", frame_format="bgr24", verbose=True, **extraparams
+).formulate()
 
 # grab the RGB24(default) frame from the decoder
 for frame in decoder.generateFrame():

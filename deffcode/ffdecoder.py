@@ -170,7 +170,7 @@ class FFdecoder:
                 "Unable to find suitable/usable video stream in the given source!"
             )
         # store as metadata
-        self.__source_metadata["operational_mode"] = self.__supported_opmodes[
+        self.__source_metadata["ffdecoder_operational_mode"] = self.__supported_opmodes[
             self.__opmode
         ]
         # and log it
@@ -436,9 +436,7 @@ class FFdecoder:
                     self.__raw_frame_depth,
                 )
             )[:, :, 0]
-        elif self.__raw_frame_pixfmt.startswith(
-            "yuv"
-        ) and self.__raw_frame_pixfmt.startswith("444p"):
+        elif self.__raw_frame_pixfmt == "yuv444p":
             # reconstruct exclusive frames
             frame = frame.reshape(
                 (
