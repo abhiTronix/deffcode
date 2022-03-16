@@ -31,7 +31,7 @@ env:
 jobs:
   deploy-docs-release:
     name: Deploy Release Docs
-    if: github.event_name == 'release' && github.event.action == 'published' && ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -78,7 +78,7 @@ jobs:
 
   deploy-docs-stable:
     name: Deploy Latest Docs
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -126,7 +126,7 @@ jobs:
 
   deploy-docs-dev:
     name: Deploy Development Docs
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev' && ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
