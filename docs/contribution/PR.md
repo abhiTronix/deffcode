@@ -29,7 +29,7 @@ The following guidelines tells you how to submit a valid PR for DeFFcode:
 
     * If you're stuck at something, please join our [Gitter community channel](https://gitter.im/DeFFcode/community). We will help you get started!
 
-    * Kindly follow the [EXEMPLARY :medal:](https://github.com/abhiTronix/DeFFcode/pulls?q=is%3Apr+label%3A%22EXEMPLARY+%3Amedal_military%3A%22+) tag for some finest PR examples.
+    * Kindly follow the [EXEMPLARY :medal:](https://github.com/abhiTronix/deffcode/pulls?q=is%3Apr+label%3A%22EXEMPLARY+%3Amedal_military%3A%22+) tag for some finest PR examples.
 
 
 &nbsp; 
@@ -37,11 +37,11 @@ The following guidelines tells you how to submit a valid PR for DeFFcode:
 ## Clone Testing branch
 
 !!! warning "Base Branch must be `dev` in your Pull Request"
-	Every PR **MUST** be pushed against DeFFcode's [`dev`](https://github.com/abhiTronix/DeFFcode/tree/dev) branch only, in order to trigger must needed CI dev workflows. If your's not, then [change the base branch to `dev` ➶](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-base-branch-of-a-pull-request)
+	Every PR **MUST** be pushed against DeFFcode's [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch only, in order to trigger must needed CI dev workflows. If your's not, then [change the base branch to `dev` ➶](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-base-branch-of-a-pull-request)
 
-!!! tip "Make sure the [`dev`](https://github.com/abhiTronix/DeFFcode/tree/dev) branch of your Forked repository is up-to-date with DeFFcode, before starting working on Pull Request."
+!!! tip "Make sure the [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch of your Forked repository is up-to-date with DeFFcode, before starting working on Pull Request."
 
-You can clone your [**Forked**](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) remote git to local and create your PR working branch as a sub-branch of latest [`dev`](https://github.com/abhiTronix/DeFFcode/tree/dev) branch as follows:
+You can clone your [**Forked**](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) remote git to local and create your PR working branch as a sub-branch of latest [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch as follows:
 
 ```sh
 # clone your forked repository(change with your username) and get inside
@@ -69,7 +69,7 @@ There are some important checks you need to perform while submitting your Pull R
 
 - [x] **Submit a Related Issue:**
   
-  * The first thing you do is submit an issue with a [proposal template](https://github.com/abhiTronix/DeFFcode/issues/new?labels=issue%3A+proposal&template=proposal.md) for your work first and then work on your Pull Request.
+  * The first thing you do is submit an issue with a [proposal template](https://github.com/abhiTronix/deffcode/issues/new?labels=issue%3A+proposal&template=proposal.md) for your work first and then work on your Pull Request.
 
 
 - [x] **Submit a Draft Pull Request:**
@@ -97,7 +97,7 @@ There are some important checks you need to perform while submitting your Pull R
 
   * Search GitHub if there's a similar open or closed PR that relates to your submission.
   * Check if your purpose code matches the overall direction, simplicity, and structure of the DeFFcode and improves it.
-  * Retain copyright for your contributions, but also agree to license them for usage by the project and author(s) under the [Apache 2.0 license ➶](https://github.com/abhiTronix/DeFFcode/blob/master/LICENSE).
+  * Retain copyright for your contributions, but also agree to license them for usage by the project and author(s) under the [Apache 2.0 license ➶](https://github.com/abhiTronix/deffcode/blob/master/LICENSE).
 
 - [x] **Link your Issues:**
 
@@ -123,17 +123,24 @@ Testing DeFFcode requires additional test dependencies and dataset, which can be
     You can easily install these dependencies via pip:
 
     ```sh
-    pip install --upgrade six flake8 black pytest
+    # Install opencv(only if not installed previously)
+    pip install opencv-python 
+    # install rest of dependencies
+    pip install --upgrade flake8 black pytest vidgear[core]
     ```
 
 - [x] **Download Tests Dataset:** 
 
-    To perform tests, you also need to download additional dataset *(to your temp dir)* by running [`prepare_dataset.sh`](https://github.com/abhiTronix/DeFFcode/blob/master/scripts/bash/prepare_dataset.sh)  bash script as follows:
+    To perform tests, you also need to download additional dataset *(to your temp dir)* by downloading and running [`prepare_dataset.sh`](https://github.com/abhiTronix/vidgear/blob/master/scripts/bash/prepare_dataset.sh)  bash script as follows:
 
     ```sh
-    chmod +x scripts/bash/prepare_dataset.sh
+    # download bash script
+    curl https://raw.githubusercontent.com/abhiTronix/vidgear/master/scripts/bash/prepare_dataset.sh -o prepare_dataset.sh
+
     # On linux and MacOS
+    chmod +x scripts/bash/prepare_dataset.sh
     .scripts/bash/prepare_dataset.sh
+
     # On Windows 
     sh scripts/bash/prepare_dataset.sh
     ```
