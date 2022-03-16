@@ -48,7 +48,7 @@ limitations under the License.
 
 > DeFFcode is a High-performance Real-time **Video frames Generator** that wraps FFmpeg pipeline inside a subprocess module for generating blazingly fast video frames in python :fire:
 
-The primary purpose of DeFFcode is to provide a one-stop solution for low-memory overhead and faster decoding of a wide range of video streams into 3D NumPy's [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames while providing **complete control over the underlying FFmpeg pipeline** without the need to go deeper into hefty documentation and in just a few lines of python code.
+The primary purpose of DeFFcode is to provide a one-stop cross-platform solution for low-memory overhead and faster decoding of a wide range of video streams into 3D NumPy's [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames while providing **complete control over the underlying FFmpeg pipeline** without the need to go deeper into hefty documentation and in just a few lines of python code.
 
 Furthermore, DeFFcode can **extract frames with any custom specification** such as Framerate, Resolution, Hardware decoder, Complex Filter into any pixel format and gives users complete freedom to apply almost any desired FFmpeg supported parameter. 
 
@@ -59,7 +59,7 @@ DeFFcode APIs are designed for **modularity** with clean API separation for buil
 
 ## Key Features
 
-DeFFcode API is built upon [**FFmpeg**][ffmpeg] - a leading multimedia framework, that gives you the following:
+DeFFcode APIs are build on [**FFmpeg**][ffmpeg] - a leading multimedia framework, that gives you the following:
 
 - Extremely exceptional real-time performance :zap: with low-memory footprints.
 - Flexible API with access to almost every parameter available within FFmpeg.
@@ -139,14 +139,16 @@ For more examples and in-depth usage guide, kindly refer our **[Basic Recipes :p
 - [x] Add project Issue and PR templates. 
 - [ ] Add related unit tests with `pytests`. **[WIP :construction:]**
 - [ ] Automate stuff with Continuous Integration. **[WIP :construction:]**
-- [ ] Add preliminary benchmarks.
-- [ ] Make Frame Seeking dynamic. 
 - [ ] Add Multiple Source Inputs support.
 - [ ] Add Devices and Screen Capture support.
-- [ ] Add more parameters to Sourcer API's metadata. 
-- [ ] Implement Buffer and Audio pass-through modes.
 - [ ] Resolve High CPU usage issue with WriteGear API.
-- [ ] Add more Advanced Recipes and use cases.
+- [ ] Add more parameters to Sourcer API's metadata.  **[WIP :construction:]**
+- [ ] Implement Buffer and Audio pass-through modes.
+- [ ] Add recipe for Source with Multiple Embedded Streams.
+- [ ] Add example to dynamically change writable FFdecoder API's metadata parameters. 
+- [ ] Add more Advanced Recipes and use cases.  **[WIP :construction:]**
+- [ ] Add preliminary benchmarks.
+- [ ] Make Frame Seeking dynamic. 
 
 &nbsp;
 
