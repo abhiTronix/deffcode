@@ -29,9 +29,26 @@ env:
   GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
 
 jobs:
+  jobs:
+  pre_job:
+    continue-on-error: true # Uncomment once integration is finished
+    runs-on: ubuntu-latest
+    # Map a step output to a job output
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          # All of these options are optional, so you can remove them if you are happy with the defaults
+          concurrent_skipping: 'never'
+          skip_after_successful_duplicate: 'true'
+          do_not_skip: '["release"]'
+
   deploy-docs-release:
     name: Deploy Release Docs
-    if: github.event_name == 'release' && github.event.action == 'published'
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }} && github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -72,7 +89,8 @@ jobs:
 
   deploy-docs-stable:
     name: Deploy Latest Docs
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }} && github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -115,7 +133,8 @@ jobs:
 
   deploy-docs-dev:
     name: Deploy Development Docs
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }} && github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
