@@ -29,7 +29,7 @@ All parameter available with Sourcer API extracted as Pretty JSON(On :fontawesom
 ???+ info "Extracting Source Video Metadata in DeFFcode"
       Metadata can be easily extracted as a dictionary in Sourcer API using its [`retrieve_metadata()`](#deffcode.sourcer.Sourcer.retrieve_metadata) method. Moreover, you can also use [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object in FFdecoder API to extract metadata as Pretty JSON, and update it directly as desired. **More information can be found in [this usage example ➶](../../examples/basic/#generate-source-video-metadata)**.  
 
-```sh
+```json
 {
   "ffmpeg_binary_path": "C:\\Users\\foo\\AppData\\Local\\Temp\\ffmpeg-static-win64-gpl/bin/ffmpeg.exe",
   "source": "foo.mp4",
@@ -45,10 +45,11 @@ All parameter available with Sourcer API extracted as Pretty JSON(On :fontawesom
   "approx_video_nframes": 133,
   "source_video_bitrate": "1205k",
   "source_audio_bitrate": "384k",
+  "source_audio_samplerate": "48000 Hz",
   "source_has_video": true,
   "source_has_audio": true,
   "source_has_image_sequence": false,
-  "operational_mode": "Video-Only"
+  "ffdecoder_operational_mode": "Video-Only"
 }
 ```
 

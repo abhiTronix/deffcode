@@ -34,8 +34,6 @@ We'd love your contribution to DeFFcode in order to fix bugs or to implement new
 - [Submitting an Issue Guidelines ➶](../contribution/issue/)
 - [Submitting Pull Request(PR) Guidelines ➶](../contribution/PR/)
 
-&thinsp;
-
 ## Submission Contexts
 
 ### Got a question or problem?
