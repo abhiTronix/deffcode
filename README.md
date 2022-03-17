@@ -137,16 +137,16 @@ For more examples and in-depth usage guide, kindly refer our **[Basic Recipes :p
 
 - [x] Add clean and elegant documentation.
 - [x] Add project Issue and PR templates. 
-- [ ] Add related unit tests with `pytests`. **[WIP :construction:]**
+- [x] Add related unit tests with `pytests`. 
 - [ ] Automate stuff with Continuous Integration. **[WIP :construction:]**
 - [ ] Add Multiple Source Inputs support.
 - [ ] Add Devices and Screen Capture support.
 - [ ] Resolve High CPU usage issue with WriteGear API.
-- [ ] Add more parameters to Sourcer API's metadata.  **[WIP :construction:]**
+- [ ] Add more parameters to Sourcer API's metadata.
 - [ ] Implement Buffer and Audio pass-through modes.
 - [ ] Add recipe for Source with Multiple Embedded Streams.
 - [ ] Add example to dynamically change writable FFdecoder API's metadata parameters. 
-- [ ] Add more Advanced Recipes and use cases.  **[WIP :construction:]**
+- [ ] Add more Advanced Recipes and use cases.
 - [ ] Add preliminary benchmarks.
 - [ ] Make Frame Seeking dynamic. 
 
