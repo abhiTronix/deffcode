@@ -37,7 +37,7 @@ The following guidelines tells you how to submit a valid PR for DeFFcode:
 ## Clone Testing branch
 
 !!! warning "Base Branch must be `dev` in your Pull Request"
-	Every PR **MUST** be pushed against DeFFcode's [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch only, in order to trigger must needed CI dev workflows. If your's not, then [change the base branch to `dev` ➶](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-base-branch-of-a-pull-request)
+    Every PR **MUST** be pushed against DeFFcode's [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch only, in order to trigger must needed CI dev workflows. If your's not, then [change the base branch to `dev` ➶](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-base-branch-of-a-pull-request)
 
 !!! tip "Make sure the [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch of your Forked repository is up-to-date with DeFFcode, before starting working on Pull Request."
 
@@ -131,15 +131,12 @@ Testing DeFFcode requires additional test dependencies and dataset, which can be
 
 - [x] **Download Tests Dataset:** 
 
-    To perform tests, you also need to download additional dataset *(to your temp dir)* by downloading and running [`prepare_dataset.sh`](https://github.com/abhiTronix/vidgear/blob/master/scripts/bash/prepare_dataset.sh)  bash script as follows:
+    To perform tests, you also need to download additional dataset *(to your temp dir)* by running [`prepare_dataset.sh`](https://github.com/abhiTronix/deffcode/blob/master/scripts/bash/prepare_dataset.sh)  bash script as follows:
 
     ```sh
-    # download bash script
-    curl https://raw.githubusercontent.com/abhiTronix/vidgear/master/scripts/bash/prepare_dataset.sh -o prepare_dataset.sh
-
-    # On linux and MacOS
+    # On linux or macOS
     chmod +x scripts/bash/prepare_dataset.sh
-    .scripts/bash/prepare_dataset.sh
+    ./scripts/bash/prepare_dataset.sh
 
     # On Windows 
     sh scripts/bash/prepare_dataset.sh

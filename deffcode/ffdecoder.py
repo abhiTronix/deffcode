@@ -566,5 +566,7 @@ class FFdecoder:
         # close `stdout` output
         self.__process.stdout and self.__process.stdout.close()
         # wait if still process is still processing some information
+        if self.__process.poll() is None:
+            self.__process.terminate()
         self.__process.wait()
         self.__process = None
