@@ -163,7 +163,7 @@ pip install -U deffcode
 
 ```sh
 # Install latest release
-pip install deffcode-0.1.0-py3-none-any.whl
+pip install deffcode-0.2.0-py3-none-any.whl
 ```
 
 &thinsp;
@@ -172,9 +172,22 @@ pip install deffcode-0.1.0-py3-none-any.whl
 
 >  Best option for trying latest patches(maybe experimental), forking for Pull Requests, or automatically installing all prerequisites(with a few exceptions). 
 
-**If you want to checkout the latest beta [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch , you can do so with the following commands:**
+??? info "Beta Branch `dev`" 
 
-!!! danger "DO NOT clone or install any other branch other than `dev` unless advised, as it is not tested with CI environments and possibly very unstable or unusable."
+    If you're looking for latest work-in-progress :construction: enhancements/bug-fixes, then you want to checkout our beta [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch with the following commands:
+
+    !!! danger "The beta `dev` branch at times can be very unstable or even unusable, User discretion is advised!"
+
+    ```sh
+    # clone the repository and get inside
+    git clone https://github.com/abhiTronix/deffcode.git && cd deffcode
+
+    # checkout the dev beta branch
+    git checkout dev
+
+    # Install it
+    pip install -U .
+    ```
 
 ??? warning ":fontawesome-brands-windows: Windows Installation"
 
@@ -205,9 +218,6 @@ pip install deffcode-0.1.0-py3-none-any.whl
 ```sh
 # clone the repository and get inside
 git clone https://github.com/abhiTronix/deffcode.git && cd deffcode
-
-# checkout the dev beta branch
-git checkout dev
 
 # Install it
 pip install -U .

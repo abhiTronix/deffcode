@@ -34,14 +34,11 @@ The following guidelines tells you how to submit a valid PR for DeFFcode:
 
 &nbsp; 
 
-## Clone Testing branch
+## Clone branch for PR
 
-!!! warning "Base Branch must be `dev` in your Pull Request"
-    Every PR **MUST** be pushed against DeFFcode's [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch only, in order to trigger must needed CI dev workflows. If your's not, then [change the base branch to `dev` ➶](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-base-branch-of-a-pull-request)
+You can clone your [**Forked**](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) remote git to local and create your PR working branch as a sub-branch of latest [`master`](https://github.com/abhiTronix/deffcode/tree/master) branch as follows:
 
-!!! tip "Make sure the [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch of your Forked repository is up-to-date with DeFFcode, before starting working on Pull Request."
-
-You can clone your [**Forked**](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) remote git to local and create your PR working branch as a sub-branch of latest [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch as follows:
+!!! alert "Make sure the [`master`](https://github.com/abhiTronix/deffcode/tree/master) branch of your Forked repository is up-to-date with DeFFcode, before starting working on a Pull Request."
 
 ```sh
 # clone your forked repository(change with your username) and get inside
@@ -50,11 +47,8 @@ git clone https://github.com/{YOUR USERNAME}/DeFFcode.git && cd DeFFcode
 # pull any recent updates
 git pull
 
-# checkout the latest dev branch
-git checkout dev
-
-# Now create your new branch with suitable name(such as "subbranch_of_dev")
-git checkout -b subbranch_of_dev
+# Now create your new branch with suitable name(such as "subbranch_of_master")
+git checkout -b subbranch_of_master
 ```
 
 Now after working with this newly created branch for your Pull Request, you can commit and push or merge it locally or remotely as usual.

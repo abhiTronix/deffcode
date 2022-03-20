@@ -44,7 +44,6 @@ cache:
 branches:
   only:
     - master
-    - dev
 
 skip_commits:
   files:

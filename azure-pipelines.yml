@@ -26,7 +26,6 @@ trigger:
 
 pr:
   - master
-  - dev
 
 pool:
   vmImage: 'macOS-latest'
