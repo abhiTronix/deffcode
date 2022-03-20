@@ -23,10 +23,7 @@ import pytest
 import logging
 import os
 from os.path import expanduser
-from deffcode.utils import (
-    dict2Args,
-    logger_handler,
-)
+from deffcode.utils import dict2Args, logger_handler, delete_file_safe
 
 # define test logger
 logger = logging.getLogger("Test_utils")
