@@ -22,7 +22,7 @@ limitations under the License.
 import re, logging, os
 import numpy as np
 
-# import helper packages
+# import utils packages
 from .utils import logger_handler
 from .ffhelper import (
     check_sp_output,

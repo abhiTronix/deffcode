@@ -23,9 +23,10 @@ limitations under the License.
 # import the necessary packages
 import os
 import logging
+from pathlib import Path
 from colorlog import ColoredFormatter
 
-# import helper packages
+# import internal packages
 from .version import __version__
 
 
@@ -112,3 +113,22 @@ def dict2Args(param_dict):
             args.append(key)
             args.append(str(param_dict[key]))
     return args
+
+
+def delete_file_safe(file_path):
+    """
+    ## delete_ext_safe
+
+    Safely deletes files at given path.
+
+    Parameters:
+        file_path (string): path to the file
+    """
+    try:
+        dfile = Path(file_path)
+        if sys.version_info >= (3, 8, 0):
+            dfile.unlink(missing_ok=True)
+        else:
+            dfile.exists() and dfile.unlink()
+    except Exception as e:
+        logger.exception(str(e))
