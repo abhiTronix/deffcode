@@ -21,7 +21,7 @@ limitations under the License.
 # Contains all the support functions/modules required by FFdecoder package
 
 # import the necessary packages
-import os
+import os, sys
 import logging
 from pathlib import Path
 from colorlog import ColoredFormatter
