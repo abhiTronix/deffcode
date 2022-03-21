@@ -143,7 +143,7 @@ For more examples and in-depth usage guide, kindly refer our **[Basic Recipes :p
 - [x] Add clean and elegant documentation.
 - [x] Add project Issue and PR templates. 
 - [x] Add related unit tests with `pytests`. 
-- [ ] Automate stuff with Continuous Integration. **[WIP :construction:]**
+- [x] Automate stuff with Continuous Integration.
 - [ ] Add Multiple Source Inputs support.
 - [ ] Add Devices and Screen Capture support.
 - [ ] Resolve High CPU usage issue with WriteGear API.
