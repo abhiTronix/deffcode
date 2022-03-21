@@ -30,8 +30,8 @@ from pathlib import Path
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-# import helper packages
-from .utils import logger_handler
+# import utils packages
+from .utils import logger_handler, delete_file_safe
 
 # define logger
 logger = logging.getLogger("FFhelper")

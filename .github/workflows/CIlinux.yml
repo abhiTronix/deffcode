@@ -1,0 +1,75 @@
+# This yaml file is based on modified code from vidgear(https://github.com/abhiTronix/vidgear)
+
+# Copyright (c) 2019 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#    http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: GitHub Action workflow for Linux
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+
+jobs:
+  test:
+    name: CI Linux
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.7', '3.8', '3.9', '3.10']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install API Dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq unzip curl -y
+          sudo apt-get install -qq dos2unix ffmpeg -y
+      - name: Prepare Bash scripts
+        run: |
+          dos2unix scripts/bash/prepare_dataset.sh
+          chmod +x scripts/bash/prepare_dataset.sh
+      - name: Install Pip Dependencies
+        run: |
+          pip install -U pip wheel numpy
+          pip install -U .
+          pip install -U vidgear[core] opencv-python-headless
+          pip install -U flake8 six codecov pytest pytest-cov
+        if: success()
+      - name: Run prepare_dataset Bash script
+        run: bash scripts/bash/prepare_dataset.sh
+        shell: bash
+      - name: Run pytest and flake8
+        run: |
+          timeout 1200 pytest --verbose --cov=deffcode --cov-report=xml  --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "EXIT_CODE=$code" >>$GITHUB_ENV; fi
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        if: success()
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          name: ${{ matrix.python-version }}
+          fail_ci_if_error: true
+          verbose: true
+        if: ${{ env.EXIT_CODE != '124' }}

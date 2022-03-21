@@ -23,10 +23,7 @@ import pytest
 import logging
 import os
 from os.path import expanduser
-from deffcode.utils import (
-    dict2Args,
-    logger_handler,
-)
+from deffcode.utils import dict2Args, logger_handler, delete_file_safe
 
 # define test logger
 logger = logging.getLogger("Test_utils")
@@ -86,3 +83,13 @@ def test_dict2Args(dictionary):
         logger.debug("dict2Args converted Arguments are: {}".format(result))
     else:
         pytest.fail("Failed to complete this test!")
+
+
+def test_delete_file_safe():
+    """
+    Testing delete_file_safe method
+    """
+    try:
+        delete_file_safe(os.path.join(expanduser("~"), "invalid"))
+    except Exception as e:
+        pytest.fail(str(e))

@@ -25,7 +25,7 @@ import numpy as np
 import subprocess as sp
 from collections import OrderedDict
 
-# import helper packages
+# import utils packages
 from .utils import dict2Args, logger_handler
 from .sourcer import Sourcer
 from .ffhelper import (
