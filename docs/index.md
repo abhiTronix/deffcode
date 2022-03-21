@@ -22,13 +22,13 @@ limitations under the License.
 
 <img src="assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" loading="lazy" width="87%" class="shadow2" />
 
-> DeFFcode is a High-performance Real-time **Video frames Generator** that wraps FFmpeg pipeline inside a subprocess module for generating blazingly fast video frames in python :fire:
+> DeFFcode is a powerful High-performance Real-time **Video frames Generator** that wraps FFmpeg pipeline inside a subprocess module for generating blazingly fast video frames in python :fire:
 
-The primary purpose of DeFFcode is to provide a one-stop cross-platform solution for low-memory overhead and faster decoding of a wide range of video streams into 3D NumPy's [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames while providing **complete control over the underlying FFmpeg pipeline** without the need to go deeper into hefty documentation and in just a few lines of python code.
+The primary purpose of DeFFcode is to provide a cross-platform solution for fast and low-overhead decoding of a wide range of video streams into 3D [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames while providing **complete control over the underlying FFmpeg pipeline** without the need to go deeper into hefty documentation and in just a few lines of python code.
 
-Furthermore, DeFFcode can **extract frames with any custom specification** such as Framerate, Resolution, Hardware decoder, Complex Filter into any pixel format and gives users complete freedom to apply almost any desired FFmpeg supported parameter. 
+DeFFcode can **extract frames in real-time with any custom specification imaginable** such as Framerate, Resolution, Hardware decoding, Complex Filters into any pixel format while giving users the complete freedom to play with any desired FFmpeg supported parameter. On top of that, DeFFcode enables **effortless and precise FFmpeg Frame Seeking** natively. 
 
-DeFFcode APIs are designed for **modularity** with clean API separation for building reusable components that are easier to understand and work with. On top of that, DeFFcode enables **effortless and precise FFmpeg Frame Seeking** natively. 
+Finally, DeFFcode APIs are designed with **simplicity, flexibility, and modularity** in mind for the best developer experience. 
 
 
 &thinsp;
@@ -44,10 +44,10 @@ DeFFcode APIs are build on ==[**FFmpeg**][ffmpeg] - a leading multimedia framewo
 - [x] Extensive support for real-time [Complex FFmpeg Filters](examples/advanced/#generating-video-with-complex-filter-applied).
 - [x] Out-of-the-box support for Computer Vision libraries like OpenCV, Pytorch, etc.
 - [x] Support a wide range of media files, devices, image-sequence and network streams.
-- [x] Lossless Transcoding support with [WriteGear](https://abhitronix.github.io/deffcode/latest/gears/writegear/introduction/).
 - [x] Easier to ingest streams into any pixel format that FFmpeg supports.
+- [x] Lossless Transcoding support with [WriteGear](https://abhitronix.github.io/deffcode/latest/gears/writegear/introduction/).
 - [x] Fewer hard dependencies, and easy to install. 
-- [x] Designed modular to be easy to use and learn.
+- [x] Designed modular for best developer experience.
 - [x] Cross-platform and runs on Python 3.7+
 
 &thinsp;
