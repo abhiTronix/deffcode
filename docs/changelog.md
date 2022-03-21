@@ -21,87 +21,73 @@ limitations under the License.
 # Release Notes
 
 
-## v0.2.0 (2021-03-21)
+## v0.2.0 (2022-03-21)
 
 ??? tip "New Features"
     - [x] Sourcer API:
-        - **Added metadata extraction and updation support:**
-            - Added `retrieve_metadata` class method to Sourcer API.
-                * The `retrieve_metadata` will returns source metadata as python dictionary.
-                * Populated private source member values in dictionary with distinct keys.
-            - Added `metadata` property object function to FFdecoder API.
-                * The property object will retrieve source metadata form Sourcer API as dict and return it as JSON dump for pretty printing.
-                * Added Operational Mode as read-only property in metadata.
-            - Added `metadata` property object with `setter()` method for updating source metadata with user-defined dictionary.
-                * Implemented way to manually alter metadata keys and values for custom results.
         - **Added a new `source_audio_samplerate` metadata parameter:**
             - Re-implemented  `__extract_audio_bitrate` internal function from scratch as `__extract_audio_bitrate_nd_samplerate`.
                 - Implemented new algorithm to extract both extract both audio bitrate and samplerate from given source.
                 - Updated regex patterns according to changes.
             - Updated `__contains_video` and `__contains_audio` logic to support new changes.
+        - **Added metadata extraction support:**
+            - Added `retrieve_metadata` class method to Sourcer API for extracting source metadata as python dictionary.
+                * Populated private source member values in dictionary with distinct keys.
         - Added new `-force_validate_source` attribute to Sourcer API's `sourcer_params` dict parameter for special cases.
         - Implemented check whether `probe_stream()` called or not in Sourcer API.
-        - Re-added missing verbose flags.
+    - [x] FFdecoder API:
+        - **Added metadata extraction and updation support:**
+            - Added `metadata` property object function to FFdecoder API for retrieving source metadata form Sourcer API as dict and return it as JSON dump for pretty printing.
+                * Added Operational Mode as read-only property in metadata.
+            - Added `metadata` property object with `setter()` method for updating source metadata with user-defined dictionary.
+                * Implemented way to manually alter metadata keys and values for custom results.
     - [x] Docs:
         * **Added new comprehensive documentation with Mkdocs:**
-            - Added new icon ICO file with each layer of the favicon holds a different size of the image.
-            - Added new png images for best compatibility with different web browsers.
-            - Added new Deffcode banner image.
-            - Added new description and simplified wording.
-            - Added new image asset.
-            - Added new docs files. 
-            - Added new index.md with introduction to project.
-            - Added new changelog.md.
-            - Added license.md
-            - Added new index.md with instructions for contributing in DeFFcode.
-            - Added `issue.md` with Issue Contribution Guidelines.
-            - Added `PR.md` with PR Contribution Guidelines.
-            - Added new image assets: logo and tagline
-            - Added separate LICENSE(under CC creative commons) and REAME.md for assets.
-            - Added new `custom.js` to add gitter sidecard support.
-            - Added new `custom.css` that brings standard and quality visual design experience to DeFFcode docs.
-                - Added new admonitions `new` and `alert`.
-            - Added new assets folders.
-            - Added new `main.html` extending `base.html` for defining custom site metadata.
+            - Added new image assets:
+                - Added new Deffcode banner image, logo and tagline
+                - Added new icon ICO file with each layer of the favicon holds a different size of the image.
+                - Added new png images for best compatibility with different web browsers.
+            - Added new docs files: 
+                - Added new index.md with introduction to project.
+                - Added new changelog.md.
+                - Added license.md
+                - Added new index.md with instructions for contributing in DeFFcode.
+                    - Added `issue.md` with Issue Contribution Guidelines.
+                    - Added `PR.md` with PR Contribution Guidelines.
+                - Added new `custom.js` to add gitter sidecard support.
+                - Added new `custom.css` that brings standard and quality visual design experience to DeFFcode docs.
+                    - Added new admonitions `new` and `alert`.
+                - Added separate LICENSE(under CC creative commons) and REAME.md for assets.
+                - Added new `main.html` extending `base.html` for defining custom site metadata.
                 - Added deFFcode banner image to metadata.
                 - Added twitter card and metadata.
                 - Added version warning for displaying a warning when the user visits any other version.
                 - Added footer sponsorship block.
                 - Added gitter card official JS script dist.
-            - Added new custom `404.html` to handle HTTP status code `404` Not Found.
-                - Implemented custom theming with new CSS style.
-                - Added custom 404 image asset.
-            - Added new `index.md` with DeFFcode Installation notes.
-                - Added info about Supported Systems, Supported Python legacies, Prerequisites, Installation instructions.
-                - Added Pip and Source Installation instructions.
-            - Added new `ffmpeg_install.md` with machine-specific instructions for FFmpeg installation.
-            - Added new image assets.
-            - Added new `index.md` with different ways to help DeFFcode, other users, and the author.
-                - Added info about Starring and Watching DeFFcode on GitHub, Helping with open issues etc.
-                - Added Tweeter intent used for tweeting `#deffode` hastags easily.
-                - Added Kofi Donation link button.
-                - Added author contact links and left align avatar image.
-            - Added new `get_help.md` to get help with DeFFcode.
-                - Added DeFFcode gitter community link.
-                - Added other helpful links.
-            - Added New Badges.
+                - Added new custom `404.html` to handle HTTP status code `404` Not Found.
+                    - Implemented custom theming with new CSS style.
+                    - Added custom 404 image asset.
+                - Added new `index.md` with DeFFcode Installation notes.
+                    - Added info about Supported Systems, Supported Python legacies, Prerequisites, Installation instructions.
+                    - Added Pip and Source Installation instructions.
+                - Added new `ffmpeg_install.md` with machine-specific instructions for FFmpeg installation.
+                - Added new `index.md` with different ways to help DeFFcode, other users, and the author.
+                    - Added info about Starring and Watching DeFFcode on GitHub, Helping with open issues etc.
+                    - Added Tweeter intent used for tweeting `#deffode` hastags easily.
+                    - Added Kofi Donation link button.
+                    - Added author contact links and left align avatar image.
+                - Added new `get_help.md` to get help with DeFFcode.
+                    - Added DeFFcode gitter community link.
+                    - Added other helpful links.
+            - Added new assets folders.
             - Added Basic Recipes with basic.md 
-                - Added Example to save Keyframes as Image
-                - Added Example to display frames using OpenCV Library.
-                - Added Example to Generate Source Video Metadata.
-                - Added Example to Generate Video from frames using OpenCV Library.
-                - Added Example to Generate Video with Filter Applied.
-            - Added API References. 
+            - Added Advanced Recipes with advanced.md 
+            - Added all API References. 
                 - Added `mkdocstrings` automatic documentation from sources.
                 - Added new `index.md` for FFdecoder API with its description and explaining its API.
                 - Added new `index.md` for Sourcer API with its description and explaining its API.
                 - Added ffhelper methods API references.
                 - Added utils methods API references.
-            - Added Advanced Recipes with advanced.md 
-                - Added Example for GPU enabled Hardware-Accelerated Decoding.
-                - Added Example to Generate Video with Complex Filter Applied.
-                - Added Example to Generate Lossless Video using VidGear Library.
-                - Added Example to Generate Video from Image sequence.
             - Added all API Parameters. 
                 - Added new `params.md` for FFdecoder API explaining all its parameters.
                 - Added new `params.md` for Sourcer API explaining all its parameters.
@@ -126,7 +112,7 @@ limitations under the License.
                 - Added custom `extra_css` and `extra_javascript`.
                 - Added support for `en` (English) language.
             - Added new badges to README.md for displaying current status of CI jobs and coverage.
-            - Added Raodmap to README.md
+            - Added Roadmap to README.md
     - [x] CI:
         * **Automated CI support for different environments:**
             - Implemented auto-handling of dependencies installation, unit testing, and coverage report uploading.
@@ -146,7 +132,7 @@ limitations under the License.
                 - Implemented behavior to about coverage upload on timeout(error code `124`) in pytests.
                 - Added `3.7+` python-versions to build matrix.
             - Added automated flake8 testing to discover any anomalies in code.
-            - Added `master` and `dev` branches for triggering CI.
+            - Added `master` branches for triggering CI.
         * **Implement new automated Docs Building and Deployment on `gh-pages` through GitHub Actions workflow:**
             - Added new workflow yaml `docs_deployer.yml` for automated docs deployment.
             - Added different jobs with ubuntu-latest environement to build matrix.
@@ -181,7 +167,7 @@ limitations under the License.
                 - Added `contact_links` parameter with gitter community link to receive regular issues outside of GitHub.
             - Added new `FUNDING.yml` with ko-fi donation link.
             - Added `.gitattributes` for DeFFcode, that set the default behavior, in case people don't have `core.autocrlf` set.
-            - Imported Codecov config(codecov.yml) from vidgear to modify coverage threshold, primary branch, ignored files, and other parameters.
+            - Imported Codecov config(`codecov.yml`) from vidgear to modify coverage parameters.
     - [x] Tests:
         * **Added DeFFcode unit tests with `pytest`:**
             - Added `essential.py` for defining all essential functions necessary for DeFFcode unit tests.
@@ -253,8 +239,6 @@ limitations under the License.
         - Updated contribution guidelines and installation docs with related changes.
         - Updated License Notice.
         - Updated code comments.
-        - Updated README.md 
-        - Updated Roadmap.
         - Updated logging messages.
         - Updated Deffcode Logo and Tagline to be dark-mode friendly.
         - Adjusted asset alignment.
@@ -292,7 +276,7 @@ limitations under the License.
         - Fixed typos in filenames in utils.py
         - Fixed internal missing or invalid hyperlinks.
         - Fixed improper docs context and typos.
-        - Fixed year in license notice.
+        - Fixed "year" in license notice.
         - Fixed content spacing.
         - Fixed Gitter Community Link in Mkdocs.
         - Fixed typos in README.md.
@@ -323,7 +307,7 @@ limitations under the License.
 
 &nbsp; 
 
-## v0.1.0 (2021-03-07)
+## v0.1.0 (2022-03-07)
 
 ??? tip "New Features"
     - [x] **:tada: Open-Sourced DeFFcode under the Apache 2.0 License.**
