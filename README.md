@@ -19,7 +19,7 @@ limitations under the License.
 -->
 
 <div align="center">
-  <img src="docs/overrides/assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" width="80%"/>
+  <img src="https://abhitronix.github.io/deffcode/latest/assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" width="80%"/>
 </div>
 
 <div align="center">
@@ -33,7 +33,7 @@ limitations under the License.
 </div>
 
 <div align="center">
-  <img src="docs/overrides/assets/images/deffcode-tagline.png" alt="DeFFcode tagline" width="40%"/>
+  <img src="https://abhitronix.github.io/deffcode/latest/assets/images/deffcode-tagline.png" alt="DeFFcode tagline" width="40%"/>
 
 
 ----
@@ -49,7 +49,7 @@ limitations under the License.
 
 ## Overview
 
-> DeFFcode is a powerful High-performance Real-time **Video frames Generator** that wraps FFmpeg pipeline inside a subprocess module for generating blazingly fast video frames in python :fire:
+> DeFFcode is a powerful High-performance Real-time **Video frames Generator** that wraps FFmpeg pipeline inside a subprocess module for generating blazingly fast video frames in python 🔥
 
 The primary purpose of DeFFcode is to provide a cross-platform solution for fast and low-overhead decoding of a wide range of video streams into 3D [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames while providing **complete control over the underlying FFmpeg pipeline** without the need to go deeper into hefty documentation and in just a few lines of python code.
 
@@ -64,7 +64,7 @@ Finally, DeFFcode APIs are designed with **simplicity, flexibility, and modulari
 
 DeFFcode APIs are build on [**FFmpeg**][ffmpeg] - a leading multimedia framework, that gives you the following:
 
-- Extremely exceptional real-time performance :zap: with low-memory footprints.
+- Extremely exceptional real-time performance ⚡ with low-memory footprints.
 - Flexible API with access to almost every parameter available within FFmpeg.
 - Fast dedicated [Hardware-Accelerated Decoding](https://abhitronix.github.io/deffcode/latest/examples/advanced/#gpu-enabled-hardware-accelerated-decoding).
 - Precise FFmpeg [Frame Seeking](https://abhitronix.github.io/deffcode/latest/examples/basic/#saving-keyframes-as-image) with pinpoint accuracy.
@@ -96,7 +96,7 @@ Installation is as simple as:
 $ (sudo) pip install deffcode
 ```
 
-:bulb: For more details, see [installation notes][install].
+💡 For more details, see [installation notes][install].
 
 &nbsp;
 
@@ -105,7 +105,7 @@ $ (sudo) pip install deffcode
 
 ---
 
-**:books: Documentation: https://abhitronix.github.io/deffcode**
+**📚 Documentation: https://abhitronix.github.io/deffcode**
 
 ---
 
@@ -130,10 +130,10 @@ print(decoder.metadata)
 decoder.terminate()
 ```
 
-For more examples and in-depth usage guide, kindly refer our **[Basic Recipes :pie:](https://abhitronix.github.io/deffcode/latest/examples/basic)** and **[Advanced Recipes :microscope:](https://abhitronix.github.io/deffcode/latest/examples/advanced)**
+For more examples and in-depth usage guide, kindly refer our **[Basic Recipes 🥧](https://abhitronix.github.io/deffcode/latest/examples/basic)** and **[Advanced Recipes 🔬](https://abhitronix.github.io/deffcode/latest/examples/advanced)**
 
 
-:bulb: In case you're run into any problems, consult our [Help](help/get_help) section.
+💡 In case you're run into any problems, consult our [Help](https://abhitronix.github.io/deffcode/latest/help/) section.
 
 
 &nbsp;
@@ -177,9 +177,9 @@ Join our Gitter community channel for quick discussions:
 
 # Donations
 
-<img src="docs/overrides/assets/images/help_us.png" alt="PiGear" width="50%" />
+<img src="https://abhitronix.github.io/deffcode/latest/assets/images/help_us.png" alt="PiGear" width="50%" />
 
-> DeFFcode is free and open source and will always remain so. :heart:
+> DeFFcode is free and open source and will always remain so. ❤️
 
 It is something I am doing with my own free time. If you would like to say thanks, please feel free to make a donation:
 
