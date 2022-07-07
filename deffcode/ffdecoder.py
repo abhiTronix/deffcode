@@ -44,7 +44,13 @@ class FFdecoder:
     """ """
 
     def __init__(
-        self, source, frame_format=None, custom_ffmpeg="", verbose=False, **extraparams
+        self,
+        source,
+        source_demuxer=None,
+        frame_format=None,
+        custom_ffmpeg="",
+        verbose=False,
+        **extraparams
     ):
         """
         This constructor method initializes the object state and attributes of the FFdecoder.
@@ -73,9 +79,6 @@ class FFdecoder:
 
         # handle process to be frames written
         self.__process = None
-
-        # handle valid FFmpeg assets location
-        self.__ffmpeg = ""
 
         # handle exclusive metadata
         self.__ff_pixfmt_metadata = None  # metadata
@@ -132,15 +135,16 @@ class FFdecoder:
         self.__source_metadata = (
             Sourcer(
                 source=source,
+                source_demuxer=source_demuxer,
                 verbose=verbose,
-                ffmpeg_path=self.__ffmpeg,
+                custom_ffmpeg=custom_ffmpeg if isinstance(custom_ffmpeg, str) else "",
                 **sourcer_params
             )
             .probe_stream(default_stream_indexes=default_stream_indexes)
             .retrieve_metadata()
         )
 
-        # get valid ffmpeg path
+        # handle valid FFmpeg assets location
         self.__ffmpeg = self.__source_metadata["ffmpeg_binary_path"]
 
         # handle pass-through audio mode works in conjunction with WriteGear [WIP]
@@ -538,8 +542,12 @@ class FFdecoder:
             + self.__ffmpeg_prefixes
             + input_parameters
             + self.__ffmpeg_postfixes
-            + ["-i"]
-            + [self.__source_metadata["source"]]
+            + (
+                ["-f", self.__source_metadata["source_demuxer"]]
+                if ("source_demuxer" in self.__source_metadata.keys())
+                else []
+            )
+            + ["-i", self.__source_metadata["source"]]
             + output_parameters
             + ["-f", "rawvideo", "-"]
         )
