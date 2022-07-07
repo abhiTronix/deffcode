@@ -101,7 +101,7 @@ class FFdecoder:
         # cleans and reformat user-defined parameters
         self.__extra_params = {
             str(k).strip(): str(v).strip()
-            if not isinstance(v, (dict, list, int, float))
+            if not (v is None) and not isinstance(v, (dict, list, int, float))
             else v
             for k, v in extraparams.items()
         }
@@ -182,15 +182,20 @@ class FFdecoder:
 
         # handle user-defined framerate
         self.__inputframerate = self.__extra_params.pop("-framerate", 0.0)
-        if (
-            isinstance(self.__inputframerate, (float, int))
-            and self.__inputframerate > 0.0
-        ):
-            # must be float
-            self.__inputframerate = float(self.__inputframerate)
+        if isinstance(self.__inputframerate, (float, int)):
+            self.__inputframerate = (
+                float(self.__inputframerate) if self.__inputframerate > 0 else 0.0
+            )
+        elif self.__inputframerate is None:
+            # special case for discarding framerate value
+            pass
         else:
-            # reset improper values
-            self.__inputframerate = 0.0
+            # warn if wrong type
+            logger.warning(
+                "Discarding `-framerate` value of wrong type `{}`!".format(
+                    type(self.__inputframerate)
+                )
+            )
 
         # FFmpeg parameter `-s` is unsupported
         if not (self.__extra_params.pop("-s", None) is None):
