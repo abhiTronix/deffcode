@@ -253,7 +253,7 @@ class Sourcer:
         )
         return metadata
 
-    def __validate_source(self, source, source_format=None, forced_validate=False):
+    def __validate_source(self, source, source_demuxer=None, forced_validate=False):
         """
         Internal method for validating source and extract its FFmpeg metadata.
         """
@@ -278,7 +278,7 @@ class Sourcer:
         elif is_valid_url(self.__ffmpeg, url=source, verbose=self.__verbose_logs):
             self.__video_source = source
         elif forced_validate:
-            source_format is None and logger.critical(
+            source_demuxer is None and logger.critical(
                 "Forcefully passing validation test for given source!"
             )
             self.__video_source = source
@@ -289,7 +289,7 @@ class Sourcer:
         # extract metadata
         metadata = check_sp_output(
             [self.__ffmpeg, "-hide_banner"]
-            + (["-f", source_format] if source_format else [])
+            + (["-f", source_demuxer] if source_demuxer else [])
             + ["-i", source],
             force_retrieve_stderr=True,
         )
