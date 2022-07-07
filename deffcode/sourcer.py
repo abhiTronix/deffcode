@@ -225,7 +225,6 @@ class Sourcer:
         metadata = {
             "ffmpeg_binary_path": self.__ffmpeg,
             "source": self.__source,
-            "source_extension": self.__source_extension,
             "source_video_resolution": self.__default_video_resolution,
             "source_video_framerate": self.__default_video_framerate,
             "source_video_pixfmt": self.__default_video_pixfmt,
@@ -241,6 +240,11 @@ class Sourcer:
             "source_has_audio": self.__contains_audio,
             "source_has_image_sequence": self.__contains_images,
         }
+        metadata.update(
+            {"source_extension": self.__source_extension}
+            if self.__source_demuxer is None
+            else {"source_demuxer": self.__source_demuxer}
+        )
         return metadata
 
     def __validate_source(self, source, source_format=None, forced_validate=False):
