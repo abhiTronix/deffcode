@@ -225,25 +225,31 @@ class Sourcer:
         metadata = {
             "ffmpeg_binary_path": self.__ffmpeg,
             "source": self.__source,
-            "source_video_resolution": self.__default_video_resolution,
-            "source_video_framerate": self.__default_video_framerate,
-            "source_video_pixfmt": self.__default_video_pixfmt,
-            "source_video_decoder": self.__default_video_decoder,
-            "source_duration_sec": self.__default_source_duration,
-            "approx_video_nframes": int(self.__approx_video_nframes)
-            if self.__approx_video_nframes
-            else None,
-            "source_video_bitrate": self.__default_video_bitrate,
-            "source_audio_bitrate": self.__default_audio_bitrate,
-            "source_audio_samplerate": self.__default_audio_samplerate,
-            "source_has_video": self.__contains_video,
-            "source_has_audio": self.__contains_audio,
-            "source_has_image_sequence": self.__contains_images,
         }
         metadata.update(
             {"source_extension": self.__source_extension}
             if self.__source_demuxer is None
             else {"source_demuxer": self.__source_demuxer}
+        )
+        metadata.update(
+            {
+                "source_video_resolution": self.__default_video_resolution,
+                "source_video_framerate": self.__default_video_framerate,
+                "source_video_pixfmt": self.__default_video_pixfmt,
+                "source_video_decoder": self.__default_video_decoder,
+                "source_duration_sec": self.__default_source_duration,
+                "approx_video_nframes": (
+                    int(self.__approx_video_nframes)
+                    if self.__approx_video_nframes
+                    else None
+                ),
+                "source_video_bitrate": self.__default_video_bitrate,
+                "source_audio_bitrate": self.__default_audio_bitrate,
+                "source_audio_samplerate": self.__default_audio_samplerate,
+                "source_has_video": self.__contains_video,
+                "source_has_audio": self.__contains_audio,
+                "source_has_image_sequence": self.__contains_images,
+            }
         )
         return metadata
 
