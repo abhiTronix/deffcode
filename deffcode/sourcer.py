@@ -41,7 +41,14 @@ logger.setLevel(logging.DEBUG)
 class Sourcer:
     """ """
 
-    def __init__(self, source, custom_ffmpeg="", verbose=False, **sourcer_params):
+    def __init__(
+        self,
+        source,
+        source_demuxer=None,
+        custom_ffmpeg="",
+        verbose=False,
+        **sourcer_params
+    ):
         """
         This constructor method initializes the object state and attributes of the Sourcer.
 
@@ -101,9 +108,12 @@ class Sourcer:
 
         # define externally accessible parameters
         self.__source = source  # handles source stream
-        self.__source_extension = os.path.splitext(source)[
-            -1
-        ]  # handles source stream extension
+        # handles source demuxer
+        self.__source_demuxer = (
+            source_demuxer.strip().lower() if isinstance(source_demuxer, str) else None
+        )
+        # handles source stream extension
+        self.__source_extension = os.path.splitext(source)[-1]
         self.__default_video_resolution = ""  # handle stream resolution
         self.__default_video_framerate = ""  # handle stream framerate
         self.__default_video_bitrate = ""  # handle stream's video bitrate
@@ -137,7 +147,13 @@ class Sourcer:
             and all(isinstance(x, int) for x in default_stream_indexes)
         ), "Invalid default_stream_indexes value!"
         # validate source and extract metadata
-        self.__ffsp_output = self.__validate_source(self.__source)
+        self.__ffsp_output = self.__validate_source(
+            self.__source,
+            source_demuxer=self.__source_demuxer,
+            forced_validate=(
+                self.__forcevalidatesource if self.__source_demuxer is None else True
+            ),
+        )
         # parse resolution and framerate
         video_rfparams = self.__extract_resolution_framerate(
             default_stream=default_stream_indexes[0]
@@ -227,12 +243,20 @@ class Sourcer:
         }
         return metadata
 
-    def __validate_source(self, source):
+    def __validate_source(self, source, source_format=None, forced_validate=False):
         """
         Internal method for validating source and extract its FFmpeg metadata.
         """
-        if source is None or not source or not isinstance(source, str):
-            raise ValueError("Input source is empty!")
+        # assert if valid source
+        assert (
+            source is None or not source or not isinstance(source, str)
+        ), "Input source is empty!"
+        # assert if valid source demuxer
+        assert source_demuxer in get_supported_demuxers(
+            self.__ffmpeg
+        ), "Installed FFmpeg failed to recognise `{}` demuxer. Check ``source_demuxer`` parameter value again!".format(
+            source_demuxer
+        )
         # Differentiate input
         if os.path.isfile(source):
             self.__video_source = os.path.abspath(source)
@@ -243,8 +267,10 @@ class Sourcer:
             self.__contains_images = True
         elif is_valid_url(self.__ffmpeg, url=source, verbose=self.__verbose_logs):
             self.__video_source = source
-        elif self.__forcevalidatesource:
-            logger.critical("Forcefully passing validation test for given source!")
+        elif forced_validate:
+            source_format is None and logger.critical(
+                "Forcefully passing validation test for given source!"
+            )
             self.__video_source = source
         else:
             logger.error("`source` value is unusable or unsupported!")
@@ -252,7 +278,10 @@ class Sourcer:
             raise ValueError("Input source is invalid. Aborting!")
         # extract metadata
         metadata = check_sp_output(
-            [self.__ffmpeg, "-hide_banner", "-i", source], force_retrieve_stderr=True
+            [self.__ffmpeg, "-hide_banner"]
+            + (["-f", source_format] if source_format else [])
+            + ["-i", source],
+            force_retrieve_stderr=True,
         )
         # filter and return
         return metadata.decode("utf-8").strip()
