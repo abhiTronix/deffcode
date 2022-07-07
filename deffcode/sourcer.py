@@ -26,6 +26,7 @@ import numpy as np
 from .utils import logger_handler
 from .ffhelper import (
     check_sp_output,
+    get_supported_demuxers,
     is_valid_url,
     is_valid_image_seq,
     get_valid_ffmpeg_path,
