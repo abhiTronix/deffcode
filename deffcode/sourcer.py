@@ -261,7 +261,7 @@ class Sourcer:
         # assert if valid source
         assert source and isinstance(source, str), "Input source is empty!"
         # assert if valid source demuxer
-        assert source_demuxer in get_supported_demuxers(
+        assert source_demuxer is None or source_demuxer in get_supported_demuxers(
             self.__ffmpeg
         ), "Installed FFmpeg failed to recognise `{}` demuxer. Check ``source_demuxer`` parameter value again!".format(
             source_demuxer
