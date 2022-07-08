@@ -25,7 +25,6 @@ import json
 import pytest
 import tempfile
 import platform
-import pyvirtualcam
 import numpy as np
 import logging
 from .essentials import (
@@ -37,6 +36,7 @@ from .essentials import (
 )
 from PIL import Image
 from deffcode import FFdecoder
+from vidgear.gears import WriteGear
 from deffcode.utils import logger_handler
 
 # define test logger
@@ -316,33 +316,38 @@ def test_FFdecoder_params(source, extraparams, result):
         not (writer is None) and writer.release() and remove_file_safe(f_name)
 
 
-@pytest.mark.skipif((platform.system() != "Linux"), reason="Tests on other platforms not supported yet!")
+@pytest.mark.skipif(
+    (platform.system() != "Linux"), reason="Tests on other platforms not supported yet!"
+)
 def test_cameradevice():
     """
     Tests FFdecoder's webcam playback capabilities
     """
     try:
-        # initialize pyvirtualcam
-        with pyvirtualcam.Camera(width=1280, height=720, fps=20) as cam:
-            logger.debug(f"Virtual camera: {cam.device}")
-            # initialize and formulate the decode with suitable source
-            logger.debug("Creating FFdecoder sink")
-            decoder = FFdecoder(
-                cam.device, source_demuxer="v4l2", frame_format="bgr24", verbose=True
-            ).formulate()
+        # Define writer with default parameters and suitable output filename for e.g. `Output.mp4`
+        logger.debug("Creating v4l2loopback source")
+        output_params = {"-f": "v4l2"}
+        writer = WriteGear(output_filename="/dev/video0", logging=True, **output_params)
 
-            # create fake frame
-            frames_data = array_data(size=(cam.height, cam.width))
+        # initialize and formulate the decode with suitable source
+        logger.debug("Creating FFdecoder sink")
+        decoder = FFdecoder(
+            cam.device, source_demuxer="v4l2", frame_format="bgr24", verbose=True
+        ).formulate()
 
+        # create fake frame
+        frames_data = array_data(size=(1280, 720))
+
+        # send and capture frames
+        for frame_sent in frames_data:
             # send and capture frames
-            for frame_sent in frames_data:
-                cam.send(frame_sent)
-                # grab the bgr24 frame from the decoder
-                frame_recv = next(decoder.generateFrame(), None)
-                # check if frame is None
-                if frame_recv is None:
-                    raise AssertionError("Test Failed!")
-                # wait till ready
-                cam.sleep_until_next_frame()
+            writer.write(frame_sent)
+
+            # grab the bgr24 frame from the decoder
+            frame_recv = next(decoder.generateFrame(), None)
+
+            # check if frame is None
+            if frame_recv is None:
+                raise AssertionError("Test Failed!")
     except Exception as e:
         pytest.fail(str(e))

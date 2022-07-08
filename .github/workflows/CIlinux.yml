@@ -60,7 +60,7 @@ jobs:
         run: |
           pip install -U pip wheel numpy 
           pip install -U .
-          pip install -U vidgear[core] opencv-python-headless pyvirtualcam
+          pip install -U vidgear[core] opencv-python-headless
           pip install -U flake8 six codecov pytest pytest-cov
         if: success()
       - name: Run prepare_dataset Bash script
