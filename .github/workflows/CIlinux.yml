@@ -60,7 +60,7 @@ jobs:
         run: |
           pip install -U pip wheel numpy 
           pip install -U .
-          pip install git+git://github.com/abhiTronix/vidgear@testing#egg=vidgear[core]
+          pip install git+https://github.com/abhiTronix/vidgear@testing#egg=vidgear[core]
           pip install -U opencv-python-headless
           pip install -U flake8 six codecov pytest pytest-cov
         if: success()
