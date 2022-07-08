@@ -46,7 +46,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -qq unzip curl -y
-          sudo apt-get install -qq dos2unix -y
+          sudo apt-get install -qq dos2unix git -y
           sudo apt-get install ffmpeg v4l2loopback-dkms v4l2loopback-utils linux-modules-extra-$(uname -r) -y
           sudo adduser $(whoami) video
           sudo usermod -a -G video $(whoami)
@@ -60,7 +60,8 @@ jobs:
         run: |
           pip install -U pip wheel numpy 
           pip install -U .
-          pip install -U vidgear[core] opencv-python-headless
+          pip install git+git://github.com/abhiTronix/vidgear@testing#egg=vidgear[core]
+          pip install -U opencv-python-headless
           pip install -U flake8 six codecov pytest pytest-cov
         if: success()
       - name: Run prepare_dataset Bash script
