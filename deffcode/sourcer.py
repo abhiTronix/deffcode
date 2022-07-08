@@ -259,9 +259,7 @@ class Sourcer:
         Internal method for validating source and extract its FFmpeg metadata.
         """
         # assert if valid source
-        assert (
-            source is None or not source or not isinstance(source, str)
-        ), "Input source is empty!"
+        assert source and isinstance(source, str), "Input source is empty!"
         # assert if valid source demuxer
         assert source_demuxer in get_supported_demuxers(
             self.__ffmpeg
@@ -269,7 +267,12 @@ class Sourcer:
             source_demuxer
         )
         # Differentiate input
-        if os.path.isfile(source):
+        if forced_validate:
+            source_demuxer is None and logger.critical(
+                "Forcefully passing validation test for given source!"
+            )
+            self.__source = source
+        elif os.path.isfile(source):
             self.__source = os.path.abspath(source)
         elif is_valid_image_seq(
             self.__ffmpeg, source=source, verbose=self.__verbose_logs
@@ -277,11 +280,6 @@ class Sourcer:
             self.__source = source
             self.__contains_images = True
         elif is_valid_url(self.__ffmpeg, url=source, verbose=self.__verbose_logs):
-            self.__source = source
-        elif forced_validate:
-            source_demuxer is None and logger.critical(
-                "Forcefully passing validation test for given source!"
-            )
             self.__source = source
         else:
             logger.error("`source` value is unusable or unsupported!")
