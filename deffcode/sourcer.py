@@ -270,19 +270,19 @@ class Sourcer:
         )
         # Differentiate input
         if os.path.isfile(source):
-            self.__video_source = os.path.abspath(source)
+            self.__source = os.path.abspath(source)
         elif is_valid_image_seq(
             self.__ffmpeg, source=source, verbose=self.__verbose_logs
         ):
-            self.__video_source = source
+            self.__source = source
             self.__contains_images = True
         elif is_valid_url(self.__ffmpeg, url=source, verbose=self.__verbose_logs):
-            self.__video_source = source
+            self.__source = source
         elif forced_validate:
             source_demuxer is None and logger.critical(
                 "Forcefully passing validation test for given source!"
             )
-            self.__video_source = source
+            self.__source = source
         else:
             logger.error("`source` value is unusable or unsupported!")
             # discard the value otherwise
