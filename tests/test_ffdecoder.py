@@ -323,8 +323,8 @@ def test_cameradevice():
     """
     try:
         # initialize pyvirtualcam
-        logger.debug(f"Virtual camera: {cam.device}")
         with pyvirtualcam.Camera(width=1280, height=720, fps=20) as cam:
+            logger.debug(f"Virtual camera: {cam.device}")
             # initialize and formulate the decode with suitable source
             logger.debug("Creating FFdecoder sink")
             decoder = FFdecoder(
