@@ -44,11 +44,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install APT Dependencies
         run: |
-          sudo add-apt-repository ppa:obsproject/obs-studio -y
           sudo apt-get update -qq
           sudo apt-get install -qq unzip curl -y
           sudo apt-get install -qq dos2unix -y
-          sudo apt-get install ffmpeg obs-studio -y
+          sudo apt-get install ffmpeg v4l2loopback-dkms libv4l-dev v4l-utils -y
+          sudo rmmod v4l2loopback 2>/dev/null
+          sudo modprobe v4l2loopback devices=${1:-1} exclusive_caps=1 card_label='VCamera'
+          sudo v4l2-ctl --list-devices
       - name: Prepare Bash scripts
         run: |
           dos2unix scripts/bash/prepare_dataset.sh
