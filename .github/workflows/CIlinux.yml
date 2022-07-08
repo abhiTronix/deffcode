@@ -44,7 +44,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install APT Dependencies
         run: |
-          sudo add-apt-repository ppa:doctormo/ppa
           sudo apt-get update -qq
           sudo apt-get install -qq unzip curl -y
           sudo apt-get install -qq dos2unix -y
