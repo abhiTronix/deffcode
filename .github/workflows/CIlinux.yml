@@ -46,16 +46,17 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -qq unzip curl -y
-          sudo apt-get install -qq dos2unix ffmpeg -y
+          sudo apt-get install -qq dos2unix ffmpeg v4l2loopback-dkms -y
+          sudo modprobe v4l2loopback devices=1
       - name: Prepare Bash scripts
         run: |
           dos2unix scripts/bash/prepare_dataset.sh
           chmod +x scripts/bash/prepare_dataset.sh
       - name: Install Pip Dependencies
         run: |
-          pip install -U pip wheel numpy
+          pip install -U pip wheel numpy 
           pip install -U .
-          pip install -U vidgear[core] opencv-python-headless
+          pip install -U vidgear[core] opencv-python-headless pyvirtualcam
           pip install -U flake8 six codecov pytest pytest-cov
         if: success()
       - name: Run prepare_dataset Bash script

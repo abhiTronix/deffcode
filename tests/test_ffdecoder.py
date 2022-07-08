@@ -24,6 +24,9 @@ import cv2
 import json
 import pytest
 import tempfile
+import platform
+import pyvirtualcam
+import numpy as np
 import logging
 from .essentials import (
     return_static_ffmpeg,
@@ -41,6 +44,15 @@ logger = logging.getLogger("Test_FFdecoder")
 logger.propagate = False
 logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
+
+
+def array_data(self, size, frame_num=10):
+    """
+    Generate 10 numpy frames with random pixels
+    """
+    np.random.seed(0)
+    random_data = np.random.random(size=(frame_num, size[0], size[1], 3)) * 255
+    return random_data.astype(np.uint8)
 
 
 @pytest.mark.parametrize(
@@ -129,7 +141,7 @@ def test_frame_format(pixfmts):
             source,
             frame_format=pixfmts,
             custom_ffmpeg=return_static_ffmpeg(),
-            **extraparams
+            **extraparams,
         ).formulate()
 
         # grab RGB24(default) 3D frames from decoder
@@ -206,7 +218,7 @@ def test_seek_n_save(extraparams, pixfmts):
             frame_format=pixfmts,
             custom_ffmpeg=return_static_ffmpeg(),
             verbose=True,
-            **extraparams
+            **extraparams,
         ).formulate()
 
         # grab the RGB24(default) frame from the decoder
@@ -302,3 +314,35 @@ def test_FFdecoder_params(source, extraparams, result):
         # terminate the decoder
         not (decoder is None) and decoder.terminate()
         not (writer is None) and writer.release() and remove_file_safe(f_name)
+
+
+@pytest.mark.skipif((platform.system() != "Linux"), reason="Tests on other platforms not supported yet!")
+def test_cameradevice():
+    """
+    Tests FFdecoder's webcam playback capabilities
+    """
+    try:
+        # initialize pyvirtualcam
+        logger.debug(f"Virtual camera: {cam.device}")
+        with pyvirtualcam.Camera(width=1280, height=720, fps=20) as cam:
+            # initialize and formulate the decode with suitable source
+            logger.debug("Creating FFdecoder sink")
+            decoder = FFdecoder(
+                cam.device, source_demuxer="v4l2", frame_format="bgr24", verbose=True
+            ).formulate()
+
+            # create fake frame
+            frames_data = array_data(size=(cam.height, cam.width))
+
+            # send and capture frames
+            for frame_sent in frames_data:
+                cam.send(frame_sent)
+                # grab the bgr24 frame from the decoder
+                frame_recv = next(decoder.generateFrame(), None)
+                # check if frame is None
+                if frame_recv is None:
+                    raise AssertionError("Test Failed!")
+                # wait till ready
+                cam.sleep_until_next_frame()
+    except Exception as e:
+        pytest.xfail(str(e))
