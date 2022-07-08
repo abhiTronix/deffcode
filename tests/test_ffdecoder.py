@@ -345,4 +345,4 @@ def test_cameradevice():
                 # wait till ready
                 cam.sleep_until_next_frame()
     except Exception as e:
-        pytest.xfail(str(e))
+        pytest.fail(str(e))
