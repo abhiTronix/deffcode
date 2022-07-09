@@ -53,6 +53,7 @@ jobs:
           sudo adduser $(whoami) video
           sudo usermod -a -G video $(whoami)
           exec sudo su -l $(whoami)
+          sudo chmod 777 /dev/video0
       - name: Prepare Bash scripts
         run: |
           dos2unix scripts/bash/prepare_dataset.sh
