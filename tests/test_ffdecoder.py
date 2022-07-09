@@ -63,6 +63,7 @@ class OnetimeSetup:
         # create process to loopback image
         self.process = sp.Popen(
             [
+                "sudo",
                 "ffmpeg",
                 "-hide_banner",
                 "-loglevel",
