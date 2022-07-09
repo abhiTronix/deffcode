@@ -19,7 +19,7 @@ limitations under the License.
 """
 
 # import required libraries
-import re, logging, os
+import re, logging, os, platform
 import numpy as np
 
 # import utils packages
@@ -155,6 +155,7 @@ class Sourcer:
                 self.__forcevalidatesource if self.__source_demuxer is None else True
             ),
         )
+        platform.system() == "Darwin" and logger.exception(self.__ffsp_output)
         # parse resolution and framerate
         video_rfparams = self.__extract_resolution_framerate(
             default_stream=default_stream_indexes[0]
