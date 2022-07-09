@@ -107,6 +107,8 @@ echo "Done Downloading Test-Data!"
 
 if [ $OS_NAME = "linux" ]; then
   echo "Setting up ffmpeg v4l2loopback"
-  nohup ffmpeg -hide_banner -loglevel error -stream_loop 10 -re -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 -f v4l2 -pix_fmt yuv420p /dev/video0 &
+  modprobe v4l2loopback devices=1 video_nr=2 exclusive_caps=1 card_label='VCamera'
+  v4l2-ctl --list-devices
+  nohup ffmpeg -hide_banner -loglevel error -re -stream_loop 10 -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 -f v4l2 -pix_fmt yuv420p /dev/video2 &
   echo "Done"
 fi

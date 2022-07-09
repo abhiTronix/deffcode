@@ -319,7 +319,7 @@ def test_camera_capture():
     try:
         # initialize and formulate the decode with suitable source
         decoder = FFdecoder(
-            "/dev/video0", source_demuxer="v4l2", frame_format="bgr24"
+            "/dev/video2", source_demuxer="v4l2", frame_format="bgr24"
         ).formulate()
         # capture 10 camera frames
         for i in range(10):
