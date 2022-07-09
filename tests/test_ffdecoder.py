@@ -57,6 +57,8 @@ class OnetimeSetup:
         # create image
         img = Image.new("RGB", (1280, 720), (255, 255, 255))
         img.save("image.png", "PNG")
+        # validate image
+        assert os.isfile("image.png")
 
         # create process to loopback image
         self.process = sp.Popen(
@@ -377,4 +379,4 @@ def test_camera_capture(onetime_setup):
     finally:
         # terminate
         onetime_setup.process.terminate()
-        decoder.terminate()
+        not (decoder is None) and decoder.terminate()
