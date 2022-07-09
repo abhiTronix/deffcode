@@ -74,7 +74,7 @@ class OnetimeSetup:
                 "v4l2",
                 "-pix_fmt",
                 "yuv420p",
-                "/dev/video2",
+                "/dev/video0",
             ]
         )
 
