@@ -58,7 +58,7 @@ class OnetimeSetup:
         img = Image.new("RGB", (1280, 720), (255, 255, 255))
         img.save("image.png", "PNG")
         # validate image
-        assert os.isfile("image.png")
+        assert os.path.isfile("image.png")
 
         # create process to loopback image
         self.process = sp.Popen(
