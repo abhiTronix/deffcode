@@ -105,8 +105,11 @@ curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfis
 curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfish-120-mbps-4k-uhd-h264.mkv -o 120_mbps_4k_uhd_h264.mkv
 echo "Done Downloading Test-Data!"
 
+echo "Preparing images from video"
+ffmpeg -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 "$TMPFOLDER"/temp_images/out%d.png
+echo "Done"
+
 if [ $OS_NAME = "linux" ]; then
-  ffmpeg -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 "$TMPFOLDER"/temp_images/out%d.png
   echo "Setting up ffmpeg v4l2loopback"
   sudo modprobe v4l2loopback devices=1 video_nr=2 exclusive_caps=1 card_label='VCamera'
   sudo v4l2-ctl --list-devices
