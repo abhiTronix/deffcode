@@ -36,7 +36,6 @@ from .essentials import (
 )
 from PIL import Image
 from deffcode import FFdecoder
-from vidgear.gears import WriteGear
 from deffcode.utils import logger_handler
 
 # define test logger
@@ -44,7 +43,6 @@ logger = logging.getLogger("Test_FFdecoder")
 logger.propagate = False
 logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
-
 
 @pytest.mark.parametrize(
     "source, output",
@@ -218,13 +216,13 @@ def test_seek_n_save(extraparams, pixfmts):
         # check if frame is None
         if not (frame is None) and pixfmts == "rgba":
             # Convert and save our output
-            filename = os.path.abspath("filename_rgba.jpeg")
+            filename = os.path.abspath(os.path.join(*[tempfile.gettempdir(), "temp_write", "filename_rgba.jpeg"]))
             im = Image.fromarray(frame)
             im = im.convert("RGB")
             im.save(filename)
         elif not (frame is None) and pixfmts == "gray":
             # Convert and save our output
-            filename = os.path.abspath("filename_gray.png")
+            filename = os.path.abspath(os.path.join(*[tempfile.gettempdir(), "temp_write", "filename_gray.png"]))
             cv2.imwrite(filename, frame)
         else:
             raise AssertionError("Test Failed!")

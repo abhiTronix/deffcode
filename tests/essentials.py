@@ -94,7 +94,12 @@ def return_generated_frames_path(path):
     # check if empty
     if not os.listdir(frame_dir):
         # Define writer with default parameters
-        writer = WriteGear(output_filename="Output.mp4", custom_ffmpeg=path)
+        writer = WriteGear(
+            output_filename=os.path.join(
+                *[tempfile.gettempdir(), "temp_write", "Output.mp4"]
+            ),
+            custom_ffmpeg=path,
+        )
         # execute FFmpeg command
         writer.execute_ffmpeg_cmd(["-i", video_path, frames_path])
         # safely close writer
