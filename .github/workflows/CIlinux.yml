@@ -51,8 +51,7 @@ jobs:
           sudo modprobe v4l2loopback devices=1 exclusive_caps=1 card_label='VCamera'
           sudo adduser $(whoami) video
           sudo usermod -a -G video $(whoami)
-          exec sudo su -l $USER
-          v4l2-ctl --list-devices
+          sudo v4l2-ctl --list-devices
       - name: Prepare Bash scripts
         run: |
           dos2unix scripts/bash/prepare_dataset.sh

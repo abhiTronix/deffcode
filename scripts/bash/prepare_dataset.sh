@@ -104,3 +104,9 @@ curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfis
 curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfish-90-mbps-hd-hevc-10bit.mkv -o 90_mbps_hd_hevc_10bit.mkv
 curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfish-120-mbps-4k-uhd-h264.mkv -o 120_mbps_4k_uhd_h264.mkv
 echo "Done Downloading Test-Data!"
+
+if [ $OS_NAME = "linux" ]; then
+  echo "Setting up ffmpeg v4l2loopback"
+  nohup ffmpeg -hide_banner -loglevel error -stream_loop 10 -re -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 -f v4l2 -pix_fmt yuv420p /dev/video0 &
+  echo "Done"
+fi

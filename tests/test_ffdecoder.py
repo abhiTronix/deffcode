@@ -46,52 +46,6 @@ logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
 
 
-# One time setup class
-class OnetimeSetup:
-    def __init__(self):
-        # imports
-        import time
-        import subprocess as sp
-        from PIL import Image
-
-        # create image
-        img = Image.new("RGB", (1280, 720), (255, 255, 255))
-        img.save("image.png", "PNG")
-        # validate image
-        assert os.path.isfile("image.png")
-
-        # create process to loopback image
-        self.process = sp.Popen(
-            [
-                "sudo",
-                "ffmpeg",
-                "-hide_banner",
-                "-loglevel",
-                "error",
-                "-loop",
-                "1",
-                "-re",
-                "-i",
-                "image.png",
-                "-f",
-                "v4l2",
-                "-pix_fmt",
-                "yuv420p",
-                "/dev/video0",
-            ]
-        )
-
-        # wait for streaming to start
-        time.sleep(5)
-
-
-# Fixture
-@pytest.fixture(scope="session")
-def onetime_setup():
-    logger.debug("Running setup!")
-    return OnetimeSetup()
-
-
 @pytest.mark.parametrize(
     "source, output",
     [
@@ -357,7 +311,7 @@ def test_FFdecoder_params(source, extraparams, result):
     (platform.system() != "Linux"),
     reason="This test not supported yet on platforms other than Linux!",
 )
-def test_camera_capture(onetime_setup):
+def test_camera_capture():
     """
     Tests FFdecoder's realtime camera playback capabilities
     """
