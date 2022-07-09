@@ -155,6 +155,7 @@ class Sourcer:
                 self.__forcevalidatesource if self.__source_demuxer is None else True
             ),
         )
+        logger.exception(self.__ffsp_output)
         # parse resolution and framerate
         video_rfparams = self.__extract_resolution_framerate(
             default_stream=default_stream_indexes[0]
