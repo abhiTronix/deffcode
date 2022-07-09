@@ -333,5 +333,4 @@ def test_camera_capture():
         pytest.fail(str(e))
     finally:
         # terminate
-        onetime_setup.process.terminate()
         not (decoder is None) and decoder.terminate()

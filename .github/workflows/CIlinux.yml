@@ -55,7 +55,7 @@ jobs:
       - name: Prepare Bash scripts
         run: |
           dos2unix scripts/bash/prepare_dataset.sh
-          chmod +x scripts/bash/prepare_dataset.sh
+          sudo chmod +x scripts/bash/prepare_dataset.sh
       - name: Install Pip Dependencies
         run: |
           pip install -U pip wheel numpy 
