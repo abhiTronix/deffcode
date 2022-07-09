@@ -54,11 +54,11 @@ jobs:
           sudo chmod +x scripts/bash/prepare_dataset.sh
       - name: Install Pip Dependencies
         run: |
-          pip install -U pip wheel numpy 
-          pip install -U .
-          pip install git+https://github.com/abhiTronix/vidgear@testing#egg=vidgear[core]
-          pip install -U opencv-python-headless
-          pip install -U flake8 six codecov pytest pytest-cov
+          sudo pip install -U pip wheel numpy 
+          sudo pip install -U .
+          sudo pip install git+https://github.com/abhiTronix/vidgear@testing#egg=vidgear[core]
+          sudo pip install -U opencv-python-headless
+          sudo pip install -U flake8 six codecov pytest pytest-cov
         if: success()
       - name: Run prepare_dataset Bash script
         run: bash scripts/bash/prepare_dataset.sh
