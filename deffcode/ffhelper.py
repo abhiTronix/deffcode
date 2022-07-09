@@ -347,7 +347,7 @@ def get_supported_demuxers(path):
     # find all outputs
     outputs = finder.findall("\n".join(supported_demuxers))
     # return output findings
-    return [o.strip() for o in outputs]
+    return [o.strip() if not ("," in o) else o.split(",")[-1].strip() for o in outputs]
 
 
 def validate_imgseqdir(source, extension="jpg", verbose=False):

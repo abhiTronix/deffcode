@@ -46,13 +46,47 @@ logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
 
 
-def array_data(self, size, frame_num=10):
-    """
-    Generate 10 numpy frames with random pixels
-    """
-    np.random.seed(0)
-    random_data = np.random.random(size=(frame_num, size[0], size[1], 3)) * 255
-    return random_data.astype(np.uint8)
+# One time setup class
+class OnetimeSetup:
+    def __init__(self):
+        # imports
+        import time
+        import subprocess as sp
+        from PIL import Image
+
+        # create image
+        img = Image.new("RGB", (1280, 720), (255, 255, 255))
+        img.save("image.png", "PNG")
+
+        # create process to loopback image
+        self.process = sp.Popen(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-loop",
+                "1",
+                "-re",
+                "-i",
+                "image.png",
+                "-f",
+                "v4l2",
+                "-pix_fmt",
+                "yuv420p",
+                "/dev/video2",
+            ]
+        )
+
+        # wait for streaming to start
+        time.sleep(5)
+
+
+# Fixture
+@pytest.fixture(scope="session")
+def onetime_setup():
+    logger.debug("Running setup!")
+    return OnetimeSetup()
 
 
 @pytest.mark.parametrize(
@@ -317,37 +351,30 @@ def test_FFdecoder_params(source, extraparams, result):
 
 
 @pytest.mark.skipif(
-    (platform.system() != "Linux"), reason="Tests on other platforms not supported yet!"
+    (platform.system() != "Linux"),
+    reason="This test not supported yet on platforms other than Linux!",
 )
-def test_cameradevice():
+def test_camera_capture(onetime_setup):
     """
-    Tests FFdecoder's webcam playback capabilities
+    Tests FFdecoder's realtime camera playback capabilities
     """
+    decoder = None
     try:
-        # Define writer with default parameters and suitable output filename for e.g. `Output.mp4`
-        logger.debug("Creating v4l2loopback source")
-        output_params = {"-f": "v4l2"}
-        writer = WriteGear(output_filename="/dev/video0", logging=True, **output_params)
-
         # initialize and formulate the decode with suitable source
-        logger.debug("Creating FFdecoder sink")
         decoder = FFdecoder(
-            cam.device, source_demuxer="v4l2", frame_format="bgr24", verbose=True
+            "/dev/video0", source_demuxer="v4l2", frame_format="bgr24"
         ).formulate()
-
-        # create fake frame
-        frames_data = array_data(size=(1280, 720))
-
-        # send and capture frames
-        for frame_sent in frames_data:
-            # send and capture frames
-            writer.write(frame_sent)
-
+        # capture 10 camera frames
+        for i in range(10):
             # grab the bgr24 frame from the decoder
             frame_recv = next(decoder.generateFrame(), None)
-
             # check if frame is None
             if frame_recv is None:
                 raise AssertionError("Test Failed!")
     except Exception as e:
+        # catch errors
         pytest.fail(str(e))
+    finally:
+        # terminate
+        onetime_setup.process.terminate()
+        decoder.terminate()
