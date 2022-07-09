@@ -48,12 +48,8 @@ jobs:
           sudo apt-get install -qq unzip curl -y
           sudo apt-get install -qq dos2unix git -y
           sudo apt-get install ffmpeg v4l2loopback-dkms v4l2loopback-utils linux-modules-extra-$(uname -r) -y
-          sudo modprobe v4l2loopback devices=1 exclusive_caps=1 card_label='VCamera'
-          sudo v4l2-ctl --list-devices
-          sudo adduser $(whoami) video
-          sudo usermod -a -G video $(whoami)
-          exec sudo su -l $(whoami)
-          sudo chmod 777 /dev/video0
+          modprobe v4l2loopback devices=1 exclusive_caps=1 card_label='VCamera'
+          v4l2-ctl --list-devices
       - name: Prepare Bash scripts
         run: |
           dos2unix scripts/bash/prepare_dataset.sh
