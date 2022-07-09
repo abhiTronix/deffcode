@@ -106,6 +106,7 @@ curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfis
 echo "Done Downloading Test-Data!"
 
 if [ $OS_NAME = "linux" ]; then
+  ffmpeg -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 "$TMPFOLDER"/temp_images/out%d.png
   echo "Setting up ffmpeg v4l2loopback"
   sudo modprobe v4l2loopback devices=1 video_nr=2 exclusive_caps=1 card_label='VCamera'
   sudo v4l2-ctl --list-devices

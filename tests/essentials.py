@@ -87,23 +87,8 @@ def return_generated_frames_path(path):
     """
     returns Test video path
     """
-    # create paths
-    video_path = return_testvideo_path(fmt="vo")
     frame_dir = "{}/temp_images".format(tempfile.gettempdir())
     frames_path = os.path.join(frame_dir, "out%d.png")
-    # check if empty
-    if not os.listdir(frame_dir):
-        # Define writer with default parameters
-        writer = WriteGear(
-            output_filename=os.path.join(
-                *[tempfile.gettempdir(), "temp_write", "Output.mp4"]
-            ),
-            custom_ffmpeg=path,
-        )
-        # execute FFmpeg command
-        writer.execute_ffmpeg_cmd(["-i", video_path, frames_path])
-        # safely close writer
-        writer.close()
     # return path
     return frames_path
 
