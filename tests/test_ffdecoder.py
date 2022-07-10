@@ -44,6 +44,7 @@ logger.propagate = False
 logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
 
+
 @pytest.mark.parametrize(
     "source, output",
     [
@@ -73,7 +74,7 @@ def test_source_playback(source, output):
             instance = FFdecoder(
                 source,
                 frame_format="bgr24",
-                custom_ffmpeg=return_static_ffmpeg(),
+                custom_ffmpeg=return_static_ffmpeg() if platform.system() != "Darwin" else "",
                 verbose=True,
             )
             # force unknown number of frames(like camera) {special case}
@@ -216,13 +217,21 @@ def test_seek_n_save(extraparams, pixfmts):
         # check if frame is None
         if not (frame is None) and pixfmts == "rgba":
             # Convert and save our output
-            filename = os.path.abspath(os.path.join(*[tempfile.gettempdir(), "temp_write", "filename_rgba.jpeg"]))
+            filename = os.path.abspath(
+                os.path.join(
+                    *[tempfile.gettempdir(), "temp_write", "filename_rgba.jpeg"]
+                )
+            )
             im = Image.fromarray(frame)
             im = im.convert("RGB")
             im.save(filename)
         elif not (frame is None) and pixfmts == "gray":
             # Convert and save our output
-            filename = os.path.abspath(os.path.join(*[tempfile.gettempdir(), "temp_write", "filename_gray.png"]))
+            filename = os.path.abspath(
+                os.path.join(
+                    *[tempfile.gettempdir(), "temp_write", "filename_gray.png"]
+                )
+            )
             cv2.imwrite(filename, frame)
         else:
             raise AssertionError("Test Failed!")

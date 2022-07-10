@@ -478,6 +478,8 @@ def check_sp_output(*args, **kwargs):
     # handle additional params
     retrieve_stderr = kwargs.pop("force_retrieve_stderr", False)
 
+    logger.debug(*args)
+
     # execute command in subprocess
     process = sp.Popen(
         stdout=sp.PIPE,
