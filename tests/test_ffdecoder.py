@@ -74,7 +74,6 @@ def test_source_playback(source, output):
             instance = FFdecoder(
                 source,
                 frame_format="bgr24",
-                custom_ffmpeg="",
                 verbose=True,
             )
             # force unknown number of frames(like camera) {special case}
@@ -86,7 +85,6 @@ def test_source_playback(source, output):
             decoder = FFdecoder(
                 source,
                 frame_format="bgr24",
-                custom_ffmpeg=return_static_ffmpeg(),
                 verbose=True,
             ).formulate()
 
