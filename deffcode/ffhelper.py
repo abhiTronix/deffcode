@@ -489,7 +489,7 @@ def check_sp_output(*args, **kwargs):
     retcode = process.poll()
 
     logger.debug(retcode)
-    
+
     # handle return code
     if retcode and not (retrieve_stderr):
         cmd = kwargs.get("args")
@@ -499,7 +499,7 @@ def check_sp_output(*args, **kwargs):
         error.output = output
         raise error
 
-    logger.debug(output.decode("utf-8"))
-    logger.exception(stderr.decode("utf-8"))
+    logger.debug("Output is None" if output is None else output.decode("utf-8"))
+    logger.exception("Stderr is None" if stderr is None else stderr.decode("utf-8"))
 
     return output if not (retrieve_stderr) else stderr
