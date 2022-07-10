@@ -74,7 +74,7 @@ def test_source_playback(source, output):
             instance = FFdecoder(
                 source,
                 frame_format="bgr24",
-                custom_ffmpeg=return_static_ffmpeg() if platform.system() != "Darwin" else "",
+                custom_ffmpeg="",
                 verbose=True,
             )
             # force unknown number of frames(like camera) {special case}
