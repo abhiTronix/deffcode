@@ -286,6 +286,7 @@ class Sourcer:
             logger.error("`source` value is unusable or unsupported!")
             # discard the value otherwise
             raise ValueError("Input source is invalid. Aborting!")
+        logger.debug("Source was: {}".format(source))
         # extract metadata
         metadata = check_sp_output(
             [self.__ffmpeg, "-hide_banner"]
@@ -293,6 +294,7 @@ class Sourcer:
             + ["-i", source],
             force_retrieve_stderr=True,
         )
+        logger.debug("Metadata was: {}".format(metadata.decode("utf-8").strip()))
         # filter and return
         return metadata.decode("utf-8").strip()
 
