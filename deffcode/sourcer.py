@@ -155,7 +155,6 @@ class Sourcer:
                 self.__forcevalidatesource if self.__source_demuxer is None else True
             ),
         )
-        platform.system() == "Darwin" and logger.exception(self.__ffsp_output)
         # parse resolution and framerate
         video_rfparams = self.__extract_resolution_framerate(
             default_stream=default_stream_indexes[0]
@@ -197,6 +196,7 @@ class Sourcer:
             elif self.__default_audio_bitrate or self.__default_audio_samplerate:
                 self.__contains_audio = True
             else:
+                logger.exception("Extracted Metadata: {}".format(self.__ffsp_output))
                 raise IOError(
                     "Invalid source provided. No usable Audio/Video stream detected. Aborting!!!"
                 )
