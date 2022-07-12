@@ -48,13 +48,13 @@ logger.setLevel(logging.DEBUG)
 @pytest.mark.parametrize(
     "source, custom_ffmpeg, output",
     [
-        (return_testvideo_path(fmt="av"), True),
+        (return_testvideo_path(fmt="av"), return_static_ffmpeg(), True),
         (
             "https://raw.githubusercontent.com/abhiTronix/Imbakup/master/Images/starship.mkv",
             "",
             True,
         ),
-        ("unknown://invalid.com/", return_static_ffmpeg(), False),
+        ("unknown://invalid.com/", "", False),
         (return_testvideo_path(fmt="ao"), return_static_ffmpeg(), False),
         (
             return_generated_frames_path(return_static_ffmpeg()),
