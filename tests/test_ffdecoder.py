@@ -46,22 +46,24 @@ logger.setLevel(logging.DEBUG)
 
 
 @pytest.mark.parametrize(
-    "source, output",
+    "source, custom_ffmpeg, output",
     [
         (return_testvideo_path(fmt="av"), True),
         (
             "https://raw.githubusercontent.com/abhiTronix/Imbakup/master/Images/starship.mkv",
+            "",
             True,
         ),
-        ("unknown://invalid.com/", False),
-        (return_testvideo_path(fmt="ao"), False),
+        ("unknown://invalid.com/", return_static_ffmpeg(), False),
+        (return_testvideo_path(fmt="ao"), return_static_ffmpeg(), False),
         (
             return_generated_frames_path(return_static_ffmpeg()),
+            return_static_ffmpeg(),
             True,
         ),
     ],
 )
-def test_source_playback(source, output):
+def test_source_playback(source, custom_ffmpeg, output):
     """
     Paths Source Playback - Test playback of various source paths/urls supported by FFdecoder API
     """
@@ -74,7 +76,7 @@ def test_source_playback(source, output):
             instance = FFdecoder(
                 source,
                 frame_format="bgr24",
-                custom_ffmpeg=return_static_ffmpeg(),
+                custom_ffmpeg=custom_ffmpeg,
                 verbose=True,
             )
             # force unknown number of frames(like camera) {special case}
@@ -86,7 +88,7 @@ def test_source_playback(source, output):
             decoder = FFdecoder(
                 source,
                 frame_format="bgr24",
-                custom_ffmpeg=return_static_ffmpeg(),
+                custom_ffmpeg=custom_ffmpeg,
                 verbose=True,
             ).formulate()
 
