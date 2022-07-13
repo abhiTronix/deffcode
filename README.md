@@ -144,7 +144,7 @@ For more examples and in-depth usage guide, kindly refer our **[Basic Recipes ðŸ
 - [x] Add project Issue and PR templates. 
 - [x] Add related unit tests with `pytests`. 
 - [x] Automate stuff with Continuous Integration.
-- [ ] Add Devices and Screen Capture support. [:construction:WIP]
+- [x] Add Devices and Screen Capture support.
 - [ ] Add Multiple Source Inputs support.
 - [ ] Resolve High CPU usage issue with WriteGear API.
 - [ ] Add more parameters to Sourcer API's metadata.

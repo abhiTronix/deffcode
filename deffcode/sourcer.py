@@ -196,7 +196,6 @@ class Sourcer:
             elif self.__default_audio_bitrate or self.__default_audio_samplerate:
                 self.__contains_audio = True
             else:
-                logger.exception("Extracted Metadata: {}".format(self.__ffsp_output))
                 raise IOError(
                     "Invalid source provided. No usable Audio/Video stream detected. Aborting!!!"
                 )
@@ -286,7 +285,6 @@ class Sourcer:
             logger.error("`source` value is unusable or unsupported!")
             # discard the value otherwise
             raise ValueError("Input source is invalid. Aborting!")
-        logger.debug("Source was: {}".format(source))
         # extract metadata
         metadata = check_sp_output(
             [self.__ffmpeg, "-hide_banner"]
@@ -294,7 +292,6 @@ class Sourcer:
             + ["-i", source],
             force_retrieve_stderr=True,
         )
-        logger.debug("Metadata was: {}".format(metadata.decode("utf-8").strip()))
         # filter and return
         return metadata.decode("utf-8").strip()
 
