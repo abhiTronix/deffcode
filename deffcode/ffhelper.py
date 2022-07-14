@@ -494,5 +494,9 @@ def check_sp_output(*args, **kwargs):
         error = sp.CalledProcessError(retcode, cmd)
         error.output = output
         raise error
-    # return output
+    # raise error if no output
+    bool(output) or bool(stderr) or logger.error(
+        "FFmpeg Pipline failed to exact any metadata!"
+    )
+    # return output otherwise
     return output if not (retrieve_stderr) else stderr
