@@ -24,6 +24,8 @@ import cv2
 import json
 import pytest
 import tempfile
+import platform
+import numpy as np
 import logging
 from .essentials import (
     return_static_ffmpeg,
@@ -44,22 +46,24 @@ logger.setLevel(logging.DEBUG)
 
 
 @pytest.mark.parametrize(
-    "source, output",
+    "source, custom_ffmpeg, output",
     [
-        (return_testvideo_path(fmt="av"), True),
+        (return_testvideo_path(fmt="av"), return_static_ffmpeg(), True),
         (
             "https://raw.githubusercontent.com/abhiTronix/Imbakup/master/Images/starship.mkv",
+            "",
             True,
         ),
-        ("unknown://invalid.com/", False),
-        (return_testvideo_path(fmt="ao"), False),
+        ("unknown://invalid.com/", "", False),
+        (return_testvideo_path(fmt="ao"), return_static_ffmpeg(), False),
         (
             return_generated_frames_path(return_static_ffmpeg()),
+            return_static_ffmpeg(),
             True,
         ),
     ],
 )
-def test_source_playback(source, output):
+def test_source_playback(source, custom_ffmpeg, output):
     """
     Paths Source Playback - Test playback of various source paths/urls supported by FFdecoder API
     """
@@ -72,7 +76,7 @@ def test_source_playback(source, output):
             instance = FFdecoder(
                 source,
                 frame_format="bgr24",
-                custom_ffmpeg=return_static_ffmpeg(),
+                custom_ffmpeg=custom_ffmpeg,
                 verbose=True,
             )
             # force unknown number of frames(like camera) {special case}
@@ -84,7 +88,7 @@ def test_source_playback(source, output):
             decoder = FFdecoder(
                 source,
                 frame_format="bgr24",
-                custom_ffmpeg=return_static_ffmpeg(),
+                custom_ffmpeg=custom_ffmpeg,
                 verbose=True,
             ).formulate()
 
@@ -129,7 +133,7 @@ def test_frame_format(pixfmts):
             source,
             frame_format=pixfmts,
             custom_ffmpeg=return_static_ffmpeg(),
-            **extraparams
+            **extraparams,
         ).formulate()
 
         # grab RGB24(default) 3D frames from decoder
@@ -206,7 +210,7 @@ def test_seek_n_save(extraparams, pixfmts):
             frame_format=pixfmts,
             custom_ffmpeg=return_static_ffmpeg(),
             verbose=True,
-            **extraparams
+            **extraparams,
         ).formulate()
 
         # grab the RGB24(default) frame from the decoder
@@ -215,13 +219,21 @@ def test_seek_n_save(extraparams, pixfmts):
         # check if frame is None
         if not (frame is None) and pixfmts == "rgba":
             # Convert and save our output
-            filename = os.path.abspath("filename_rgba.jpeg")
+            filename = os.path.abspath(
+                os.path.join(
+                    *[tempfile.gettempdir(), "temp_write", "filename_rgba.jpeg"]
+                )
+            )
             im = Image.fromarray(frame)
             im = im.convert("RGB")
             im.save(filename)
         elif not (frame is None) and pixfmts == "gray":
             # Convert and save our output
-            filename = os.path.abspath("filename_gray.png")
+            filename = os.path.abspath(
+                os.path.join(
+                    *[tempfile.gettempdir(), "temp_write", "filename_gray.png"]
+                )
+            )
             cv2.imwrite(filename, frame)
         else:
             raise AssertionError("Test Failed!")
@@ -302,3 +314,32 @@ def test_FFdecoder_params(source, extraparams, result):
         # terminate the decoder
         not (decoder is None) and decoder.terminate()
         not (writer is None) and writer.release() and remove_file_safe(f_name)
+
+
+@pytest.mark.skipif(
+    (platform.system() != "Linux"),
+    reason="This test not supported yet on platforms other than Linux!",
+)
+def test_camera_capture():
+    """
+    Tests FFdecoder's realtime camera playback capabilities
+    """
+    decoder = None
+    try:
+        # initialize and formulate the decode with suitable source
+        decoder = FFdecoder(
+            "/dev/video2", source_demuxer="v4l2", frame_format="bgr24"
+        ).formulate()
+        # capture 10 camera frames
+        for i in range(10):
+            # grab the bgr24 frame from the decoder
+            frame_recv = next(decoder.generateFrame(), None)
+            # check if frame is None
+            if frame_recv is None:
+                raise AssertionError("Test Failed!")
+    except Exception as e:
+        # catch errors
+        pytest.fail(str(e))
+    finally:
+        # terminate
+        not (decoder is None) and decoder.terminate()

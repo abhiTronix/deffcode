@@ -21,6 +21,88 @@ limitations under the License.
 # Release Notes
 
 
+## v0.2.1 (2022-07-14) :material-new-box:
+
+??? tip "New Features"
+    - [x] **Sourcer API:**
+        * Implemented support for extracting metadata from live input devices/sources.
+        * Added new `source_demuxer` and `forced_validate` parameters to `validate_source` internal method.
+        * Implemented logic to validate `source_demuxer` value against FFmpeg supported demuxers.
+        * Rearranged metadata dict.
+        * Updated Code comments.
+    - [x] **FFdecoder API:** 
+        * Implemented functionality to supported live devices by allowing device path and respective demuxer into pipeline.
+        * Included `-f` FFmpeg parameter into pipeline to specify source device demuxer.
+        * Added special case for discarding `-framerate` value with Nonetype.
+    - [x] **CI:**
+        * Added new unittest `test_camera_capture()` to test support for live Virtual Camera devices.
+        * Added new `v4l2loopback-dkms`, `v4l2loopback-utils` and kernel related APT dependencies. 
+    - [x] **Bash Script:**
+        * Added new FFmpeg command to extract image datasets from given video on Linux envs.
+        * Created live Virtual Camera devices through `v4l2loopback` library on Github Actions Linux envs. 
+            * Added `v4l2loopback` modprobe command to setup Virtual Camera named `VCamera` dynamically at `/dev/video2`.
+            * Added `v4l2-ctl --list-devices` command for debugging.
+            * Implemented FFmpeg command through `nohup`(no hangup) to feed video loop input to Virtual Camera in the background.
+
+??? success "Updates/Improvements"  
+    - [x] Sourcer API:
+        * Only either `source_demuxer` or `source_extension` attribute can be present in metadata.
+        * Enforced `forced_validate` for live input devices/sources in `validate_source` internal method.
+    - [x] FFdecoder API:
+        * Rearranged FFmpeg parameters in pipeline.
+        * Removed redundant code.
+        * Updated Code comments.
+    - [x] FFhelper API:
+        * Logged error message on metadata extraction failure.
+    - [x] CI:
+        * Restricted `test_camera_capture()` unittest to Linux envs only.
+        * Removed `return_generated_frames_path()` method support for Linux envs. 
+        * Pinned jinja2 `3.1.0` or above breaking mkdocs. 
+            * `jinja2>=3.1.0` breaks mkdocs (mkdocs/mkdocs#2799), therefore pinned jinja2 version to `<3.1.0`.
+    - [x] Bash Script:
+          * Updated to latest FFmpeg Static Binaries links. 
+              * Updated download links to abhiTronix/ffmpeg-static-builds * hosting latest available versions.
+              * Updated date/version tag to `12-07-2022`.
+              * Removed depreciated binaries download links and code.
+    - [x] Setup:
+          * Bumped version to 0.2.1.
+    - [x] Docs:
+          * Updated Changelog.md
+          * Updated Roadmap in README.md
+
+??? danger "Breaking Updates/Changes"
+    - [x] :skull_crossbones: **Implement support for live input devices/sources.**
+        * `source` parameter now accepts device name or path.
+        * Added `source_demuxer` parameter to specify demuxer for live input devices/sources.
+        * Implemented Automated inserting of `-f` FFmpeg parameter whenever `source_demuxer` is specified by the user.
+
+??? bug "Bug-fixes"
+    - [x] Sourcer API:
+        * Fixed Nonetype value bug in `source_demuxer` assertion logic.
+        * Fixed typos in parameter names.
+        * Added missing import.
+    - [x] FFhelper API:
+        * Logged error message on metadata extraction failure.
+        * Fixed bug with `get_supported_demuxers` not detecting name patterns with commas.
+        * Removed redundant logging.
+    - [x] CI:
+        * Fixed critical permission bug causing  `v4l2loopback` to fail on Github Actions Linux envs. 
+            * Elevated privileges to `root` by adding `sudo` to all commands(including bash scripts and python commands).
+            * Updated vidgear dependency to pip install from its git `testing` branch with recent bug fixes.
+            * Replaced relative paths with absolute paths in unit tests.
+        * Fixed WriteGear API unable to write frames due to permission errors.
+        * Fixed `test_source_playback()` test failing on Darwin envs with OLD FFmpeg binaries.
+            * Removed `custom_ffmpeg` value for Darwin envs.
+        * Fixed various naming typos.
+        * Fixed missing APT dependencies. 
+
+??? question "Pull Requests"
+    * PR #17
+
+&nbsp; 
+
+&nbsp; 
+
 ## v0.2.0 (2022-03-21)
 
 ??? tip "New Features"
@@ -190,20 +272,19 @@ limitations under the License.
         - 🔧 Imported prepare_dataset.sh from vidgear for downloading pytest datasets to `temp` dir.
 
 ??? success "Updates/Improvements" 
-    - [x] API:
-        - FFdecoder API:
-            - Removed redundant forcing `-r` FFmpeg parameter for image sequences as source.
-            - Removed redundant checks on `-vf` FFmpeg parameter.
-            - FFmpeg parameter `-s` will be discarded in favor of `-custom_resolution` attribute.
-            - Replaced `-constant_framerate` with FFmpeg `-framerate` attribute.
-            - Replaced `-custom_source_params` with correct `-custom_sourcer_params` attribute.
-            - Renamed `operational_mode` metadata parameter to `ffdecoder_operational_mode`.
-        - Sourcer API:
-            - Converted all Sourcer APIs public available variables into private ones for stability.
-              * All Sourcer's publicly accessed variable metadata values in FFdecoder, therefore replaced with dictionary counterparts.
-            - Moved FFmpeg path validation and handling to Sourcer from FFdecoder API.
-              * Moved `-ffmpeg_download_path` dictionary attribute to Sourcer API's `sourcer_params` parameter.
-              * Moved dependencies and related functions.
+    - [x] FFdecoder API:
+        - Removed redundant forcing `-r` FFmpeg parameter for image sequences as source.
+        - Removed redundant checks on `-vf` FFmpeg parameter.
+        - FFmpeg parameter `-s` will be discarded in favor of `-custom_resolution` attribute.
+        - Replaced `-constant_framerate` with FFmpeg `-framerate` attribute.
+        - Replaced `-custom_source_params` with correct `-custom_sourcer_params` attribute.
+        - Renamed `operational_mode` metadata parameter to `ffdecoder_operational_mode`.
+    - [x] Sourcer API:
+        - Converted all Sourcer APIs public available variables into private ones for stability.
+          * All Sourcer's publicly accessed variable metadata values in FFdecoder, therefore replaced with dictionary counterparts.
+        - Moved FFmpeg path validation and handling to Sourcer from FFdecoder API.
+          * Moved `-ffmpeg_download_path` dictionary attribute to Sourcer API's `sourcer_params` parameter.
+          * Moved dependencies and related functions.
     - [x] CI:
         - Excluded `dev` branch from triggering workflow on any environment. 
             - Updated yaml files to exclude beta `dev` branch from  triggering workflow on any environment.
@@ -256,11 +337,11 @@ limitations under the License.
         - Added useful comments for convenience.
 
 ??? danger "Breaking Updates/Changes"
-    - [ ] Sourcer API will now raises Assertion error if `probe_stream()` not called before calling `retrieve_metadata()`.
-    - [ ] Only `-framerate` values greater than `0.0` are now valid.
-    - [ ] Renamed `decode_stream` to `probe_stream` in Sourcer API.
-    - [ ] Any of _video bitrate_ or _video framerate_ are sufficient to validate if source contains valid video stream(s).
-    - [ ] Any of _audio bitrate_ or _audio samplerate_ are sufficient to validate if source contains valid audio stream(s).
+    - [x] :skull_crossbones: Sourcer API will now raises Assertion error if `probe_stream()` not called before calling `retrieve_metadata()`.
+    - [x] :skull_crossbones: Only `-framerate` values greater than `0.0` are now valid.
+    - [x] :skull_crossbones: Renamed `decode_stream` to `probe_stream` in Sourcer API.
+    - [x] :skull_crossbones: Any of _video bitrate_ or _video framerate_ are sufficient to validate if source contains valid video stream(s).
+    - [x] :skull_crossbones: Any of _audio bitrate_ or _audio samplerate_ are sufficient to validate if source contains valid audio stream(s).
 
 ??? bug "Bug-fixes"
     - [x] APIs:
@@ -330,12 +411,12 @@ limitations under the License.
         * Added `.gitignore`
 
 ??? success "Updates/Improvements"  
-    - [x] **Maintenance:**
+    - [x] Maintenance:
         * Bumped version to `0.1.0`
         * Updated LICENSE notice to add vidgear code usage notice.
 
 ??? danger "Breaking Updates/Changes"
-    - [ ] **Fixed support for Python-3.7 and above legacies only.**
+    - [x] :skull_crossbones: **Fixed support for Python-3.7 and above legacies only.**
 
 ??? bug "Bug-fixes"
     - [x] Docs:

@@ -31,7 +31,7 @@ mkdir -p "$TMPFOLDER"/Downloads/Test_videos
 MACHINE_BIT=$(uname -m)
 
 #Defining alternate ffmpeg static binaries date/version
-ALTBINARIES_DATE=02-12-19
+ALTBINARIES_DATE="12-07-2022"
 
 # Acknowledging machine OS type
 case $(uname | tr '[:upper:]' '[:lower:]') in
@@ -55,37 +55,23 @@ cd "$TMPFOLDER"/Downloads/FFmpeg_static
 if [ $OS_NAME = "linux" ]; then
 
   echo "Downloading Linux Static FFmpeg Binaries..."
-  if [ "$MACHINE_BIT" = "x86_64" ]; then
-    curl -L https://github.com/abhiTronix/ffmpeg-static-builds/raw/master/$ALTBINARIES_DATE/ffmpeg-release-amd64-static.tar.xz -o ffmpeg-release-amd64-static.tar.xz
-    tar -xJf ffmpeg-release-amd64-static.tar.xz
-    rm *.tar.*
-    mv ffmpeg* ffmpeg
-  else
-    curl -L https://github.com/abhiTronix/ffmpeg-static-builds/raw/master/$ALTBINARIES_DATE/ffmpeg-release-i686-static.tar.xz -o ffmpeg-release-i686-static.tar.xz
-    tar -xJf ffmpeg-release-i686-static.tar.xz
-    rm *.tar.*
-    mv ffmpeg* ffmpeg
-  fi
+  curl -LO https://github.com/abhiTronix/ffmpeg-static-builds/raw/master/$ALTBINARIES_DATE/linux/ffmpeg-git-amd64-static.tar.xz
+  tar -xJf ffmpeg-git-amd64-static.tar.xz
+  rm *.tar.*
+  mv ffmpeg* ffmpeg
 
 elif [ $OS_NAME = "windows" ]; then
 
   echo "Downloading Windows Static FFmpeg Binaries..."
-  if [ "$MACHINE_BIT" = "x86_64" ]; then
-    curl -L https://github.com/abhiTronix/ffmpeg-static-builds/raw/master/$ALTBINARIES_DATE/ffmpeg-latest-win64-static.zip -o ffmpeg-latest-win64-static.zip
-    unzip -qq ffmpeg-latest-win64-static.zip
-    rm ffmpeg-latest-win64-static.zip
-    mv ffmpeg-latest-win64-static ffmpeg
-  else
-    curl -L https://github.com/abhiTronix/ffmpeg-static-builds/raw/master/$ALTBINARIES_DATE/ffmpeg-latest-win32-static.zip -o ffmpeg-latest-win32-static.zip
-    unzip -qq ffmpeg-latest-win32-static.zip
-    rm ffmpeg-latest-win32-static.zip
-    mv ffmpeg-latest-win32-static ffmpeg
-  fi
+  curl -LO https://github.com/abhiTronix/ffmpeg-static-builds/raw/master/$ALTBINARIES_DATE/windows/ffmpeg-latest-win64-static.zip
+  unzip -qq ffmpeg-latest-win64-static.zip
+  rm ffmpeg-latest-win64-static.zip
+  mv ffmpeg-latest-win64-static ffmpeg
 
 else
 
   echo "Downloading MacOS64 Static FFmpeg Binary..."
-  curl -LO https://github.com/abhiTronix/ffmpeg-static-builds/raw/master/$ALTBINARIES_DATE/ffmpeg-latest-macos64-static.zip
+  curl -LO https://github.com/abhiTronix/ffmpeg-static-builds/raw/master/$ALTBINARIES_DATE/macOS/ffmpeg-latest-macos64-static.zip
   unzip -qq ffmpeg-latest-macos64-static.zip
   rm ffmpeg-latest-macos64-static.zip
   mv ffmpeg-latest-macos64-static ffmpeg
@@ -104,3 +90,13 @@ curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfis
 curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfish-90-mbps-hd-hevc-10bit.mkv -o 90_mbps_hd_hevc_10bit.mkv
 curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfish-120-mbps-4k-uhd-h264.mkv -o 120_mbps_4k_uhd_h264.mkv
 echo "Done Downloading Test-Data!"
+
+if [ $OS_NAME = "linux" ]; then
+  echo "Preparing images from video"
+  ffmpeg -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 "$TMPFOLDER"/temp_images/out%d.png
+  echo "Setting up ffmpeg v4l2loopback"
+  sudo modprobe v4l2loopback devices=1 video_nr=2 exclusive_caps=1 card_label='VCamera'
+  sudo v4l2-ctl --list-devices
+  nohup sudo ffmpeg -hide_banner -re -stream_loop -1 -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 -f v4l2 -pix_fmt yuv420p /dev/video2 &
+  echo "Done"
+fi

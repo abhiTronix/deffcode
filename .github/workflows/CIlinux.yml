@@ -42,28 +42,30 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install API Dependencies
+      - name: Install APT Dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -qq unzip curl -y
-          sudo apt-get install -qq dos2unix ffmpeg -y
+          sudo apt-get install -qq dos2unix git -y
+          sudo apt-get install ffmpeg v4l2loopback-dkms v4l2loopback-utils linux-modules-extra-$(uname -r) -y
       - name: Prepare Bash scripts
         run: |
           dos2unix scripts/bash/prepare_dataset.sh
-          chmod +x scripts/bash/prepare_dataset.sh
+          sudo chmod +x scripts/bash/prepare_dataset.sh
       - name: Install Pip Dependencies
         run: |
-          pip install -U pip wheel numpy
-          pip install -U .
-          pip install -U vidgear[core] opencv-python-headless
-          pip install -U flake8 six codecov pytest pytest-cov
+          sudo pip install -U pip wheel numpy 
+          sudo pip install -U .
+          sudo pip install git+https://github.com/abhiTronix/vidgear@testing#egg=vidgear[core]
+          sudo pip install -U opencv-python-headless
+          sudo pip install -U flake8 six codecov pytest pytest-cov
         if: success()
       - name: Run prepare_dataset Bash script
         run: bash scripts/bash/prepare_dataset.sh
         shell: bash
       - name: Run pytest and flake8
         run: |
-          timeout 1200 pytest --verbose --cov=deffcode --cov-report=xml  --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "EXIT_CODE=$code" >>$GITHUB_ENV; fi
+          timeout 1200 sudo python -m pytest --verbose --cov=deffcode --cov-report=xml  --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "EXIT_CODE=$code" >>$GITHUB_ENV; fi
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         if: success()
       - name: Upload coverage to Codecov

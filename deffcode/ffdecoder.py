@@ -44,7 +44,13 @@ class FFdecoder:
     """ """
 
     def __init__(
-        self, source, frame_format=None, custom_ffmpeg="", verbose=False, **extraparams
+        self,
+        source,
+        source_demuxer=None,
+        frame_format=None,
+        custom_ffmpeg="",
+        verbose=False,
+        **extraparams
     ):
         """
         This constructor method initializes the object state and attributes of the FFdecoder.
@@ -74,9 +80,6 @@ class FFdecoder:
         # handle process to be frames written
         self.__process = None
 
-        # handle valid FFmpeg assets location
-        self.__ffmpeg = ""
-
         # handle exclusive metadata
         self.__ff_pixfmt_metadata = None  # metadata
         self.__raw_frame_num = None  # raw-frame number
@@ -101,7 +104,7 @@ class FFdecoder:
         # cleans and reformat user-defined parameters
         self.__extra_params = {
             str(k).strip(): str(v).strip()
-            if not isinstance(v, (dict, list, int, float))
+            if not (v is None) and not isinstance(v, (dict, list, int, float))
             else v
             for k, v in extraparams.items()
         }
@@ -132,15 +135,16 @@ class FFdecoder:
         self.__source_metadata = (
             Sourcer(
                 source=source,
+                source_demuxer=source_demuxer,
                 verbose=verbose,
-                ffmpeg_path=self.__ffmpeg,
+                custom_ffmpeg=custom_ffmpeg if isinstance(custom_ffmpeg, str) else "",
                 **sourcer_params
             )
             .probe_stream(default_stream_indexes=default_stream_indexes)
             .retrieve_metadata()
         )
 
-        # get valid ffmpeg path
+        # handle valid FFmpeg assets location
         self.__ffmpeg = self.__source_metadata["ffmpeg_binary_path"]
 
         # handle pass-through audio mode works in conjunction with WriteGear [WIP]
@@ -182,15 +186,20 @@ class FFdecoder:
 
         # handle user-defined framerate
         self.__inputframerate = self.__extra_params.pop("-framerate", 0.0)
-        if (
-            isinstance(self.__inputframerate, (float, int))
-            and self.__inputframerate > 0.0
-        ):
-            # must be float
-            self.__inputframerate = float(self.__inputframerate)
+        if isinstance(self.__inputframerate, (float, int)):
+            self.__inputframerate = (
+                float(self.__inputframerate) if self.__inputframerate > 0 else 0.0
+            )
+        elif self.__inputframerate is None:
+            # special case for discarding framerate value
+            pass
         else:
-            # reset improper values
-            self.__inputframerate = 0.0
+            # warn if wrong type
+            logger.warning(
+                "Discarding `-framerate` value of wrong type `{}`!".format(
+                    type(self.__inputframerate)
+                )
+            )
 
         # FFmpeg parameter `-s` is unsupported
         if not (self.__extra_params.pop("-s", None) is None):
@@ -533,8 +542,12 @@ class FFdecoder:
             + self.__ffmpeg_prefixes
             + input_parameters
             + self.__ffmpeg_postfixes
-            + ["-i"]
-            + [self.__source_metadata["source"]]
+            + (
+                ["-f", self.__source_metadata["source_demuxer"]]
+                if ("source_demuxer" in self.__source_metadata.keys())
+                else []
+            )
+            + ["-i", self.__source_metadata["source"]]
             + output_parameters
             + ["-f", "rawvideo", "-"]
         )

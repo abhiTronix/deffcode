@@ -347,7 +347,7 @@ def get_supported_demuxers(path):
     # find all outputs
     outputs = finder.findall("\n".join(supported_demuxers))
     # return output findings
-    return [o.strip() for o in outputs]
+    return [o.strip() if not ("," in o) else o.split(",")[-1].strip() for o in outputs]
 
 
 def validate_imgseqdir(source, extension="jpg", verbose=False):
@@ -474,10 +474,8 @@ def check_sp_output(*args, **kwargs):
     if platform.system() == "Windows":
         # see comment https://bugs.python.org/msg370334
         sp._cleanup = lambda: None
-
     # handle additional params
     retrieve_stderr = kwargs.pop("force_retrieve_stderr", False)
-
     # execute command in subprocess
     process = sp.Popen(
         stdout=sp.PIPE,
@@ -485,9 +483,9 @@ def check_sp_output(*args, **kwargs):
         *args,
         **kwargs,
     )
+    # communicate and poll process
     output, stderr = process.communicate()
     retcode = process.poll()
-
     # handle return code
     if retcode and not (retrieve_stderr):
         cmd = kwargs.get("args")
@@ -496,5 +494,9 @@ def check_sp_output(*args, **kwargs):
         error = sp.CalledProcessError(retcode, cmd)
         error.output = output
         raise error
-
+    # raise error if no output
+    bool(output) or bool(stderr) or logger.error(
+        "FFmpeg Pipline failed to exact any metadata!"
+    )
+    # return output otherwise
     return output if not (retrieve_stderr) else stderr
