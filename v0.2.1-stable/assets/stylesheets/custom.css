@@ -1,0 +1,235 @@
+/* 
+===============================================
+DeFFcode library source-code is deployed under the Apache 2.0 License:
+
+Copyright (c) 2021 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+===============================================
+*/
+
+/* Handles New admonition*/
+:root {
+	--md-admonition-icon--new: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23000000' d='M13 2V3H12V9H11V10H9V11H8V12H7V13H5V12H4V11H3V9H2V15H3V16H4V17H5V18H6V22H8V21H7V20H8V19H9V18H10V19H11V22H13V21H12V17H13V16H14V15H15V12H16V13H17V11H15V9H20V8H17V7H22V3H21V2M14 3H15V4H14Z' /%3E%3C/svg%3E");
+	--md-admonition-icon--alert: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23000000' d='M6,6.9L3.87,4.78L5.28,3.37L7.4,5.5L6,6.9M13,1V4H11V1H13M20.13,4.78L18,6.9L16.6,5.5L18.72,3.37L20.13,4.78M4.5,10.5V12.5H1.5V10.5H4.5M19.5,10.5H22.5V12.5H19.5V10.5M6,20H18A2,2 0 0,1 20,22H4A2,2 0 0,1 6,20M12,5A6,6 0 0,1 18,11V19H6V11A6,6 0 0,1 12,5Z' /%3E%3C/svg%3E");
+}
+
+.md-typeset .admonition.new,
+.md-typeset details.new {
+	border-color: rgb(57,255,20);
+}
+
+.md-typeset .admonition.alert,
+.md-typeset details.alert {
+	border-color: rgb(255, 0, 255);
+}
+
+.md-typeset .new > .admonition-title,
+.md-typeset .new > summary {
+	background-color: rgb(57,255,20,0.1);
+	border-color: rgb(57,255,20);
+}
+
+.md-typeset .new > .admonition-title::before,
+.md-typeset .new > summary::before {
+	background-color: rgb(57,255,20);
+	-webkit-mask-image: var(--md-admonition-icon--new);
+	mask-image: var(--md-admonition-icon--new);
+}
+
+.md-typeset .alert > .admonition-title,
+.md-typeset .alert > summary {
+	background-color: rgba(255, 0, 255, 0.1);
+	border-color: rgb(255, 0, 255);
+}
+
+.md-typeset .alert > .admonition-title::before,
+.md-typeset .alert > summary::before {
+	background-color: rgb(255, 0, 255);
+	-webkit-mask-image: var(--md-admonition-icon--alert);
+	mask-image: var(--md-admonition-icon--alert);
+}
+
+
+/* Handles Gitter Sidecard UI */
+.gitter-open-chat-button {
+    background-color: var(--md-primary-fg-color) !important;
+    font-family: inherit !important;
+    font-size: 12px;
+    -webkit-filter: none !important;
+    filter: none !important;
+}
+
+
+/* Handles DeFFcode UI */
+.center-small {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 90%;
+}
+
+.md-tabs__link--active {
+	font-weight: bold;
+}
+
+.md-nav__title {
+	font-size: 1rem !important;
+}
+
+.md-version__current {
+	text-transform: uppercase;
+	font-weight: bolder;
+}
+
+.md-typeset .task-list-control .task-list-indicator::before {
+	background-color: #ff0000;
+	-webkit-mask-image: var(--md-admonition-icon--failure);
+	mask-image: var(--md-admonition-icon--failure);
+}
+
+.doc-heading {
+	padding-top: 50px;
+}
+
+
+/* Custom Blockquotes */
+blockquote {
+	padding: 0.5em 10px;
+	quotes: "\201C""\201D""\2018""\2019";
+}
+
+blockquote:before {
+	color: #ccc;
+	content: open-quote;
+	font-size: 4em;
+	line-height: 0.1em;
+	margin-right: 0.25em;
+	vertical-align: -0.4em;
+}
+
+blockquote:after {
+	visibility: hidden;
+	content: close-quote;
+}
+
+blockquote p {
+	display: inline;
+}
+
+
+/* Footer Sponsorship Block */
+footer.sponsorship {
+	text-align: center;
+}
+
+footer.sponsorship hr {
+	display: inline-block;
+	width: 2rem;
+	margin: 0.875rem;
+	vertical-align: middle;
+	border-bottom: 2px solid var(--md-default-fg-color--lighter);
+}
+
+footer.sponsorship:hover hr {
+	border-color: var(--md-accent-fg-color);
+}
+
+footer.sponsorship:not(:hover) .twemoji.heart-throb-hover svg {
+	color: var(--md-default-fg-color--lighter) !important;
+}
+/* Heart Animation */
+@keyframes heart {
+  0%, 40%, 80%, 100% {
+    transform: scale(1);
+  }
+  20%, 60% {
+    transform: scale(1.15);
+  }
+}
+.heart {
+  animation: heart 1000ms infinite;
+}
+
+/* Custom Button UI */
+.btn {
+	z-index: 1;
+	overflow: hidden;
+	background: transparent;
+	position: relative;
+	padding: 8px 50px;
+	border-radius: 30px;
+	cursor: pointer;
+	font-size: 1em;
+	letter-spacing: 2px;
+	transition: 0.2s ease;
+	font-weight: bold;
+	margin: 5px 0px;
+}
+
+.btn.bcolor {
+	border: 4px solid var(--md-typeset-a-color);
+	color: var(--blue);
+}
+
+.btn.bcolor:before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 0%;
+	height: 100%;
+	background: var(--md-typeset-a-color);
+	z-index: -1;
+	transition: 0.2s ease;
+}
+
+.btn.bcolor:hover {
+	color: var(--white);
+	background: var(--md-typeset-a-color);
+	transition: 0.2s ease;
+}
+
+.btn.bcolor:hover:before {
+	width: 100%;
+}
+
+/* Dark Theme Changes */
+body[data-md-color-scheme="slate"] img[class="shadow"]{
+   -webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+  	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+}
+
+body[data-md-color-scheme="slate"] div[class="btn-container"]{
+   -webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+  	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+}
+
+body[data-md-color-scheme="slate"] div[class="highlight"]{
+   -webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+  	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+}
+
+body[data-md-color-scheme="slate"] div[class^="admonition"]{
+   -webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+  	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+}
+
+body[data-md-color-scheme="slate"] img[class="shadow2"]{
+   -webkit-filter: drop-shadow(1px 1px 0 black);
+  	filter: drop-shadow(1px 1px 0 black);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-hue: 285; 
+}
