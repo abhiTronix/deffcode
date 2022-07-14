@@ -41,7 +41,7 @@ setup(
     name="deffcode",
     packages=["deffcode"],
     version=pkg_version["__version__"],
-    description="High-performance Real-time Video frames Generator for generating blazingly fast video frames in python.",
+    description="High-performance Real-time FFmpeg based Video-Decoder in python.",
     license="Apache License 2.0",
     author="Abhishek Thakur",
     install_requires=[
@@ -57,8 +57,10 @@ setup(
     url="https://abhitronix.github.io/deffcode",
     keywords=[
         "FFmpeg",
+        "Decoder",
         "Video Processing",
         "Computer Vision",
+        "Video Decoding",
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
