@@ -20,7 +20,6 @@ limitations under the License.
 
 # import the necessary packages
 import logging
-import json
 import numpy as np
 import subprocess as sp
 from collections import OrderedDict
@@ -56,11 +55,12 @@ class FFdecoder:
         This constructor method initializes the object state and attributes of the FFdecoder.
 
         Parameters:
-            source (str): defines the default input source.
-            frame_format (str): sets pixel format(-pix_fmt) of the decoded frames.
+            source (str): defines the input(`-i`) source filename/URL/device-name/device-path.
+            source_demuxer (str): specifies the demuxer(`-f`) for the input source.
+            frame_format (str): sets pixel format(`-pix_fmt`) of the decoded frames.
             custom_ffmpeg (str): assigns the location of custom path/directory for custom FFmpeg executable.
             verbose (bool): enables/disables verbose.
-            extraparams (dict): provides the flexibility to control supported internal parameters and FFmpeg properties.
+            extraparams (dict): provides the flexibility to control supported internal and FFmpeg parameters.
         """
 
         # enable verbose if specified
@@ -501,10 +501,14 @@ class FFdecoder:
     @property
     def metadata(self):
         """
-        A property object that dumps Source metadata dict as JSON for pretty printing. As well as can be used to update source metadata with user-defined dictionary.
+        A property object that dumps Source metadata dict as JSON string for pretty printing. 
 
-        **Returns:** A [`json.dumps`](https://docs.python.org/3/library/json.html#json.dumps) output.
+        **Returns:** Metadata as JSON string.
         """
+        # import dependency
+        import json
+
+        # reurn metadata as JSON string
         return json.dumps(self.__source_metadata, indent=2)
 
     @metadata.setter

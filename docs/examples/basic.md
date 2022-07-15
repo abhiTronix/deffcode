@@ -247,28 +247,28 @@ In following example we're using OpenCV's `imshow()` to display real-time BGR fr
 &nbsp;
 
 
-## Generate Source Video Metadata
+## Display Source Video Metadata
 
-FFdecoder using its [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object _(as Pretty JSON(`json.dump`))_, and Sourcer  using its [`retrieve_metadata()`](../../reference/sourcer/#deffcode.sourcer.Sourcer.retrieve_metadata) method _(as Python dictionary)_, both DeFFcode APIs can be used for **Source Metadata Extraction** that extracts metadata out of given media file.  
+DeFFcode's Sourcer API can easily parse **Metadata** from multimedia streams available in the given Input Source, and returns it as either Human-readable _(JSON string)_ or Machine-readable _(Dictionary object)_ type with its [`retrieve_metadata()`](../../reference/sourcer/#deffcode.sourcer.Sourcer.retrieve_metadata) method. 
 
-In this example we will generate all metadata parameters available within `foo.mp4` media file using both APIs.
+In this example we will parse all metadata information available within `foo.mp4` media file and print them in both types.
 
-=== "Using FFdecoder API"
+=== "As JSON string"
+
+    ??? tip "Extracting and Updating Metadata in FFdecoder API"
+        You can also use [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object in FFdecoder API to return metadata _(only as JSON string)_, and update metadata manually as desired. **More information can be found in [this usage example ➶]()**.
 
     ```python
     # import the necessary packages
-    from deffcode import FFdecoder
+    from deffcode import Sourcer
 
     # initialize and formulate the decoder using suitable source
-    decoder = FFdecoder("foo.mp4").formulate()
+    sourcer = Sourcer("foo.mp4").probe_stream()
 
-    # print metadata as `json.dump`
-    print(decoder.metadata)
-
-    # terminate the decoder
-    decoder.terminate()
+    # print metadata as `json`
+    print(sourcer.retrieve_metadata(pretty_json=True))
     ```
-    ???+ quote "After running above python code, the resultant Terminal Output will look something as following on :fontawesome-brands-windows:Windows machine:"
+    ???+ abstract "After running above python code, the resultant Terminal Output will look something as following on :fontawesome-brands-windows:Windows machine:"
         ```json
         {
           "ffmpeg_binary_path": "C:\\Users\\foo\\AppData\\Local\\Temp\\ffmpeg-static-win64-gpl/bin/ffmpeg.exe",
@@ -289,11 +289,10 @@ In this example we will generate all metadata parameters available within `foo.m
           "source_has_video": true,
           "source_has_audio": true,
           "source_has_image_sequence": false,
-          "ffdecoder_operational_mode": "Video-Only"
         }
         ```
 
-=== "Using Sourcer API"
+=== "As Dictionary object"
 
     ```python
     # import the necessary packages
@@ -306,7 +305,7 @@ In this example we will generate all metadata parameters available within `foo.m
     print(sourcer.retrieve_metadata())
     ```
     
-    ???+ quote "After running above python code, the resultant Terminal Output will look something as following on :fontawesome-brands-windows:Windows machine:"
+    ???+ abstract "After running above python code, the resultant Terminal Output will look something as following on :fontawesome-brands-windows:Windows machine:"
         ```py
         {'ffmpeg_binary_path': 'C:\\Users\\foo\\AppData\\Local\\Temp\\ffmpeg-static-win64-gpl/bin/ffmpeg.exe', 'source': 'foo.mp4', 'source_extension': '.mp4', 'source_video_resolution': [1280, 720], 'source_video_framerate': 25.0, 'source_video_pixfmt': 'yuv420p', 'source_video_decoder': 'h264', 'source_duration_sec': 5.31, 'approx_video_nframes': 133, 'source_video_bitrate': '1205k', 'source_audio_bitrate': '384k', 'source_audio_samplerate': '48000 Hz', 'source_has_video': True, 'source_has_audio': True, 'source_has_image_sequence': False}
     

@@ -19,7 +19,11 @@ limitations under the License.
 """
 
 # import required libraries
-import re, logging, os, platform
+import re
+import os
+import json
+import logging
+import platform
 import numpy as np
 
 # import utils packages
@@ -40,7 +44,28 @@ logger.setLevel(logging.DEBUG)
 
 
 class Sourcer:
-    """ """
+    """
+    DeFFcode's Sourcer API acts as **Source Probing Utility** that attempts to open the given Input Source inside a synchronous ==FFmpeg 
+    [`subprocess`](https://docs.python.org/3/library/subprocess.html) pipe==, and parses/probes the real-time standard output _(stdout)_ 
+    to identify all the properties, formats, and types of each media stream contained in it.
+
+    Sourcer API primarily act as a **backend for [FFdecoder API](../../reference/ffdecoder)** for gathering, processing and validating all multimedia
+    streams available in the given Input Source. Sourcer shares this information with FFdecoder API which helps in the formatting of its default FFmpeg 
+    pipeline parameters for real-time video-frames generation. 
+
+    Sourcer is designed as a standalone **Metadata Extraction API** for easily parsing information from multimedia streams available in given
+    Input Source, and returns it in either Human-readable _(JSON string)_ or Machine-readable _(Dictionary object)_ type with its
+    [`retrieve_metadata()`](#deffcode.sourcer.Sourcer.retrieve_metadata) method.
+
+    !!! info "All parameter available with Sourcer API(On :fontawesome-brands-windows:Windows) are discussed [here ➶](../../examples/basic/#display-source-video-metadata)."
+
+    Furthermore, `sourcer_params` dictionary parameter in Sourcer API can be used to define almost all the parameters supported by Installed FFmpeg or for altering internal
+    parameters of Sourcer API.
+
+    !!! example "For usage examples, kindly refer our **[Basic Recipes :pie:](../../examples/basic)** and **[Advanced Recipes :microscope:](../../examples/advanced)**"
+
+    !!! info "Sourcer API parameters are explained [here ➶](params/)"
+    """
 
     def __init__(
         self,
@@ -54,10 +79,11 @@ class Sourcer:
         This constructor method initializes the object state and attributes of the Sourcer.
 
         Parameters:
-            source (str): defines the default input source.
-            verbose (bool): enables/disables verbose.
+            source (str): defines the input(`-i`) source filename/URL/device-name/device-path.
+            source_demuxer (str): specifies the demuxer(`-f`) for the input source.
             custom_ffmpeg (str): assigns the location of custom path/directory for custom FFmpeg executable.
-            sourcer_params (dict): provides the flexibility to control supported internal Sourcer parameters.
+            verbose (bool): enables/disables verbose.
+            sourcer_params (dict): provides the flexibility to control supported internal and FFmpeg parameters.
         """
         # checks if machine in-use is running windows os or not
         self.__os_windows = True if os.name == "nt" else False
@@ -135,10 +161,10 @@ class Sourcer:
 
     def probe_stream(self, default_stream_indexes=(0, 0)):
         """
-        Parses Source's FFmpeg Output and populates metadata in private class variables
+        Parses/Probes FFmpeg Pipe Output for given input source and populates information in private class variables.
 
         Parameters:
-            default_stream_indexes (list, tuple): selects specific video and audio stream index in case of multiple ones. Value can be of format: (int,int). For example (0,1) is ("0th video stream", "1st audio stream").
+            default_stream_indexes (list, tuple): selects specific video and audio stream index in case of multiple ones. Value can be of format: `(int,int)`. For example `(0,1)` is ("0th video stream", "1st audio stream").
 
         **Returns:** Reference to the instance object.
         """
@@ -211,18 +237,22 @@ class Sourcer:
         # return reference to the instance object.
         return self
 
-    def retrieve_metadata(self):
+    def retrieve_metadata(self, pretty_json=False):
         """
-        Returns Source metadata formatted as python dictionary.
+        Returns Parsed Metadata of the given source.
 
-        **Returns:** A dictionary value containing metadata.
+        Parameters:
+            pretty_json (bool): whether to return metadata as JSON string(if `True`) or Dictionary(if `False`) type?
+
+        **Returns:** metadata formatted as JSON string or python dictionary.
         """
         # check if metadata has been probed or not
         assert (
             self.__metadata_probed
         ), "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
-
+        # log it
         self.__verbose_logs and logger.debug("Retrieving Metadata...")
+        # create metadata dictionary from information populated in private class variables
         metadata = {
             "ffmpeg_binary_path": self.__ffmpeg,
             "source": self.__source,
@@ -252,11 +282,18 @@ class Sourcer:
                 "source_has_image_sequence": self.__contains_images,
             }
         )
-        return metadata
+        # return metadata as either JSON string or Python dictionary
+        return json.dumps(metadata, indent=2) if pretty_json else metadata
 
     def __validate_source(self, source, source_demuxer=None, forced_validate=False):
         """
         Internal method for validating source and extract its FFmpeg metadata.
+
+        Parameters:
+            source_demuxer(str): specifies the demuxer(`-f`) for the input source.
+            forced_validate (bool): whether to skip validation tests or not?
+
+        **Returns:** `True` if passed tests else `False`.
         """
         # assert if valid source
         assert source and isinstance(source, str), "Input source is empty!"
@@ -297,12 +334,12 @@ class Sourcer:
 
     def __extract_video_bitrate(self, default_stream=0):
         """
-        Parses default video-stream bitrate from metadata.
+        Internal method for parsing default video-stream bitrate from metadata.
 
         Parameters:
             default_stream (int): selects specific video-stream in case of multiple ones.
 
-        **Returns:** A string value.
+        **Returns:** Default Video bitrate as string value.
         """
         identifiers = ["Video:", "Stream #"]
         video_bitrate_text = [
@@ -330,12 +367,12 @@ class Sourcer:
 
     def __extract_video_decoder(self, default_stream=0):
         """
-        Parses default video-stream decoder from metadata.
+        Internal method for parsing default video-stream decoder from metadata.
 
         Parameters:
             default_stream (int): selects specific video-stream in case of multiple ones.
 
-        **Returns:** A string value.
+        **Returns:** Default Video decoder as string value.
         """
         assert isinstance(default_stream, int), "Invalid input!"
         identifiers = ["Video:", "Stream #"]
@@ -359,12 +396,12 @@ class Sourcer:
 
     def __extract_video_pixfmt(self, default_stream=0):
         """
-        Parses default video-stream pixel format from metadata.
+        Internal method for parsing default video-stream pixel-format from metadata.
 
         Parameters:
             default_stream (int): selects specific video-stream in case of multiple ones.
 
-        **Returns:** A string value.
+        **Returns:** Default Video pixel-format as string value.
         """
         identifiers = ["Video:", "Stream #"]
         meta_text = [
@@ -387,12 +424,12 @@ class Sourcer:
 
     def __extract_audio_bitrate_nd_samplerate(self, default_stream=0):
         """
-        Parses default audio-stream bitrate and samplerate from metadata.
+        Internal method for parsing default audio-stream bitrate and sample-rate from metadata.
 
         Parameters:
             default_stream (int): selects specific audio-stream in case of multiple ones.
 
-        **Returns:** A string value.
+        **Returns:** Default Audio-stream bitrate and sample-rate as string value.
         """
         identifiers = ["Audio:", "Stream #"]
         meta_text = [
@@ -431,9 +468,12 @@ class Sourcer:
 
     def __extract_resolution_framerate(self, default_stream=0):
         """
-        Parses default video-stream resolution and framerate from metadata.
+        Internal method for parsing default video-stream resolution and framerate from metadata.
 
-        **Returns:** A dictionary value.
+        Parameters:
+            default_stream (int): selects specific audio-stream in case of multiple ones.
+
+        **Returns:** Default Video resolution and framerate as dictionary value.
         """
         identifiers = ["Video:", "Stream #"]
         meta_text = [
@@ -466,9 +506,12 @@ class Sourcer:
 
     def __extract_duration(self, inseconds=True):
         """
-        Parses stream duration from metadata.
+        Internal method for parsing stream duration from metadata.
 
-        **Returns:** A string value.
+        Parameters:
+            inseconds (bool): whether to parse time in second(s) or `HH::mm::ss`?
+
+        **Returns:** Default Stream duration as string value.
         """
         identifiers = ["Duration:"]
         stripped_data = [
