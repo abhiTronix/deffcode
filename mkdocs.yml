@@ -74,11 +74,9 @@ plugins:
   - minify:
       minify_html: true
   - mkdocstrings:
-      custom_templates: ""
-      default_handler: python
       handlers:
         python:
-          rendering:
+          options:
             show_root_heading: false
             show_root_toc_entry: false
             show_source: true
