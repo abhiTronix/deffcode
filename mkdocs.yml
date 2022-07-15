@@ -49,7 +49,7 @@ theme:
       primary: light green
       accent: green
       toggle:
-        icon: material/home-lightning-bolt-outline
+        icon: fontawesome/regular/lightbulb
         name: Switch to dark mode
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
@@ -57,7 +57,7 @@ theme:
       primary: amber
       accent: lime
       toggle:
-        icon: material/home-lightning-bolt
+        icon: fontawesome/solid/lightbulb
         name: Switch to light mode
   font: # font
     text: Heebo
