@@ -46,16 +46,16 @@ theme:
     # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: green
-      accent: dark green
+      primary: light green
+      accent: green
       toggle:
         icon: material/home-lightning-bolt-outline
         name: Switch to dark mode
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: teal
-      accent: light green
+      primary: amber
+      accent: lime
       toggle:
         icon: material/home-lightning-bolt
         name: Switch to light mode
