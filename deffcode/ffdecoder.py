@@ -40,7 +40,33 @@ logger.setLevel(logging.DEBUG)
 
 
 class FFdecoder:
-    """ """
+    """
+    > DeFFcode's FFdecoder API is a **high-performance Video-frames Decoder** wrapping [FFmpeg](https://ffmpeg.org/) library aimed at
+    **generating Low-Overhead, High-Speed, and Real-time RGB video-frames** from its pipeline.
+
+    FFdecoder API **compiles its FFmpeg pipeline** by processing input Video Source metadata and User-defined options, and **executes it inside a
+    ==[`subprocess`](https://docs.python.org/3/library/subprocess.html) pipe==** that runs independent and concurrently with the main thread,
+    extracting dataframes(1D arrays) into a Numpy buffer. These dataframes are consecutively grabbed from the buffer and decoded into
+    ==3D [24-bit RGB](https://en.wikipedia.org/wiki/List_of_monochrome_and_RGB_color_formats#24-bit_RGB) _(default)_
+    [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames== frames that are readily available
+    through its [`generateFrame()`](#deffcode.ffdecoder.FFdecoder.generateFrame) method.
+
+    FFdecoder API supports a **wide-ranging media stream** as input source such as USB/Virtual/IP Camera Feed, Multimedia video file,
+    Screen Capture, Image Sequence, Network streams, URL schemes _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth.
+
+    FFdecoder API provides the **fastest and most flexible Video-frames Extraction API with access to almost any FFmpeg specification thinkable** such as
+    framerate, resolution, hardware decoding, complex filters, and any pixel format that is readily supported by prominent Computer Vision libraries
+    while maintaining the same standard OpenCV-Python _(Python API for OpenCV)_ coding syntax, thereby making it perfect replacement for
+    [OpenCV](https://github.com/opencv/opencv), and easiest to learn or adapt.
+
+    Furthermore, FFdecoder API **utilizes [Sourcer API](../../reference/sourcer) at its backend** for gathering, processing, and validating metadata of all
+    multimedia streams available in the given Input Source for formatting its default FFmpeg pipeline. This metadata information is also
+    available as a JSON string with its [`metadata`](#deffcode.ffdecoder.FFdecoder.metadata) property object.
+
+    !!! example "For usage examples, kindly refer our **[Basic Recipes :pie:](../../examples/basic)** and **[Advanced Recipes :microscope:](../../examples/advanced)**"
+
+    !!! info "FFdecoder API parameters are explained [here ➶](params/)"
+    """
 
     def __init__(
         self,
@@ -52,7 +78,7 @@ class FFdecoder:
         **extraparams
     ):
         """
-        This constructor method initializes the object state and attributes of the FFdecoder.
+        This constructor method initializes the object state and attributes of the FFdecoder Class.
 
         Parameters:
             source (str): defines the input(`-i`) source filename/URL/device-name/device-path.
@@ -230,7 +256,7 @@ class FFdecoder:
     def formulate(self):
 
         """
-        Formulates all necessary FFmpeg parameters command and Launches FFmpeg Pipeline using subprocess module.
+        This method formulates all necessary FFmpeg pipeline arguments and executes it inside the FFmpeg `subprocess` pipe.
         """
         # assign values to class variables on first run
         if self.__initializing:
@@ -397,7 +423,7 @@ class FFdecoder:
 
     def __fetchNextfromPipeline(self):
         """
-        Internal method to fetch next dataframe(in bytes) from FFmpeg Pipeline.
+        This Internal method to fetch next dataframes(1D arrays) from `subprocess` pipe's standard output(`stdout`) into a Numpy buffer.
         """
         assert not (
             self.__process is None
@@ -429,7 +455,7 @@ class FFdecoder:
 
     def __fetchNextFrame(self):
         """
-        Internal method to reconstruct next video-frame(`ndarray`) from fetched dataframe.
+        This Internal method grabs and decodes next 3D `ndarray` video-frame from the buffer.
         """
         # Read next and reconstruct as numpy array
         frame = self.__fetchNextfromPipeline()
@@ -468,8 +494,8 @@ class FFdecoder:
 
     def generateFrame(self):
         """
-        A python Generator function which can also works as an Iterator(using `next()`) for extracting
-        video-frames(`ndarray`) at rapid pace.
+        This method returns a [Generator function](https://wiki.python.org/moin/Generators)
+        _(also an Iterator using `next()`)_ of video frames, grabbed continuously from the buffer.
         """
         if self.__raw_frame_num is None or not self.__raw_frame_num:
             while not self.__terminate_stream:
@@ -501,7 +527,7 @@ class FFdecoder:
     @property
     def metadata(self):
         """
-        A property object that dumps Source metadata dict as JSON string for pretty printing. 
+        A property object that dumps Source metadata dict as JSON string.
 
         **Returns:** Metadata as JSON string.
         """
@@ -528,7 +554,7 @@ class FFdecoder:
     def __launch_FFdecoderline(self, input_params, output_params):
 
         """
-        An Internal method that launches FFmpeg Pipeline using subprocess module, that pipelines dataframes(in bytes) to `stdout`.
+        This Internal method executes FFmpeg pipeline arguments inside a `subprocess` pipe in a new process.
 
         Parameters:
             input_params (dict): Input FFmpeg parameters
@@ -570,7 +596,7 @@ class FFdecoder:
 
     def terminate(self):
         """
-        Safely terminate all processes.
+        Safely terminates all processes.
         """
         # signal we are closing
         self.__verbose_logs and logger.debug("Terminating FFdecoder Pipeline...")
