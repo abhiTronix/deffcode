@@ -52,7 +52,7 @@ There you can ask quick questions, swiftly troubleshoot your problems, help othe
 
 &thinsp;
 
-## Reporting an issues
+## :fontawesome-regular-face-tired: Reporting an issues
 
 > Want to report a bug? Suggest a new feature?
 
@@ -62,7 +62,7 @@ Before you do, please read our [guidelines ➶](../../contribution/issue/)
 &thinsp;
 
 
-## Preparing a Pull Request
+## :fontawesome-solid-code-pull-request: Preparing a Pull Request
 
 > Interested in contributing to DeFFcode?
 

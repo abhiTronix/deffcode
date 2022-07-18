@@ -36,6 +36,7 @@ theme:
   language: en
   features:
     - navigation.tracking
+    - navigation.tabs
     - navigation.indexes
     - navigation.top
     - search.suggest
@@ -153,13 +154,21 @@ markdown_extensions:
 
 # Page tree
 nav:
-  - Getting Started: 
-    - Introduction: index.md
+  - Home: 
+    - Introduction: 
+      - Introduction: index.md
     - Installation Notes: 
-      - Introduction: installation/index.md
+      - Overview: installation/index.md
       - FFmpeg Installation: installation/ffmpeg_install.md
-    - Basic Recipies: examples/basic.md
-  - Advanced Recipies: examples/advanced.md
+    - Contribution Guidelines:
+      - Overview: contribution/index.md
+      - Issue Guidelines: contribution/issue.md
+      - Pull Request(PR) Guidelines: contribution/PR.md 
+    - Changelog: changelog.md
+    - License: license.md
+  - Recipies:
+    - Basic Recipies ☕️: examples/basic.md
+    - Advanced Recipies 🥐: examples/advanced.md
   - API References:
     - deffcode.FFdecoder: 
       - API: reference/ffdecoder/index.md
@@ -169,15 +178,8 @@ nav:
       - API Parameters: reference/sourcer/params.md
     - deffcode.ffhelper: reference/ffhelper.md
     - deffcode.utils: reference/utils.md
-  - Help:
-    - Help Section: 
-      - Helping Us: help/index.md
-      - Getting Help: help/get_help.md 
-    - Contribution:
-      - Overview: contribution/index.md
-      - Issue Guidelines: contribution/issue.md
-      - Pull Request(PR) Guidelines: contribution/PR.md
-  - Extras:
-    - Changelog: changelog.md
-    - License: license.md
+  - Help Section:
+    - Help Us: help/help.md
+    - Get Help: help/get_help.md
+    
 

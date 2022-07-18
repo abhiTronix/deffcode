@@ -26,7 +26,7 @@ limitations under the License.
 
 &thinsp;
 
-> :warning: DeFFcode must requires FFmpeg executables for all its core functions. 
+==:warning: **DeFFcode APIs requires FFmpeg binaries to be installed for all of its core functionality.**==
 
 
 You can following machine-specific instructions for its installation:

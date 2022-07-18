@@ -23,13 +23,13 @@ limitations under the License.
 ![DeFFcode](assets/images/deffcode.png#only-light){ loading=lazy }
 ![DeFFcode](assets/images/deffcode-dark.png#only-dark){ loading=lazy }
 
-> DeFFcode is a cross-platform **High-performance Video Frames Decoder** that wraps FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, blazingly fast video frames in python :material-rocket-launch:
+DeFFcode is a cross-platform **High-performance Video Frames Decoder** that wraps FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, blazingly fast video frames in python :material-rocket-launch:
 
 DeFFcode APIs **supports a wide-ranging media stream** as input source such as USB/Virtual/IP Camera Feed, Multimedia video file, Screen Capture, Image Sequence, Network URL schemes _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth. 
 
-DeFFcode APIs gains an edge over other FFmpeg Wrappers by providing **complete control over the underlying pipeline with access to almost any FFmpeg specification thinkable** such as framerate, resolution, hardware decoding, complex filters, and any pixel format that is readily supported by almost all prominent Computer Vision libraries. 
+DeFFcode APIs gains an edge over other FFmpeg Wrappers by providing complete control over the underlying pipeline with **access to almost any FFmpeg specification thinkable** such as framerate, resolution, hardware decoder, complex filter, and any pixel format that is readily supported by almost all prominent Computer Vision libraries. 
 
-DeFFcode **maintains the same standard OpenCV-Python _(Python API for OpenCV)_ coding syntax** for all of its APIs, thereby making it even easier to learn and integrate DeFFcode APIs in existing or newer applications with least amount of effort.
+DeFFcode maintains the **same standard OpenCV-Python _(Python API for OpenCV)_ coding syntax** for all of its APIs, thereby making it even easier to learn and integrate these APIs in existing or newer applications with least amount of effort.
 
 &thinsp;
 
@@ -55,34 +55,37 @@ DeFFcode APIs wraps ==[**FFmpeg**][ffmpeg]== to offer you some of the following 
 
 &thinsp;
 
-## Installation
 
-If this is your first time using DeFFcode, head straight to the [**Installation Notes**](installation/) to install DeFFcode.
-
-&thinsp;
+## Getting Started
 
 
-## Quickstart
+### :material-notebook-plus: Installation Notes
 
-!!! tip "In case you're run into any problems, consult our [Help](help/get_help) section."
+If this is your first time using DeFFcode, head straight to the **[Installation Notes](installation/#installation-notes) to install DeFFcode on your machine**.
 
-### Usage Examples
+&nbsp;
 
-Once you have DeFFcode installed, Refer our **Well-Documented Recipes :material-pot-steam:** for examples:
-
-- [x] [**Basic Recipes :pie:**](examples/basic): Accessible to Python programmers of all skill levels.
-- [x] [**Advanced Recipes :croissant:**](examples/advanced): Involve advanced techniques that may not be “beginner friendly”.
+### :material-pot-steam: Recipes a.k.a Examples
 
 
-### API in a nutshell
+Once you have DeFFcode installed, checkout our **Well-Documented Recipes :material-pot-steam: for usage examples**:
 
-As a user, you just have to remember only two DeFFcode APIs:
+- [x] [**Basic Recipes :cake:**](examples/basic): Recipes for beginners of any skill level to get started.
+- [x] [**Advanced Recipes :croissant:**](examples/advanced): Recipes to take your skills to the next level.
+
+!!! tip "In case you're run into any problems, consult our [Help section](help/get_help)."
+
+&nbsp;
+
+### :material-api: API in a nutshell
 
 !!! info "See [API Reference](reference/ffdecoder/#ffdecoder-api) for more in-depth information."
 
+As a user, you just have to remember only two DeFFcode APIs namely:
+
 #### A. FFdecoder API 
 
-The primary function of [FFdecoder API](reference/ffdecoder/#ffdecoder-api) is to generate 24-bit RGB video frames from the given source:
+The primary function of [**FFdecoder API**](reference/ffdecoder/#ffdecoder-api) is to **generate 24-bit RGB video frames** from the given source:
 
 ```py
 # import the necessary packages
@@ -103,7 +106,7 @@ decoder.terminate()
 
 #### B. Sourcer API 
 
-The primary function of [Sourcer API](reference/sourcer/#sourcer-api) is to gathers information from all multimedia streams available in the given input source:
+The primary function of [**Sourcer API**](reference/sourcer/#sourcer-api) is to **gather information from all multimedia streams available** in the given source:
 
 ```python
  # import the necessary packages
@@ -117,7 +120,7 @@ The primary function of [Sourcer API](reference/sourcer/#sourcer-api) is to gath
 
 ```
 
-??? abstract "The resultant Terminal Output will look something as following on :fontawesome-brands-windows:Windows machine:"
+??? abstract "The resultant Terminal Output will look something as following on :fontawesome-brands-windows: Windows machine:"
      
       ```json
       {
@@ -146,7 +149,7 @@ The primary function of [Sourcer API](reference/sourcer/#sourcer-api) is to gath
 &thinsp;
 
 
-## Contributions
+## Contribution Guidelines
 
 > Contributions are welcome, and greatly appreciated!  
 

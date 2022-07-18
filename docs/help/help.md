@@ -18,10 +18,10 @@ limitations under the License.
 ===============================================
 -->
 
-# Help Us
+# Helping Us
 
 <figure>
-  <img src="../assets/images/help_us.png" loading="lazy" alt="Helping DeFFcode" class="shadow"  width="80%"/>
+  <img src="../../assets/images/help_us.png" loading="lazy" alt="Helping DeFFcode" class="shadow"  width="80%"/>
 </figure>
 
 > Liked DeFFcode? Would you like to help DeFFcode, other users, and the author?

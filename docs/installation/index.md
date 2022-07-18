@@ -102,26 +102,23 @@ DeFFcode is well-tested and supported on the following systems(but not limited t
 
 ## Supported Python legacies
 
-:fontawesome-brands-python: [**Python 3.7+**](https://www.python.org/downloads/) are only supported legacies for installing DeFFcode v0.1.0 and above.
+:fontawesome-brands-python: [**Python 3.7+**](https://www.python.org/downloads/) are only supported legacies for installing DeFFcode `v0.1.0` and above.
 
 &thinsp;
 
-
 ## Prerequisites
 
-When installing DeFFcode, [**FFmpeg**][ffmpeg] is the only prerequisites you need to install manually, except on Windows :fontawesome-brands-windows::
+==:warning: **DeFFcode APIs requires FFmpeg binaries to be installed for all of its core functionality.**==
 
 ### FFmpeg 
 
-Must require FFmpeg binaries installed for all core functions. 
-
-!!! tip "You easily install it by following this dedicated [**FFmpeg Installation doc**](../installation/ffmpeg_install/)"
+When installing DeFFcode, [**FFmpeg**][ffmpeg] is the only prerequisites you need to install manually. **You could easily do it by refering [**FFmpeg Installation doc**](../installation/ffmpeg_install/)**.
 
 &nbsp;
 
 ## Installation
 
-### A. Install using pip (Recommended)
+### A. Installation using pip (Recommended)
 
 
 > _Best option for easily getting stable DeFFcode installed._
@@ -172,9 +169,9 @@ pip install deffcode-0.2.0-py3-none-any.whl
 
 >  Best option for trying latest patches(maybe experimental), forking for Pull Requests, or automatically installing all prerequisites(with a few exceptions). 
 
-??? info "Beta Branch `dev`" 
+??? info "Installation using `dev` banch :octicons-git-branch-24:" 
 
-    If you're looking for latest work-in-progress :construction: enhancements/bug-fixes, then you want to checkout our beta [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch with the following commands:
+    If you're looking for latest work-in-progress :construction: enhancements or bug-fixes, then you want to checkout our beta [`dev`](https://github.com/abhiTronix/deffcode/tree/dev) branch with the following commands:
 
     !!! danger "The beta `dev` branch at times can be very unstable or even unusable, User discretion is advised!"
 
