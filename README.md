@@ -19,7 +19,10 @@ limitations under the License.
 -->
 
 <div align="center">
-  <img src="https://abhitronix.github.io/deffcode/latest/assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" width="80%"/>
+  
+  ![DeFFcode](docs/overrides/assets/images/deffcode.png#gh-light-mode-only)
+  ![DeFFcode](docs/overrides/assets/images/deffcode-dark.png#gh-dark-mode-only)
+
 </div>
 
 <div align="center">
@@ -29,11 +32,6 @@ limitations under the License.
 [![Glitter chat][gitter-bagde]][gitter] [![Build Status][appveyor]][app] [![PyPi version][pypi-badge]][pypi] 
 
 [![Code Style][black-badge]][black]
-
-</div>
-
-<div align="center">
-  <img src="https://abhitronix.github.io/deffcode/latest/assets/images/deffcode-tagline.png" alt="DeFFcode tagline" width="40%"/>
 
 
 ----

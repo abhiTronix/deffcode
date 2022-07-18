@@ -265,7 +265,7 @@ In this example we will parse all metadata information available within `foo.mp4
     # initialize and formulate the decoder using suitable source
     sourcer = Sourcer("foo.mp4").probe_stream()
 
-    # print metadata as `json`
+     # print metadata as `json.dump`
     print(sourcer.retrieve_metadata(pretty_json=True))
     ```
     ???+ abstract "After running above python code, the resultant Terminal Output will look something as following on :fontawesome-brands-windows:Windows machine:"

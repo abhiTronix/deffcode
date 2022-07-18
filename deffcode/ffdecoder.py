@@ -51,8 +51,8 @@ class FFdecoder:
     [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames== frames that are readily available
     through its [`generateFrame()`](#deffcode.ffdecoder.FFdecoder.generateFrame) method.
 
-    FFdecoder API supports a **wide-ranging media stream** as input source such as USB/Virtual/IP Camera Feed, Multimedia video file,
-    Screen Capture, Image Sequence, Network streams, URL schemes _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth.
+    FFdecoder API **supports a wide-ranging media stream** as input source such as USB/Virtual/IP Camera Feed, Multimedia video file,
+    Screen Capture, Image Sequence, Network URL schemes _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth.
 
     FFdecoder API provides the **fastest and most flexible Video-frames Extraction API with access to almost any FFmpeg specification thinkable** such as
     framerate, resolution, hardware decoding, complex filters, and any pixel format that is readily supported by prominent Computer Vision libraries

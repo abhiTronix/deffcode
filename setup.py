@@ -33,6 +33,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = long_description.replace(
         "(#", "(https://github.com/abhiTronix/deffcode#"
     )
+    long_description = long_description.replace(
+        "docs/overrides/", "(https://abhitronix.github.io/deffcode/latest/"
+    )
     # patch for unicodes
     long_description = long_description.replace("➶", ">>")
     long_description = long_description.replace("©", "(c)")
