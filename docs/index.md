@@ -23,65 +23,67 @@ limitations under the License.
 ![DeFFcode](assets/images/deffcode.png#only-light){ loading=lazy }
 ![DeFFcode](assets/images/deffcode-dark.png#only-dark){ loading=lazy }
 
-DeFFcode is a cross-platform **High-performance Video Frames Decoder** that wraps [**FFmpeg**][ffmpeg] pipeline inside a subprocess pipe for generating real-time, low-overhead, lightning fast video frames with strong error-handling in python :zap:
+<center>DeFFcode - A cross-platform **High-performance Video Frames Decoder** that wraps <br>[**FFmpeg**][ffmpeg] pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code :zap:</center>
+
+<div class="spacer"></div>
 
 DeFFcode APIs **supports a wide-ranging media stream** as input source such as live USB/Virtual/IP camera feeds, regular multimedia files, grabbing devices, image sequences, network URL schemes _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth. 
 
 DeFFcode APIs gains an edge over other FFmpeg Wrappers by providing complete control over the underline pipeline including **access to almost any FFmpeg specification thinkable** such as framerate, resolution, hardware decoder(s), complex filter(s), and pixel format(s) that are readily supported by all well known Computer Vision libraries.
 
-Furthermore, DeFFcode **maintains the same standard [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) _(Python API for OpenCV)_ coding syntax** for every API, thereby making it even easier to integrate these APIs in your python applications without the need to dig into tedious FFmpeg documentation and in just a few lines of code.
+Furthermore, DeFFcode **maintains the same standard [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) _(Python API for OpenCV)_ coding syntax** for every API, thereby making it even easier to learn and faster to code these APIs in your python applications without the need to dig into tedious FFmpeg documentation. 
 
 &thinsp;
 
-## Key Features
+## Key features of DeFFcode
 
-DeFFcode APIs wraps ==[**FFmpeg**][ffmpeg]== to offer you some of the following key features:
+Here are some key features that stand out:
 
 - [x] High-performance, low-overhead, lightning fast video frames decoding.
-- [x] Supports a wide range of live camera feeds, multimedia files, grabbing devices, network URL schemes, etc.
-- [x] Flexible API with access to almost any FFmpeg specification thinkable.
+- [x] Supports a wide range of live camera feeds, multimedia files, grabbing devices, etc.
 - [x] Effortless metadata extraction from multimedia streams available in the given source.
-- [x] Support easy dedicated [Hardware-Accelerated Decoding](examples/advanced/#gpu-enabled-hardware-accelerated-decoding).
-- [x] Precise FFmpeg [Frame Seeking](examples/basic/#saving-keyframes-as-image) with pinpoint accuracy.
-- [x] Extensive support for real-time [Complex FFmpeg Filters](examples/advanced/#generating-video-with-complex-filter-applied).
-- [x] Out-of-the-box support for Computer Vision libraries like OpenCV, Pytorch, etc.
-- [x] Easier to transform frames into any pixel format that FFmpeg supports.
-- [x] Fewer hard dependencies, and easy to install. 
-- [x] Cross-platform and runs on Python 3.7+
+- [x] Flexible API with access to almost any FFmpeg specification thinkable.
+- [x] Curated list of well-documented recipes from [**Basic**](recipes/basic) to [**Advanced**](recipes/advanced) skill levels.
+- [x] Out-of-the-box support for all well known Computer Vision libraries.
+- [x] Support easy dedicated [**Hardware-Accelerated Decoding**](recipes/advanced/#gpu-enabled-hardware-accelerated-decoding).
+- [x] Precise FFmpeg [**Frame Seeking**](recipes/basic/#saving-keyframes-as-image) with pinpoint accuracy.
+- [x] Extensive support for real-time [**Complex FFmpeg Filters**](recipes/advanced/#generating-video-with-complex-filter-applied).
+- [x] Cross-platform, runs on Python 3.7+, and easy to install. 
 
 <!--
 - [x] Lossless Transcoding support with [WriteGear](https://abhitronix.github.io/deffcode/latest/gears/writegear/introduction/). #TODO
 -->
 
-&thinsp;
+
+&nbsp;
 
 
 ## Getting Started
 
+<div class="spacer"></div>
+!!! tip "In case you're run into any problems, consult our [Help section](help/get_help)."
 
 ### :material-notebook-plus: Installation Notes
 
 If this is your first time using DeFFcode, head straight to the **[Installation Notes](installation/#installation-notes) to install DeFFcode on your machine**.
 
-&nbsp;
+<div class="spacer"></div>
 
 ### :material-pot-steam: Recipes a.k.a Examples
 
 
-Once you have DeFFcode installed, checkout our **Well-Documented Recipes :material-pot-steam: for usage examples**:
+Once you have DeFFcode installed, checkout our **Well-Documented [Recipes :material-pot-steam:](recipes/basic) for usage examples**:
 
-- [x] [**Basic Recipes :cake:**](examples/basic): Recipes for beginners of any skill level to get started.
-- [x] [**Advanced Recipes :croissant:**](examples/advanced): Recipes to take your skills to the next level.
+- [x] [**Basic Recipes :cake:**](recipes/basic): Recipes for beginners of any skill level to get started.
+- [x] [**Advanced Recipes :croissant:**](recipes/advanced): Recipes to take your skills to the next level.
 
-!!! tip "In case you're run into any problems, consult our [Help section](help/get_help)."
-
-&nbsp;
+<div class="spacer"></div>
 
 ### :material-api: API in a nutshell
 
 !!! info "See [API Reference](reference/ffdecoder/#ffdecoder-api) for more in-depth information."
 
-As a user, you just have to remember only two DeFFcode APIs namely:
+As a user, you just have to remember only two DeFFcode APIs, namely:
 
 #### A. FFdecoder API 
 
@@ -146,8 +148,7 @@ The primary function of [**Sourcer API**](reference/sourcer/#sourcer-api) is to 
       ```
 
 
-&thinsp;
-
+&nbsp;
 
 ## Contribution Guidelines
 
@@ -155,19 +156,19 @@ The primary function of [**Sourcer API**](reference/sourcer/#sourcer-api) is to 
 
 Please read our [**Contribution Guidelines**](contribution/) for more details.
 
-&thinsp;
+&nbsp;
 
 ## Community Channel
 
 If you've come up with some new idea, or looking for the fastest way troubleshoot your problems. Please checkout our [**Gitter community channel ➶**][gitter]
 
-&thinsp; 
+&nbsp;
 
 ## Become a Stargazer
 
 You can be a  [**Stargazer** :star2:{ .heart }][stargazer]  by starring us on Github, it helps us a lot and you're making it easier for others to find & trust this library. Thanks!
 
-&thinsp;
+&nbsp;
 
 ## Donations
 
@@ -177,8 +178,7 @@ It is something I am doing with my own free time. But so much more needs to be d
 
 <script type='text/javascript' src='https://ko-fi.com/widgets/widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#eba100', 'W7W8WTYO');kofiwidget2.draw();</script> 
 
-
-&thinsp;
+&nbsp;
 
 <!--
 External URLs

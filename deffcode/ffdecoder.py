@@ -63,7 +63,7 @@ class FFdecoder:
     multimedia streams available in the given Input Source for formatting its default FFmpeg pipeline. This metadata information is also
     available as a JSON string with its [`metadata`](#deffcode.ffdecoder.FFdecoder.metadata) property object.
 
-    !!! example "For usage examples, kindly refer our **[Basic Recipes :pie:](../../examples/basic)** and **[Advanced Recipes :microscope:](../../examples/advanced)**"
+    !!! example "For usage examples, kindly refer our **[Basic Recipes :pie:](../../recipes/basic)** and **[Advanced Recipes :microscope:](../../recipes/advanced)**"
 
     !!! info "FFdecoder API parameters are explained [here ➶](params/)"
     """

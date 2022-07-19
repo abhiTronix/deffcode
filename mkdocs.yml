@@ -167,8 +167,8 @@ nav:
     - Changelog: changelog.md
     - License: license.md
   - Recipies:
-    - Basic Recipies ☕️: examples/basic.md
-    - Advanced Recipies 🥐: examples/advanced.md
+    - Basic Recipies ☕️: recipes/basic.md
+    - Advanced Recipies 🥐: recipes/advanced.md
   - API References:
     - deffcode.FFdecoder: 
       - API: reference/ffdecoder/index.md
@@ -179,7 +179,7 @@ nav:
     - deffcode.ffhelper: reference/ffhelper.md
     - deffcode.utils: reference/utils.md
   - Help Section:
-    - Help Us: help/help.md
+    - Help Us: help.md
     - Get Help: help/get_help.md
     
 

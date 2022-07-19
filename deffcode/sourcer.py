@@ -57,11 +57,11 @@ class Sourcer:
     given Input Source and returns it in either Human-readable _(JSON string)_ or Machine-readable _(Dictionary object)_ type with its
     [`retrieve_metadata()`](#deffcode.sourcer.Sourcer.retrieve_metadata) method.
 
-    !!! info "All metadata attributes available with Sourcer API(On :fontawesome-brands-windows:Windows) are discussed [here ➶](../../examples/basic/#display-source-video-metadata)."
+    !!! info "All metadata attributes available with Sourcer API(On :fontawesome-brands-windows:Windows) are discussed [here ➶](../../recipes/basic/#display-source-video-metadata)."
 
     Furthermore, Sourcer's [`sourcer_params`](params/#sourcer_params) dictionary parameter can be used to define almost any FFmpeg parameter as well as alter internal API settings. 
 
-    !!! example "For usage examples, kindly refer our **[Basic Recipes :pie:](../../examples/basic)** and **[Advanced Recipes :microscope:](../../examples/advanced)**"
+    !!! example "For usage examples, kindly refer our **[Basic Recipes :pie:](../../recipes/basic)** and **[Advanced Recipes :microscope:](../../recipes/advanced)**"
 
     !!! info "Sourcer API parameters are explained [here ➶](params/)"
     """

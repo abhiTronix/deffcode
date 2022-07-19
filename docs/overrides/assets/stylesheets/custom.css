@@ -233,3 +233,7 @@ body[data-md-color-scheme="slate"] img[class="shadow2"]{
 [data-md-color-scheme="slate"] {
   --md-hue: 285; 
 }
+
+.spacer {
+  height: 1px;
+}
