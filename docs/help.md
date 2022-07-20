@@ -87,7 +87,7 @@ Thanks a million! :blush:
 
 You can connect with me, the author 👋:
 
-![Image title](https://avatars.githubusercontent.com/u/34266896?v=4){ align=left width="160" loading=lazy }
+![Author Image](https://avatars.githubusercontent.com/u/34266896?v=4){ align=left width="160" loading=lazy }
 
 * Follow author on GitHub: [![GitHub follow](https://img.shields.io/github/followers/abhiTronix?label=Follow%20%40abhiTronix&logo=github&style=flat-square)](https://github.com/abhiTronix)
 * Follow author on Twitter: <a href="https://twitter.com/abhi_una12?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow &commat;abhi_una12</a>
