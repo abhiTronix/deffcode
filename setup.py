@@ -44,7 +44,7 @@ setup(
     name="deffcode",
     packages=["deffcode"],
     version=pkg_version["__version__"],
-    description="High-performance Real-time FFmpeg based Video-Decoder in python.",
+    description="FFmpeg based High-performance Video Frames Decoder in python.",
     license="Apache License 2.0",
     author="Abhishek Thakur",
     install_requires=[
