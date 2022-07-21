@@ -50,11 +50,12 @@ DeFFcode - A cross-platform **High-performance Video Frames Decoder** that execu
 
 &thinsp;
 
-DeFFcode APIs implements a standalone highly-extensible wrapper around [**FFmpeg**][ffmpeg] multimedia framework. These APIs **supports a wide-ranging media stream** as input source such as live USB/Virtual/IP camera feeds, regular multimedia files, grabbing devices, image sequences, network URL schemes _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth. 
+**<ins>Highly Adaptive</ins> -** _DeFFcode APIs implements a **standalone highly-extensible wrapper around [FFmpeg][ffmpeg]** multimedia framework. These APIs **supports a wide-ranging media stream** as input source such as live USB/Virtual/IP camera feeds, regular multimedia files, grabbing devices, image sequences, network URL schemes (such as HTTP(s), RTP/RSTP, etc.), so on and so forth._
 
-DeFFcode APIs gains an edge over other FFmpeg Wrappers by providing complete control over the underline pipeline including **access to almost any FFmpeg specification thinkable** such as framerate, resolution, hardware decoder(s), complex filter(s), and pixel format(s) that are readily supported by all well known Computer Vision libraries.
+**<ins>Highly Flexible</ins> -** _DeFFcode APIs gains an edge over other FFmpeg Wrappers by providing **complete control over the underline pipeline** including **access to almost any FFmpeg specification thinkable** such as framerate, resolution, hardware decoder(s), complex filter(s), and pixel format(s) that are readily **supported by all well known Computer Vision libraries**._
 
-Furthermore, DeFFcode **maintains the same standard [OpenCV-Python][opencv-py] _(Python API for OpenCV)_ coding syntax** for every API, thereby making it even easier to learn and faster to code these APIs in your python applications without the need to dig into tedious FFmpeg documentation. 
+**<ins>Highly Convenient</ins> -** _DeFFcode **maintains the same standard [OpenCV-Python][opencv-py] (Python API for OpenCV) coding syntax** for every API, thereby making it even **easier to create and develop Video Processing Python applications** using these APIs._
+
 
 &nbsp;
 
@@ -63,10 +64,10 @@ Furthermore, DeFFcode **maintains the same standard [OpenCV-Python][opencv-py] _
 Here are some key features that stand out:
 
 - High-performance, low-overhead, lightning fast video frames decoding.
-- Supports a wide range of live camera feeds, multimedia files, grabbing devices, network URL schemes, etc.
 - Flexible API with access to almost any FFmpeg specification thinkable.
-- Effortless metadata extraction from multimedia streams available in the given source.
+- Supports a wide range of live camera feeds, multimedia files, grabbing devices, etc.
 - Curated list of well-documented recipes from [**Basic**][basic-recipes] to [**Advanced**][advanced-recipes] skill levels.
+- Maintains the standard OpenCV-Python coding syntax for usability and convenience.
 - Out-of-the-box support for all well known Computer Vision libraries.
 - Support easy dedicated [**Hardware-Accelerated Decoding**][hw-decoding-recipe].
 - Precise FFmpeg [**Frame Seeking**][frame-seek-recipe] with pinpoint accuracy.
