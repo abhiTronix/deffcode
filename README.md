@@ -44,13 +44,13 @@ limitations under the License.
 
 <div align="center">
 
-DeFFcode - A cross-platform **High-performance Video Frames Decoder** that executes <br>[**FFmpeg**][ffmpeg] pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code ⚡
+DeFFcode - A cross-platform **High-performance Video Frames Decoder** that executes <br>FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code ⚡
 
 </div>
 
 &thinsp;
 
-DeFFcode APIs **supports a wide-ranging media stream** as input source such as live USB/Virtual/IP camera feeds, regular multimedia files, grabbing devices, image sequences, network URL schemes _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth. 
+DeFFcode APIs implements a standalone highly-extensible wrapper around [**FFmpeg**][ffmpeg] multimedia framework. These APIs **supports a wide-ranging media stream** as input source such as live USB/Virtual/IP camera feeds, regular multimedia files, grabbing devices, image sequences, network URL schemes _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth. 
 
 DeFFcode APIs gains an edge over other FFmpeg Wrappers by providing complete control over the underline pipeline including **access to almost any FFmpeg specification thinkable** such as framerate, resolution, hardware decoder(s), complex filter(s), and pixel format(s) that are readily supported by all well known Computer Vision libraries.
 
