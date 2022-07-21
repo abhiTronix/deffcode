@@ -52,14 +52,14 @@ from deffcode import FFdecoder
 import json, cv2
 
 # define the Complex Video Filter with additional `watermark.png` image input
-extraparams = {
+ffparams = {
     "-clones": ["-i", "watermark.png"],  # define your `watermark.png` here
     "-filter_complex": "[1]format=rgba,colorchannelmixer=aa=0.5[logo];[0][logo]overlay=W-w-5:H-h-5:format=auto,format=bgr24"
 }
 
 # initialize and formulate the decoder for BGR24 output with given params
 decoder = FFdecoder(
-    "input_foo.mp4", frame_format="bgr24", verbose=True, **extraparams
+    "input_foo.mp4", frame_format="bgr24", verbose=True, **ffparams
 ).formulate()
 
 # retrieve JSON Metadata and convert it to dict
@@ -128,10 +128,10 @@ In this example we will generate grayscale video from Image Sequence using FFdec
 
         ```python
         # define `-start_number` such as `5`
-        extraparams = {"-ffpostfixes":["-start_number", "5"]}
+        ffparams = {"-ffpostfixes":["-start_number", "5"]}
 
         # initialize and formulate the decoder with define parameters
-        decoder = FFdecoder('img%03d.png', verbose=True, **extraparams).formulate()
+        decoder = FFdecoder('img%03d.png', verbose=True, **ffparams).formulate()
         ```
 
     ```python
@@ -186,10 +186,10 @@ In this example we will generate grayscale video from Image Sequence using FFdec
     import cv2, json
 
     # define `-pattern_type glob` for accepting glob pattern
-    extraparams = {"-ffprefixes":["-pattern_type", "glob"]}
+    ffparams = {"-ffprefixes":["-pattern_type", "glob"]}
 
     # initialize and formulate the decode with suitable source
-    decoder = FFdecoder("/path/to/pngs/img*.png", frame_format="bgr24", verbose=True, **extraparams).formulate()
+    decoder = FFdecoder("/path/to/pngs/img*.png", frame_format="bgr24", verbose=True, **ffparams).formulate()
 
     # retrieve JSON Metadata and convert it to dict
     metadata_dict = json.loads(decoder.metadata)
@@ -233,10 +233,10 @@ In this example we will generate grayscale video from Image Sequence using FFdec
     import cv2, json
 
     # define `-loop 1` for looping
-    extraparams = {"-ffprefixes":["-loop", "1"]}
+    ffparams = {"-ffprefixes":["-loop", "1"]}
 
     # initialize and formulate the decode with suitable source
-    decoder = FFdecoder("img.png", frame_format="bgr24", verbose=True, **extraparams).formulate()
+    decoder = FFdecoder("img.png", frame_format="bgr24", verbose=True, **ffparams).formulate()
 
     # retrieve JSON Metadata and convert it to dict
     metadata_dict = json.loads(decoder.metadata)
@@ -419,7 +419,7 @@ In this example we will generate lossless video with controlled framerate:
 
 ## GPU enabled Hardware-Accelerated Decoding
 
-By default, FFdecoder API uses **Source Video's decoder** _(extracted using Sourcer API)_ for decoding input. But you can easily change it to your suitable [**supported decoder**](../../reference/ffdecoder/params/#supported-decoders) through `-vcodec` FFmpeg parameter by passing it as an attribute with FFdecoder's [`extraparams`](../../reference/ffdecoder/params/#extraparams) dictionary parameter. In addition to this, you can also specify the additional properties/features of your system's GPU :octicons-cpu-16: easily. 
+By default, FFdecoder API uses **Source Video's decoder** _(extracted using Sourcer API)_ for decoding input. But you can easily change it to your suitable [**supported decoder**](../../reference/ffdecoder/params/#supported-decoders) through `-vcodec` FFmpeg parameter by passing it as an attribute with FFdecoder's [`ffparams`](../../reference/ffdecoder/params/#ffparams) dictionary parameter. In addition to this, you can also specify the additional properties/features of your system's GPU :octicons-cpu-16: easily. 
 
 !!! warning "User Discretion Advised"
 
@@ -450,7 +450,7 @@ from deffcode import FFdecoder
 import cv2
 
 # define suitable FFmpeg parameter
-extraparams = {
+ffparams = {
     "-vcodec": "h264_cuvid",
     "-ffprefixes": ["–hwaccel", "cuvid"],
     "-ffpostfixes": ["-vf", "fade,hwupload_cuda,scale_npp=1280:720"],
@@ -458,7 +458,7 @@ extraparams = {
 
 # initialize and formulate the decode with suitable source and params
 decoder = FFdecoder(
-    "foo.mp4", frame_format="bgr24", verbose=True, **extraparams
+    "foo.mp4", frame_format="bgr24", verbose=True, **ffparams
 ).formulate()
 
 # grab the RGB24(default) frame from the decoder

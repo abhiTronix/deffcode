@@ -1,4 +1,4 @@
-<!--
+s<!--
 ===============================================
 DeFFcode library source-code is deployed under the Apache 2.0 License:
 
@@ -55,10 +55,10 @@ Its valid input can be one of the following:
 
         ```python
         # define `-start_number` such as `5`
-        extraparams = {"-ffpostfixes":["-start_number", "5"]}
+        ffparams = {"-ffpostfixes":["-start_number", "5"]}
 
         # initialize and formulate the decoder with define parameters
-        decoder = FFdecoder('img%03d.png', verbose=True, **extraparams).formulate()
+        decoder = FFdecoder('img%03d.png', verbose=True, **ffparams).formulate()
         ```
 
     === "Glob pattern"
@@ -69,10 +69,10 @@ Its valid input can be one of the following:
 
         ```python
         # define `-pattern_type glob` for accepting glob pattern
-        extraparams = {"-ffprefixes":["-pattern_type", "glob"]}
+        ffparams = {"-ffprefixes":["-pattern_type", "glob"]}
 
         # initialize and formulate the decoder with define parameters
-        decoder = FFdecoder('img*.png', verbose=True, **extraparams).formulate()
+        decoder = FFdecoder('img*.png', verbose=True, **ffparams).formulate()
         ```
 
     === "Single image"
@@ -81,20 +81,20 @@ Its valid input can be one of the following:
 
         ```python
         # define `-loop 1` for looping
-        extraparams = {"-ffprefixes":["-loop", "1"]}
+        ffparams = {"-ffprefixes":["-loop", "1"]}
 
         # initialize and formulate the decoder with define parameters
-        decoder = FFdecoder('img.jpg', verbose=True, **extraparams).formulate()
+        decoder = FFdecoder('img.jpg', verbose=True, **ffparams).formulate()
         ```
 
 - [x] **Network Address:** _Valid (`http(s)`, `rtp`, `rstp`, `rtmp`, `mms`, etc.) incoming network stream address such as `'rtsp://xx:yy@192.168.1.ee:fd/av0_0'` as input:_
 
     ```python
     # define `rtsp_transport` or necessary parameters 
-    extraparams = {"-ffpostfixes":["-rtsp_transport", "tcp"]}
+    ffparams = {"-ffpostfixes":["-rtsp_transport", "tcp"]}
 
     # initialize and formulate the decoder with define parameters
-    decoder = FFdecoder('rtsp://xx:yy@192.168.1.ee:fd/av0_0', verbose=True, **extraparams).formulate()
+    decoder = FFdecoder('rtsp://xx:yy@192.168.1.ee:fd/av0_0', verbose=True, **ffparams).formulate()
     ```
 
 - [ ] **Video Input devices:** _(Yet to be supported)_
@@ -179,11 +179,11 @@ FFdecoder("foo.mp4", verbose=True).formulate()
 &nbsp; 
 
 
-## **`extraparams`**
+## **`ffparams`**
 
 This parameter accepts to all [supported parameters](#supported-parameters) formatted as as its attributes:
 
-!!! danger "Kindly read [**FFmpeg Docs**](https://ffmpeg.org/documentation.html) carefully before passing any additional values to `extraparams` parameter. Wrong invalid values may result in undesired errors or no output at all."
+!!! danger "Kindly read [**FFmpeg Docs**](https://ffmpeg.org/documentation.html) carefully before passing any additional values to `ffparams` parameter. Wrong invalid values may result in undesired errors or no output at all."
 
 
 **Data-Type:** Dictionary
@@ -195,7 +195,7 @@ This parameter accepts to all [supported parameters](#supported-parameters) form
 
 #### A. FFmpeg Parameters 
 
-Almost any FFmpeg parameter _(supported by installed FFmpeg)_  can be passed as dictionary attributes in `extraparams`. But make sure to read [**FFmpeg Docs**](https://ffmpeg.org/documentation.html) carefully first.
+Almost any FFmpeg parameter _(supported by installed FFmpeg)_  can be passed as dictionary attributes in `ffparams`. But make sure to read [**FFmpeg Docs**](https://ffmpeg.org/documentation.html) carefully first.
 
 Let's assume we're using `h264_nvenc` NVDEC/CUVID decoder to produce faster frames with low memory footprints, then we can pass required FFmpeg parameters as dictionary attributes as follows:
 
@@ -205,7 +205,7 @@ Let's assume we're using `h264_nvenc` NVDEC/CUVID decoder to produce faster fram
 !!! error "All ffmpeg parameters are case-sensitive. Remember to double check every parameter if any error occurs."
 
 ```python
-extraparams = {"-vcodec":"h264_nvenc", "-ffpostfixes":["-hwaccel", "cuda", "-hwaccel_output_format", "cuda"]} 
+ffparams = {"-vcodec":"h264_nvenc", "-ffpostfixes":["-hwaccel", "cuda", "-hwaccel_output_format", "cuda"]} 
 ```
 
 &thinsp;
@@ -217,10 +217,10 @@ In addition to FFmpeg parameters, FFdecoder API also supports few Exclusive Para
 
 * **`-vcodec`** _(str)_ : works similiar to `-vcodec` FFmpeg parameter for specifying [supported decoders](#supported-decoders). If not specified, it derived from source video. Its usage is as follows: 
 
-    !!! info "To remove `-vcodec` forcefully from FFmpeg Pipeline, assign its value Nonetype as `#!py3 {"-vcodec":None}` in extraparams"
+    !!! info "To remove `-vcodec` forcefully from FFmpeg Pipeline, assign its value Nonetype as `#!py3 {"-vcodec":None}` in ffparams"
 
     ```python
-    extraparams = {"-vcodec": "h264"} # set decoder to `h264`
+    ffparams = {"-vcodec": "h264"} # set decoder to `h264`
     ```
 
 &ensp;
@@ -229,7 +229,7 @@ In addition to FFmpeg parameters, FFdecoder API also supports few Exclusive Para
 * **`-framerate`** _(float/int)_ : works similiar to `-framerate` FFmpeg parameter for generating video-frames at specified framerate. If not specified, it calculated from source video framerate. Its usage is as follows: 
 
     ```python
-    extraparams = {"-framerate": 60.0} # set input video source framerate to 60fps
+    ffparams = {"-framerate": 60.0} # set input video source framerate to 60fps
     ```
 
 &ensp;
@@ -237,7 +237,7 @@ In addition to FFmpeg parameters, FFdecoder API also supports few Exclusive Para
 * **`-custom_resolution`** _(tuple/list)_ : sets the custom resolution/size/dimensions of the output frames. Its value can either be a **tuple** => `(width,height)` or a **list** => `[width, height]`. If not specified, it calculated from source video resolution. Its usage is as follows: 
     
     ```python
-    extraparams = {"-output_dimensions": (1280,720)} # to produce a 1280x720 resolution/scale output video
+    ffparams = {"-output_dimensions": (1280,720)} # to produce a 1280x720 resolution/scale output video
     ```
 
 &ensp;
@@ -253,7 +253,7 @@ In addition to FFmpeg parameters, FFdecoder API also supports few Exclusive Para
     !!! tip "Turn on verbose([`verbose = True`](#verbose)) to see the FFmpeg command that is being executed in FFdecoder's pipeline. This helps you debug/address any issues and make adjustments accordingly."
         
     ```python
-    extraparams = {"-ffprefixes": ['-re']} # executes as `ffmpeg -re <rest of command>`
+    ffparams = {"-ffprefixes": ['-re']} # executes as `ffmpeg -re <rest of command>`
     ```
 
 &ensp;
@@ -270,7 +270,7 @@ In addition to FFmpeg parameters, FFdecoder API also supports few Exclusive Para
     !!! tip "Turn on verbose([`verbose = True`](#verbose)) to see the FFmpeg command that is being executed in FFdecoder's pipeline. This helps you debug/address any issues and make adjustments accordingly."
         
     ```python
-    extraparams = {"-ffpostfixes": ['-preset', 'fast']} # executes as `ffmpeg -vcodec h264 -preset fast <rest of command>`
+    ffparams = {"-ffpostfixes": ['-preset', 'fast']} # executes as `ffmpeg -vcodec h264 -preset fast <rest of command>`
     ```
 
 &ensp;
@@ -286,17 +286,17 @@ In addition to FFmpeg parameters, FFdecoder API also supports few Exclusive Para
     !!! tip "Turn on verbose([`verbose = True`](#verbose)) to see the FFmpeg command that is being executed in FFdecoder's pipeline. This helps you debug/address any issues and make adjustments accordingly."
 
     ```python
-    extraparams = {"-clones": ['-map', '0:v:0', '-map', '1:a?']} 
+    ffparams = {"-clones": ['-map', '0:v:0', '-map', '1:a?']} 
     # executes as `ffmpeg -vcodec -i foo.mp4 -pix_fmt rgb24 -s 1280x720 -framerate 25.0 -map 0:v:0 -map 1:a -f rawvideo -
     ```
 
 &ensp;
 
-* **`-custom_sourcer_params`** _(dict)_ : assigns values to Sourcer API's [`source_params`](../../sourcer/params/#sourcer_params) dictionary parameter directly through FFdecoder API. Its usage is as follows: 
+* **`-custom_sourcer_params`** _(dict)_ : assigns values to Sourcer API's [`sourcer_params`](../../sourcer/params/#sourcer_params) dictionary parameter directly through FFdecoder API. Its usage is as follows: 
     
     ```python
-    extraparams = {"-custom_sourcer_params": {"-ffmpeg_download_path": "C:/User/foo/foo1"}}
-    # will be assigned to Sourcer API's `source_params` directly
+    ffparams = {"-custom_sourcer_params": {"-ffmpeg_download_path": "C:/User/foo/foo1"}}
+    # will be assigned to Sourcer API's `sourcer_params` directly
     ```
 
 &ensp;

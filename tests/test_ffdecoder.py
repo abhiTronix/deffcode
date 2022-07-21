@@ -126,14 +126,14 @@ def test_frame_format(pixfmts):
     frame_num = 0
     source = return_testvideo_path(fmt="vo")
     actual_frame_num, actual_frame_shape = actual_frame_count_n_frame_size(source)
-    extraparams = {"-pix_fmt": "bgr24"}
+    ffparams = {"-pix_fmt": "bgr24"}
     try:
         # formulate the decoder with suitable source(for e.g. foo.mp4)
         decoder = FFdecoder(
             source,
             frame_format=pixfmts,
             custom_ffmpeg=return_static_ffmpeg(),
-            **extraparams,
+            **ffparams,
         ).formulate()
 
         # grab RGB24(default) 3D frames from decoder
@@ -191,13 +191,13 @@ def test_metadata(custom_params):
 
 
 @pytest.mark.parametrize(
-    "extraparams, pixfmts",
+    "ffparams, pixfmts",
     [
         ({"-ss": "00:00:01.45", "-frames:v": 1}, "rgba"),
         ({"-ss": "00:02.45", "-vframes": 1}, "gray"),
     ],
 )
-def test_seek_n_save(extraparams, pixfmts):
+def test_seek_n_save(ffparams, pixfmts):
     """
     Testing `frame_format` with different colorspaces.
     """
@@ -210,7 +210,7 @@ def test_seek_n_save(extraparams, pixfmts):
             frame_format=pixfmts,
             custom_ffmpeg=return_static_ffmpeg(),
             verbose=True,
-            **extraparams,
+            **ffparams,
         ).formulate()
 
         # grab the RGB24(default) frame from the decoder
@@ -273,8 +273,8 @@ test_data_class = [
 ]
 
 
-@pytest.mark.parametrize("source, extraparams, result", test_data_class)
-def test_FFdecoder_params(source, extraparams, result):
+@pytest.mark.parametrize("source, ffparams, result", test_data_class)
+def test_FFdecoder_params(source, ffparams, result):
     """
     Testing FFdecoder API with different parameters and save output
     """
@@ -283,7 +283,7 @@ def test_FFdecoder_params(source, extraparams, result):
     f_name = os.path.join(*[tempfile.gettempdir(), "temp_write", "output_foo.avi"])
     try:
         # initialize and formulate the decode with suitable source
-        decoder = FFdecoder(source, frame_format="bgr24", **extraparams).formulate()
+        decoder = FFdecoder(source, frame_format="bgr24", **ffparams).formulate()
 
         # retrieve JSON Metadata and convert it to dict
         metadata_dict = json.loads(decoder.metadata)

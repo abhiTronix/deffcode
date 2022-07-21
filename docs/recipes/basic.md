@@ -54,10 +54,10 @@ Here's a example for seeking to `00:00:01.45`_(or 1045msec)_ in time, and get on
 
     # define the FFmpeg parameter to seek to 00:00:01.45(or 1s and 45msec)
     # in time and get one single frame
-    extraparams = {"-ss": "00:00:01.45", "-frames:v": 1}
+    ffparams = {"-ss": "00:00:01.45", "-frames:v": 1}
 
     # initialize and formulate the decode with suitable source
-    decoder = FFdecoder("foo.mp4", **extraparams).formulate()
+    decoder = FFdecoder("foo.mp4", **ffparams).formulate()
 
     # grab the RGB24(default) frame from the decoder
     frame = next(decoder.generateFrame(), None)
@@ -85,10 +85,10 @@ Here's a example for seeking to `00:00:01.45`_(or 1045msec)_ in time, and get on
 
     # define the FFmpeg parameter to seek to 00:00:01.45(or 1s and 45msec) 
     # in time and get one single frame
-    extraparams = {"-ss": "00:00:01.45", "-frames:v":1}
+    ffparams = {"-ss": "00:00:01.45", "-frames:v":1}
 
     # initialize and formulate the decoder for BGR24 outputwith suitable source
-    decoder = FFdecoder("foo.mp4", frame_format="bgr24", **extraparams).formulate()
+    decoder = FFdecoder("foo.mp4", frame_format="bgr24", **ffparams).formulate()
 
     # grab the BGR24 frame from the decoder
     frame = next(decoder.generateFrame(), None)
@@ -115,10 +115,10 @@ Here's a example for seeking to `00:00:01.45`_(or 1045msec)_ in time, and get on
 
     # define the FFmpeg parameter to seek to 00:00:01.45(or 1s and 45msec) 
     # in time and get one single frame
-    extraparams = {"-ss": "00:00:01.45", "-frames:v":1}
+    ffparams = {"-ss": "00:00:01.45", "-frames:v":1}
 
     # initialize and formulate the decode with suitable source
-    decoder = FFdecoder("foo.mp4", **extraparams).formulate()
+    decoder = FFdecoder("foo.mp4", **ffparams).formulate()
 
     # grab the RGB24(default) frame from the decoder
     frame = next(decoder.generateFrame(), None)
@@ -145,10 +145,10 @@ Here's a example for seeking to `00:00:01.45`_(or 1045msec)_ in time, and get on
 
     # define the FFmpeg parameter to seek to 00:00:01.45(or 1s and 45msec) 
     # in time and get one single frame
-    extraparams = {"-ss": "00:00:01.45", "-frames:v":1}
+    ffparams = {"-ss": "00:00:01.45", "-frames:v":1}
 
     # initialize and formulate the decode with suitable source
-    decoder = FFdecoder("foo.mp4", **extraparams).formulate()
+    decoder = FFdecoder("foo.mp4", **ffparams).formulate()
 
     # grab the RGB24(default) frame from the decoder
     frame = next(decoder.generateFrame(), None)
@@ -384,7 +384,7 @@ from deffcode import FFdecoder
 import json, cv2
 
 # define the Video Filter definition like `rotate` and `drawtext` with `-vf` FFmpeg parameter
-extraparams = {
+ffparams = {
     "-vf": ""
     + "rotate=angle=-20*PI/180:fillcolor=brown"  # rotate filter
     + ", "
@@ -393,7 +393,7 @@ extraparams = {
 
 # initialize and formulate the decoder for BGR24 output with given params
 decoder = FFdecoder(
-    "input_foo.mp4", frame_format="bgr24", **extraparams
+    "input_foo.mp4", frame_format="bgr24", **ffparams
 ).formulate()
 
 # retrieve JSON Metadata and convert it to dict

@@ -76,7 +76,7 @@ class FFdecoder:
         frame_format=None,
         custom_ffmpeg="",
         verbose=False,
-        **extraparams
+        **ffparams
     ):
         """
         This constructor method initializes the object state and attributes of the FFdecoder Class.
@@ -87,7 +87,7 @@ class FFdecoder:
             frame_format (str): sets pixel format(`-pix_fmt`) of the decoded frames.
             custom_ffmpeg (str): assigns the location of custom path/directory for custom FFmpeg executable.
             verbose (bool): enables/disables verbose.
-            extraparams (dict): provides the flexibility to control supported internal and FFmpeg parameters.
+            ffparams (dict): provides the flexibility to control supported internal and FFmpeg parameters.
         """
 
         # enable verbose if specified
@@ -133,7 +133,7 @@ class FFdecoder:
             str(k).strip(): str(v).strip()
             if not (v is None) and not isinstance(v, (dict, list, int, float))
             else v
-            for k, v in extraparams.items()
+            for k, v in ffparams.items()
         }
 
         # handle custom Sourcer API params
