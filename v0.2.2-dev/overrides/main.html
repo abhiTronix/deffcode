@@ -22,6 +22,12 @@
   <meta name="twitter:description" content="{{ config.site_description }}">
   <meta name="twitter:image" content="{{ image }}">
 {% endblock %}
+{% block announce %}
+  <!-- Add announcement here, including arbitrary HTML -->
+  {% set announcement_link = config.site_url ~ '/recipies/basic' %}
+
+  <b>Hey, Live Camera Feed & Screen Capture support has been added in <code>v0.2.2</code>. Checkout new examples <a href="{{ announcement_link }}">here ➶</a></b>
+{% endblock %}
 {% block outdated %}
   You're not viewing the latest version.
   <a href="{{ '../' ~ base_url }}">
