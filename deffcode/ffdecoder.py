@@ -41,29 +41,30 @@ logger.setLevel(logging.DEBUG)
 
 class FFdecoder:
     """
-    > DeFFcode's FFdecoder API is a **high-performance Video-frames Decoder** wrapping [FFmpeg](https://ffmpeg.org/) library aimed at
-    **generating Low-Overhead, High-Speed, and Real-time RGB video-frames** from its pipeline.
+    > FFdecoder API compiles and executes the FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, lightning fast video frames 
+    with robust error-handling in python 🎞️⚡
 
-    FFdecoder API **compiles its FFmpeg pipeline** by processing input Video Source metadata and User-defined options, and **executes it inside a
-    ==[`subprocess`](https://docs.python.org/3/library/subprocess.html) pipe==** that runs independent and concurrently with the main thread,
-    extracting dataframes(1D arrays) into a Numpy buffer. These dataframes are consecutively grabbed from the buffer and decoded into
-    ==3D [24-bit RGB](https://en.wikipedia.org/wiki/List_of_monochrome_and_RGB_color_formats#24-bit_RGB) _(default)_
-    [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames== frames that are readily available
+    FFdecoder API implements a **standalone highly-extensible wrapper around [FFmpeg](https://ffmpeg.org/)** multimedia framework that provides complete 
+    control over the underline pipeline including **access to almost any FFmpeg specification thinkable** such as framerate, resolution, hardware decoder(s), 
+    complex filter(s), and pixel format(s) that are readily supported by all well known Computer Vision libraries. 
+
+    FFdecoder API **compiles its FFmpeg pipeline** by processing input Video Source metadata and User-defined options, and **runs it inside a
+    [`subprocess`](https://docs.python.org/3/library/subprocess.html) pipe** concurrently with the main thread, while extracting output dataframes(1D arrays) 
+    into a Numpy buffer. These dataframes are consecutively grabbed from the buffer and decoded into ==[24-bit RGB](https://en.wikipedia.org/wiki/List_of_monochrome_and_RGB_color_formats#24-bit_RGB) _(default)_
+    [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) 3D frames== that are readily available
     through its [`generateFrame()`](#deffcode.ffdecoder.FFdecoder.generateFrame) method.
 
     FFdecoder API **supports a wide-ranging media stream** as input source such as USB/Virtual/IP Camera Feed, Multimedia video file,
     Screen Capture, Image Sequence, Network URL schemes _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth.
 
-    FFdecoder API provides the **fastest and most flexible Video-frames Extraction API with access to almost any FFmpeg specification thinkable** such as
-    framerate, resolution, hardware decoding, complex filters, and any pixel format that is readily supported by prominent Computer Vision libraries
-    while maintaining the same standard OpenCV-Python _(Python API for OpenCV)_ coding syntax, thereby making it perfect replacement for
-    [OpenCV](https://github.com/opencv/opencv), and easiest to learn or adapt.
+    FFdecoder API maintains the **same standard [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) _(Python API for OpenCV)_ coding syntax**, thereby making it even easier to 
+    integrate this API in any Computer Vision application. 
 
-    Furthermore, FFdecoder API **utilizes [Sourcer API](../../reference/sourcer) at its backend** for gathering, processing, and validating metadata of all
+    Furthermore, FFdecoder API **employs [Sourcer API](../../reference/sourcer) at its backend** for gathering, processing, and validating metadata of all
     multimedia streams available in the given Input Source for formatting its default FFmpeg pipeline. This metadata information is also
     available as a JSON string with its [`metadata`](#deffcode.ffdecoder.FFdecoder.metadata) property object.
 
-    !!! example "For usage examples, kindly refer our **[Basic Recipes :pie:](../../recipes/basic)** and **[Advanced Recipes :microscope:](../../recipes/advanced)**"
+    !!! example "For usage examples, kindly refer our **[Basic Recipes :cake:](../../recipes/basic)** and **[Advanced Recipes :croissant:](../../recipes/advanced)**"
 
     !!! info "FFdecoder API parameters are explained [here ➶](params/)"
     """

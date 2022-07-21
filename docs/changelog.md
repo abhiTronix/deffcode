@@ -23,7 +23,7 @@ limitations under the License.
 
 ## v0.2.1 (2022-07-14) :material-new-box:
 
-??? tip "New Features"
+??? new "New Features"
     - [x] **Sourcer API:**
         * Implemented support for extracting metadata from live input devices/sources.
         * Added new `source_demuxer` and `forced_validate` parameters to `validate_source` internal method.
@@ -105,7 +105,7 @@ limitations under the License.
 
 ## v0.2.0 (2022-03-21)
 
-??? tip "New Features"
+??? new "New Features"
     - [x] Sourcer API:
         - **Added a new `source_audio_samplerate` metadata parameter:**
             - Re-implemented  `__extract_audio_bitrate` internal function from scratch as `__extract_audio_bitrate_nd_samplerate`.
@@ -390,7 +390,7 @@ limitations under the License.
 
 ## v0.1.0 (2022-03-07)
 
-??? tip "New Features"
+??? new "New Features"
     - [x] **:tada: Open-Sourced DeFFcode under the Apache 2.0 License.**
     - [x] **Added new Classes(APIs):**
         * FFdecoder: Performant Real-time **Video frames Generator** for generating blazingly fast video frames(RGB ndarray by default).

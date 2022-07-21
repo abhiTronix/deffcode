@@ -18,6 +18,16 @@ limitations under the License.
 ===============================================
 -->
 
+!!! abstract "Following methods are exclusively design to handle FFmpeg related tasks. These tasks includes validation of installed FFmpeg binaries, downloading of FFmpeg binaries(on Windows), and parsing of FFmpeg metadata into useful information using various pattern matching methods."
+
+!!! example "For usage examples, kindly refer our **[Basic Recipes :cake:](../../recipes/basic)** and **[Advanced Recipes :croissant:](../../recipes/advanced)**"
+
+&nbsp;
+
+::: deffcode.ffhelper.get_valid_ffmpeg_path
+
+&nbsp;
+
 ::: deffcode.ffhelper.get_valid_ffmpeg_path
 
 &nbsp;

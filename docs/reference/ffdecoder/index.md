@@ -20,6 +20,8 @@ limitations under the License.
 
 # FFdecoder API
 
+<img src="../../assets/images/ffdecoder.png" alt="FFdecoder API Functional Diagram" title="FFdecoder API Functional Diagram" loading="lazy" width="90%" class="shadow2" />
+
 ::: deffcode.FFdecoder
 
 &nbsp;

@@ -23,6 +23,7 @@ limitations under the License.
 If you've found a new bug or you've come up with some new feature which can improve the quality of the DeFFcode, then related issues are welcomed! But, Before you do, please read the following guidelines:
 
 ??? question "First Issue on GitHub?" 
+    
     You can easily learn about it from [creating an issue](https://help.github.com/en/github/managing-your-work-on-github/creating-an-issue) wiki.
 
 !!! Info 
@@ -44,7 +45,7 @@ If you've found a new bug or you've come up with some new feature which can impr
 ### Follow the Issue Template
 
 * Please format your issue by choosing the appropriate template. 
-* Any improper/insufficient reports will be marked **invalid**, and if we don't hear back from you we may close the issue.
+* Any improper/insufficient reports will be marked **Invalid ⛔**, and if we don't hear back from you we may close the issue.
 
 ### Raise the Issue
 

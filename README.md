@@ -44,7 +44,7 @@ limitations under the License.
 
 <div align="center">
 
-DeFFcode - A cross-platform **High-performance Video Frames Decoder** that wraps <br>[**FFmpeg**][ffmpeg] pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code ⚡
+DeFFcode - A cross-platform **High-performance Video Frames Decoder** that executes <br>[**FFmpeg**][ffmpeg] pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code ⚡
 
 </div>
 

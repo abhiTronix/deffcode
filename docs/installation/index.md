@@ -112,7 +112,7 @@ DeFFcode is well-tested and supported on the following systems(but not limited t
 
 ### FFmpeg 
 
-When installing DeFFcode, [**FFmpeg**][ffmpeg] is the only prerequisites you need to install manually. **You could easily do it by referring [**FFmpeg Installation doc**](../installation/ffmpeg_install/)**.
+When installing DeFFcode, [**FFmpeg**][ffmpeg] is the only prerequisites you need to configure/install manually. **You could easily do it by referring [**FFmpeg Installation doc**](../installation/ffmpeg_install/)**.
 
 &nbsp;
 

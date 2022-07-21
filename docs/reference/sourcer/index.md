@@ -20,6 +20,10 @@ limitations under the License.
 
 # Sourcer API
 
+<img src="../../assets/images/sourcer.png" alt="Sourcer API Functional Diagram" title="Sourcer API Functional Diagram" loading="lazy" width="90%" class="shadow2" />
+
+&emsp;
+
 ::: deffcode.Sourcer
 
 &nbsp;
