@@ -116,7 +116,7 @@ def test_source_playback(source, custom_ffmpeg, output):
 
 
 @pytest.mark.parametrize(
-    "pixfmts", ["bgr24", "gray", "rgba", "invalid", "yuvj422p", "yuv444p", "bgr48be"]
+    "pixfmts", ["bgr24", "gray", "rgba", "invalid", "invalid2", "yuv444p", "bgr48be"]
 )
 def test_frame_format(pixfmts):
     """
@@ -129,12 +129,23 @@ def test_frame_format(pixfmts):
     ffparams = {"-pix_fmt": "bgr24"}
     try:
         # formulate the decoder with suitable source(for e.g. foo.mp4)
-        decoder = FFdecoder(
-            source,
-            frame_format=pixfmts,
-            custom_ffmpeg=return_static_ffmpeg(),
-            **ffparams,
-        ).formulate()
+        if pixfmts != "invalid2":
+            decoder = FFdecoder(
+                source,
+                frame_format=pixfmts,
+                custom_ffmpeg=return_static_ffmpeg(),
+                **ffparams,
+            ).formulate()
+        else:
+            decoder = FFdecoder(
+                source,
+                custom_ffmpeg=return_static_ffmpeg(),
+                **ffparams,
+            )
+            # assign manually pix-format via `metadata` property object {special case}
+            decoder.metadata = dict(output_frames_pixfmt="yuvj422p")
+            # formulate decoder
+            decoder.formulate()
 
         # grab RGB24(default) 3D frames from decoder
         for frame in decoder.generateFrame():
@@ -150,9 +161,29 @@ def test_frame_format(pixfmts):
 
 
 @pytest.mark.parametrize(
-    "custom_params", [{"source_has_video": "Custom_Value"}, ["invalid"], {"foo": 1234}]
+    "custom_params, checks",
+    [
+        ({"source": "Custom_Value"}, False),
+        ({"source_video_resolution": ["invalid"]}, False),
+        (["invalid"], False),
+        (
+            dict(
+                mystring="abcd",  # string data
+                myint=1234,  # integers data
+                mylist=[1, "Rohan", ["inner_list"]],  # list data
+                mytuple=(1, "John", ("inner_tuple")),  # tuple data
+                mydict={"anotherstring": "hello"},  # dictionary data
+                myjson=json.loads(
+                    '{"name": "John", "age": 30, "city": "New York"}'
+                ),  # json data
+                source_video_resolution=[640, 480],
+                output_frames_pixfmt="invalid",
+            ),
+            True,
+        ),
+    ],
 )
-def test_metadata(custom_params):
+def test_metadata(custom_params, checks):
     """
     Testing `metadata` print and updation
     """
@@ -177,11 +208,13 @@ def test_metadata(custom_params):
         # print metadata as `json.dump`
         logger.debug(decoder.metadata)
 
-        assert all(
-            json.loads(decoder.metadata)[x] == custom_params[x] for x in custom_params
-        ), "Test failed"
+        if checks:
+            assert all(
+                json.loads(decoder.metadata)[x] == custom_params[x]
+                for x in custom_params
+            ), "Test failed"
     except Exception as e:
-        if custom_params == ["invalid"]:
+        if custom_params == ["invalid"] or not checks:
             pytest.xfail(str(e))
         else:
             pytest.fail(str(e))
@@ -193,8 +226,11 @@ def test_metadata(custom_params):
 @pytest.mark.parametrize(
     "ffparams, pixfmts",
     [
-        ({"-ss": "00:00:01.45", "-frames:v": 1}, "rgba"),
-        ({"-ss": "00:02.45", "-vframes": 1}, "gray"),
+        (
+            {"-ss": "00:00:01.45", "-frames:v": 1, "-custom_resolution": [640, 480]},
+            "rgba",
+        ),
+        ({"-ss": "00:02.45", "-vframes": 1, "-custom_resolution": "invalid"}, "gray"),
     ],
 )
 def test_seek_n_save(ffparams, pixfmts):

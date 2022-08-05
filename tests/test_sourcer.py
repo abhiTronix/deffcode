@@ -64,7 +64,7 @@ def test_source(source, sourcer_params):
         ).probe_stream()
         logger.debug("Found Metadata: `{}`".format(sourcer.retrieve_metadata()))
     except Exception as e:
-        if isinstance(e, (ValueError, IOError)):
+        if isinstance(e, (ValueError, ValueError)):
             pytest.xfail("Test Passed!")
         else:
             pytest.fail(str(e))
@@ -113,7 +113,7 @@ def test_probe_stream_n_retrieve_metadata(source, default_stream_indexes, params
                 >= actual_frame_count_n_frame_size(source)[0]
             ), "Test Failed for frames count!"
     except Exception as e:
-        if isinstance(e, (ValueError, IOError)) or (
+        if isinstance(e, (ValueError, ValueError)) or (
             source in ["invalid", "unknown://invalid.com/"]
             and isinstance(e, AssertionError)
         ):
