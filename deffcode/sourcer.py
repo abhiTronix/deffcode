@@ -45,21 +45,22 @@ logger.setLevel(logging.DEBUG)
 
 class Sourcer:
     """
-    > Sourcer API acts as **Source Probing Utility** that attempts to open the given Input Source with FFmpeg inside a
-    [`subprocess`](https://docs.python.org/3/library/subprocess.html) pipe, and parses/probes the standard output (stdout) to 
-    recognize all the properties, formats of each media stream contained in it.
+    > Sourcer API acts as **Source Probing Utility** that unlike other FFmpeg Wrappers which mostly uses [`ffprobe`](https://ffmpeg.org/ffprobe.html) module,
+    attempts to open the given Input Source directly with [**FFmpeg**](https://ffmpeg.org/) inside a [`subprocess`](https://docs.python.org/3/library/subprocess.html) pipe,
+    and parses/probes the standard output(stdout) employing various pattern matching methods in order to recognize all the properties(metadata) of each
+    media stream contained in it.
 
-    Sourcer API primarily acts as a **backend for [FFdecoder API](../../reference/ffdecoder)** for gathering, processing, and validating 
-    all multimedia streams metadata available in the given Input Source. Sourcer shares this information with FFdecoder API which helps in the 
-    formatting of its default FFmpeg pipeline parameters for a real-time video-frames generation.  
+    Sourcer API primarily acts as a **backend for [FFdecoder API](../../reference/ffdecoder)** for gathering, processing, and validating
+    all multimedia streams metadata available in the given Input Source. Sourcer shares this information with FFdecoder API which helps in
+    formulating its default FFmpeg pipeline parameters for real-time video-frames generation.
 
-    Sourcer API is design as a standalone **Metadata Extraction API** for easily parsing information from multimedia streams available in the 
+    Sourcer API is design as a standalone **Metadata Extraction API** for easily parsing information from multimedia streams available in the
     given Input Source and returns it in either Human-readable _(JSON string)_ or Machine-readable _(Dictionary object)_ type with its
     [`retrieve_metadata()`](#deffcode.sourcer.Sourcer.retrieve_metadata) method.
 
     !!! info "All metadata attributes available with Sourcer API(On :fontawesome-brands-windows: Windows) are discussed [here ➶](../../recipes/basic/#display-source-video-metadata)."
 
-    Furthermore, Sourcer's [`sourcer_params`](params/#sourcer_params) dictionary parameter can be used to define almost any FFmpeg parameter as well as alter internal API settings. 
+    Furthermore, Sourcer's [`sourcer_params`](params/#sourcer_params) dictionary parameter can be used to define almost any FFmpeg parameter as well as alter internal API settings.
 
     !!! example "For usage examples, kindly refer our **[Basic Recipes :cake:](../../recipes/basic)** and **[Advanced Recipes :croissant:](../../recipes/advanced)**"
 
@@ -91,7 +92,11 @@ class Sourcer:
         self.__verbose_logs = (  # enable verbose if specified
             verbose if (verbose and isinstance(verbose, bool)) else False
         )
-        self.__ffsp_output = None  # handles metadata received
+
+        # handle metadata received
+        self.__ffsp_output = None
+
+        # sanitize sourcer_params
         self.__sourcer_params = {
             str(k).strip(): str(v).strip()
             if not isinstance(v, (dict, list, int, float))
@@ -106,6 +111,18 @@ class Sourcer:
         if not isinstance(self.__forcevalidatesource, bool):
             # reset improper values
             self.__forcevalidatesource = False
+
+        # handle user defined ffmpeg pre-headers(parameters such as `-re`) parameters (must be a list)
+        self.__ffmpeg_prefixes = self.__extra_params.pop("-ffprefixes", [])
+        if not isinstance(self.__ffmpeg_prefixes, list):
+            # log it
+            logger.warning(
+                "Discarding invalid `-ffprefixes` of wrong type `{}`!".format(
+                    type(self.__ffmpeg_prefixes)
+                )
+            )
+            # reset improper values
+            self.__ffmpeg_prefixes = []
 
         # handle where to save the downloaded FFmpeg Static assets on Windows(if specified)
         __ffmpeg_download_path = self.__sourcer_params.pop("-ffmpeg_download_path", "")
@@ -211,18 +228,21 @@ class Sourcer:
             # parse video duration
             self.__default_source_duration = self.__extract_duration()
             # calculate all flags
-            if (self.__default_video_bitrate or self.__default_video_framerate) and (
-                self.__default_audio_bitrate or self.__default_audio_samplerate
-            ):
+            if (
+                self.__default_video_bitrate
+                or (self.__default_video_framerate and self.__default_video_resolution)
+            ) and (self.__default_audio_bitrate or self.__default_audio_samplerate):
                 self.__contains_video = True
                 self.__contains_audio = True
-            elif self.__default_video_bitrate or self.__default_video_framerate:
+            elif self.__default_video_bitrate or (
+                self.__default_video_framerate and self.__default_video_resolution
+            ):
                 self.__contains_video = True
             elif self.__default_audio_bitrate or self.__default_audio_samplerate:
                 self.__contains_audio = True
             else:
-                raise IOError(
-                    "Invalid source provided. No usable Audio/Video stream detected. Aborting!!!"
+                raise ValueError(
+                    "Invalid source with no decodable audio or video stream provided. Aborting!"
                 )
         # calculate approximate number of video frame
         if self.__default_video_framerate and self.__default_source_duration:
@@ -256,6 +276,8 @@ class Sourcer:
             "ffmpeg_binary_path": self.__ffmpeg,
             "source": self.__source,
         }
+        # Only either `source_demuxer` or `source_extension` attribute can be
+        # present in metadata.
         metadata.update(
             {"source_extension": self.__source_extension}
             if self.__source_demuxer is None
@@ -295,7 +317,9 @@ class Sourcer:
         **Returns:** `True` if passed tests else `False`.
         """
         # assert if valid source
-        assert source and isinstance(source, str), "Input source is empty!"
+        assert source and isinstance(
+            source, str
+        ), "Input source is empty or invalid type!"
         # assert if valid source demuxer
         assert source_demuxer is None or source_demuxer in get_supported_demuxers(
             self.__ffmpeg
@@ -323,7 +347,9 @@ class Sourcer:
             raise ValueError("Input source is invalid. Aborting!")
         # extract metadata
         metadata = check_sp_output(
-            [self.__ffmpeg, "-hide_banner"]
+            [self.__ffmpeg]
+            + (["-hide_banner"] if not self.__verbose_logs else [])
+            + self.__ffmpeg_prefixes
             + (["-f", source_demuxer] if source_demuxer else [])
             + ["-i", source],
             force_retrieve_stderr=True,
@@ -487,6 +513,7 @@ class Sourcer:
                 if default_stream > 0 and default_stream < len(meta_text)
                 else 0
             ]
+
             # filter data
             filtered_resolution = re.findall(
                 r"([1-9]\d+)x([1-9]\d+)", selected_stream.strip()
@@ -494,13 +521,24 @@ class Sourcer:
             filtered_framerate = re.findall(
                 r"\d+(?:\.\d+)?\sfps", selected_stream.strip()
             )
-            # get framerate and resolution metadata
+            filtered_tbr = re.findall(r"\d+(?:\.\d+)?\stbr", selected_stream.strip())
+
+            # extract framerate metadata
             if filtered_framerate:
+                # calculate actual framerate
                 result["framerate"] = float(
                     re.findall(r"[\d\.\d]+", filtered_framerate[0])[0]
                 )
+            elif filtered_tbr:
+                # guess from TBR(if fps unavailable)
+                result["framerate"] = float(
+                    re.findall(r"[\d\.\d]+", filtered_tbr[0])[0]
+                )
+
+            # extract resolution metadata
             if filtered_resolution:
                 result["resolution"] = [int(x) for x in filtered_resolution[0]]
+
         return result if result and (len(result) == 2) else {}
 
     def __extract_duration(self, inseconds=True):
