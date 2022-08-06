@@ -164,7 +164,10 @@ def test_frame_format(pixfmts):
     "custom_params, checks",
     [
         ({"source": "Custom_Value"}, False),
-        ({"source_video_resolution": ["invalid"]}, False),
+        (
+            {"output_frames_pixfmt": "invalid", "source_video_resolution": ["invalid"]},
+            False,
+        ),
         (["invalid"], False),
         (
             dict(
@@ -177,7 +180,6 @@ def test_frame_format(pixfmts):
                     '{"name": "John", "age": 30, "city": "New York"}'
                 ),  # json data
                 source_video_resolution=[640, 480],
-                output_frames_pixfmt="invalid",
             ),
             True,
         ),
@@ -214,7 +216,7 @@ def test_metadata(custom_params, checks):
                 for x in custom_params
             ), "Test failed"
     except Exception as e:
-        if custom_params == ["invalid"] or not checks:
+        if not checks:
             pytest.xfail(str(e))
         else:
             pytest.fail(str(e))
