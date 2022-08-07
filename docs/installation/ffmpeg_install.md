@@ -82,13 +82,13 @@ If DeFFcode APIs do not receive any input from the user on [**`custom_ffmpeg`**]
 
     * You can also provide a custom save path for auto-downloading **FFmpeg Static Binaries** through exclusive [`-ffmpeg_download_path`](../../reference/sourcer/params/#exclusive-parameters) attribute in Sourcer API.
 
-        ??? question "How to use  `-ffmpeg_download_path` attribute in FFdecoder API?"
+        ??? question "How to use  `-ffmpeg_download_path` attribute in FFdecoder API?
             
-            `-ffmpeg_download_path` is also available in FFdecoder API through the [`-custom_sourcer_params`](../../reference/ffdecoder/params/#b-exclusive-parameters) attribute of its `ffparams` dictionary parameter"
+            `-ffmpeg_download_path` is also available in FFdecoder API through the [`-custom_sourcer_params`](../../reference/ffdecoder/params/#b-exclusive-parameters) attribute of its `ffparams` dictionary parameter
 
-    * If binaries were found at the specified path, DeFFcode APIs automatically skips the auto-installation step.
+    * If binaries were found at the specified path, DeFFcode APIs automatically skips the Auto-Installation step.
 
-    * ==If the required FFmpeg static binary fails to download, extract, or validate during auto-installation, then DeFFcode APIs will exit with **RuntimeError**!==
+    * ==If the required FFmpeg static binary fails to download, extract, or validate during Auto-Installation, then DeFFcode APIs will exit with **RuntimeError**!==
 
 
 ### B. Manual Configuration

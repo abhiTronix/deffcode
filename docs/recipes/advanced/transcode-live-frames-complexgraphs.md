@@ -41,7 +41,7 @@ We'll discuss the transcoding of live complex filtergraphs in the following reci
 
 !!! warning "DeFFcode APIs requires FFmpeg executable"
 
-    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../installation/ffmpeg_install/) for its installation.
+    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../../installation/ffmpeg_install/) for its installation.
 
 ???+ info "Additional Python Dependencies for following recipes"
 

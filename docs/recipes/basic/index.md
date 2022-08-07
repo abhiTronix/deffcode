@@ -31,7 +31,7 @@ The following recipes should be reasonably accessible to beginners of any skill 
 
 !!! alert "Refer Installation doc first!"
 
-    If this is your first time using DeFFcode, head straight to the **[Installation Notes](installation/#installation-notes) to install DeFFcode on your machine**.
+    If this is your first time using DeFFcode, head straight to the **[Installation Notes](installation/#installation-notes) to install DeFFcode with required prerequisites on your machine**.
 
 
 ??? tip "Any proficiency with OpenCV-Python will be Helpful"
