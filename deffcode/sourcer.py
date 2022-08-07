@@ -113,7 +113,7 @@ class Sourcer:
             self.__forcevalidatesource = False
 
         # handle user defined ffmpeg pre-headers(parameters such as `-re`) parameters (must be a list)
-        self.__ffmpeg_prefixes = self.__extra_params.pop("-ffprefixes", [])
+        self.__ffmpeg_prefixes = self.__sourcer_params.pop("-ffprefixes", [])
         if not isinstance(self.__ffmpeg_prefixes, list):
             # log it
             logger.warning(
