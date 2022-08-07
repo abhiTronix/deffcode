@@ -74,15 +74,19 @@ DeFFcode APIs supports **Auto-Installation** and **Manual Configuration** method
 If DeFFcode APIs do not receive any input from the user on [**`custom_ffmpeg`**](../../reference/ffdecoder/params/#custom_ffmpeg) parameter, then they try to **auto-generate** the required FFmpeg Static Binaries from our dedicated [**Github Server**](https://github.com/abhiTronix/FFmpeg-Builds) into the temporary directory(e.g. `C:\Temp`) of your machine on the Windows OS systems.
 
 
-!!! danger "Active Internet connection is required while downloading required FFmpeg Static Binaries from our dedicated Github Server."
+!!! danger "Active Internet connection :fontawesome-brands-windows: Windows is required while downloading required FFmpeg Static Binaries from our dedicated [**Github Server**](https://github.com/abhiTronix/FFmpeg-Builds) onto your :fontawesome-brands-windows: Windows machine."
 
-!!! warning "Important Information"
+???+ warning "Important Information regarding Auto-Installation"
 
-    * The files downloaded to a temporary directory (e.g. `C:\TEMP`), may get erased if your machine shutdowns/restarts.
+    * The files downloaded to a temporary directory (e.g. `C:\TEMP`), may get erased if your machine shutdowns/restarts in some cases.
 
-    * You can also provide a custom save path for auto-downloading **FFmpeg Static Binaries** through [`-ffmpeg_download_path`](../params/#a-exclusive-parameters) parameter.
+    * You can also provide a custom save path for auto-downloading **FFmpeg Static Binaries** through exclusive [`-ffmpeg_download_path`](../../reference/sourcer/params/#exclusive-parameters) attribute in Sourcer API.
 
-    * If binaries were found at the specified path, StreamGear automatically skips the auto-installation step.
+        ??? question "How to use  `-ffmpeg_download_path` attribute in FFdecoder API?"
+            
+            `-ffmpeg_download_path` is also available in FFdecoder API through the [`-custom_sourcer_params`](../../reference/ffdecoder/params/#b-exclusive-parameters) attribute of its `ffparams` dictionary parameter"
+
+    * If binaries were found at the specified path, DeFFcode APIs automatically skips the auto-installation step.
 
     * ==If the required FFmpeg static binary fails to download, extract, or validate during auto-installation, then DeFFcode APIs will exit with **RuntimeError**!==
 
