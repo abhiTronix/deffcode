@@ -81,6 +81,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.2-dev/recipes/advanced/update-metadata/</loc>
+         <lastmod>2022-08-07</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.2-dev/recipes/basic/</loc>
          <lastmod>2022-08-07</lastmod>
          <changefreq>daily</changefreq>
