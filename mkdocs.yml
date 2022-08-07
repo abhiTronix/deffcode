@@ -67,6 +67,9 @@ theme:
     logo: logo
   logo: assets/images/android-chrome-192x192.png
   favicon: assets/images/favicon-32x32.png
+  # 404 page
+  static_templates:
+    - 404.html
 
 # Plugins
 plugins:
