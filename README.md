@@ -44,7 +44,7 @@ limitations under the License.
 
 <div align="center">
 
-DeFFcode - A cross-platform **High-performance Video Frames Decoder** that executes <br>FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code ⚡
+DeFFcode - A cross-platform **High-performance Video Frames Decoder** that flexibly executes <br>FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code ⚡
 
 </div>
 
@@ -54,7 +54,7 @@ DeFFcode - A cross-platform **High-performance Video Frames Decoder** that execu
 
 **<ins>Highly Flexible</ins> -** _DeFFcode APIs gains an edge over other FFmpeg Wrappers by providing **complete control over the underline pipeline** including **access to almost any FFmpeg specification thinkable** such as specifying framerate, resolution, hardware decoder(s), filtergraph(s), and pixel-format(s) that are readily **supported by all well known Computer Vision libraries**._
 
-**<ins>Highly Convenient</ins> -** _FFmpeg has a steep learning curve especially for users unfamiliar with a command line interface. DeFFcode helps users by maintaining the **same standard [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) (Python API for OpenCV) coding syntax for its APIs**, thereby making it even **easier to learn, create, or develop Python applications with FFmpeg**._
+**<ins>Highly Convenient</ins> -** _FFmpeg has a steep learning curve especially for users unfamiliar with a command line interface. DeFFcode helps users by maintaining the **same standard [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) (Python API for OpenCV) coding syntax for its APIs**, thereby making it even **easier to learn, create, and develop FFmpeg based apps** in Python._
 
 &nbsp;
 

@@ -23,15 +23,15 @@ limitations under the License.
 ![DeFFcode](assets/images/deffcode.png#only-light){ loading=lazy }
 ![DeFFcode](assets/images/deffcode-dark.png#only-dark){ loading=lazy }
 
-<center>DeFFcode - A cross-platform **High-performance Video Frames Decoder** that executes <br>FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code :zap:</center>
+<center>DeFFcode - A cross-platform **High-performance Video Frames Decoder** that flexibly executes <br>FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code :zap:</center>
 
 <div class="spacer"></div>
 
 **==Highly Adaptive== -** DeFFcode APIs implements a **standalone highly-extensible wrapper around [FFmpeg][ffmpeg]** multimedia framework. These APIs **supports a wide-ranging media streams as input** source such as live USB/Virtual/IP camera feeds, regular multimedia files, screen recordings, image sequences, network protocols _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth.
 
-**==Highly Flexible== -** DeFFcode APIs gains an edge over other FFmpeg Wrappers by providing **complete control over the underline pipeline** including **access to almost any FFmpeg specification thinkable** such as specifying framerate, resolution, hardware decoder(s), <br>filtergraph(s), and pixel-format(s) that are readily **supported by all well known <br>Computer Vision libraries**.
+**==Highly Flexible== -** DeFFcode APIs gains an edge over other Wrappers by providing **complete control over the underline pipeline** including **access to almost any FFmpeg specification thinkable** such as specifying framerate, resolution, hardware decoder(s), filtergraph(s), and <br>pixel-format(s) that are readily **supported by all well known Computer Vision libraries**.
 
-**==Highly Convenient== -**  FFmpeg has a steep learning curve especially for users unfamiliar with a command line interface. DeFFcode helps users by maintaining the **same standard [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) (Python API for OpenCV) coding syntax for its APIs**, thereby making it even <br>**easier to learn, create, or develop Python applications with FFmpeg**.
+**==Highly Convenient== -**  FFmpeg has a steep learning curve especially for users unfamiliar with a command line interface. DeFFcode helps users by keeping the **same [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) _(Python API for OpenCV)_ coding syntax for its APIs**, thereby making it even **easier to learn, create, and develop FFmpeg based apps** in Python.
 
 &thinsp;
 

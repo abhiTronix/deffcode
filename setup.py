@@ -44,7 +44,7 @@ setup(
     name="deffcode",
     packages=["deffcode"],
     version=pkg_version["__version__"],
-    description="A cross-platform High-performance Video Frames Decoder in python.",
+    description="A Cross-platform High-performance & Flexible Video Frames Decoder in python.",
     license="Apache License 2.0",
     author="Abhishek Thakur",
     install_requires=[
@@ -61,6 +61,7 @@ setup(
     keywords=[
         "FFmpeg",
         "Decoder",
+        "Framework",
         "Video Processing",
         "Computer Vision",
         "Video Decoding",
