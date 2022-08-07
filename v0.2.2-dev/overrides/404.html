@@ -1,11 +1,12 @@
 {% extends "main.html" %} {% block content %}
 {% set image_404 = config.site_url ~ '/assets/images/404.png' %}
+{% set homepage_link = config.site_url ~ '/' %}
 <img src="{{ image_404 }}" alt="404" loading="lazy" width="80%" />
 <div class="contant_box_404">
 	<h2 class="h2">
               Look like you're lost
             </h2>
-	<p>the page you are looking for not available!</p> <a href="https://abhitronix.github.io/deffcode/" class="link_404">Go to Home</a> </div>
+	<p>the page you are looking for not available!</p> <a href="{{ homepage_link }}" class="link_404">Go to Home</a> </div>
 <style>
 .link_404 {
 	color: #fff !important;
