@@ -74,7 +74,7 @@ DeFFcode APIs supports **Auto-Installation** and **Manual Configuration** method
 If DeFFcode APIs do not receive any input from the user on [**`custom_ffmpeg`**](../../reference/ffdecoder/params/#custom_ffmpeg) parameter, then they try to **auto-generate** the required FFmpeg Static Binaries from our dedicated [**Github Server**](https://github.com/abhiTronix/FFmpeg-Builds) into the temporary directory(e.g. `C:\Temp`) of your machine on the Windows OS systems.
 
 
-!!! danger "Active Internet connection :fontawesome-brands-windows: Windows is required while downloading required FFmpeg Static Binaries from our dedicated [**Github Server**](https://github.com/abhiTronix/FFmpeg-Builds) onto your :fontawesome-brands-windows: Windows machine."
+!!! danger "Active Internet connection is required while downloading required FFmpeg Static Binaries from our dedicated [**Github Server**](https://github.com/abhiTronix/FFmpeg-Builds) onto your :fontawesome-brands-windows: Windows machine."
 
 ???+ warning "Important Information regarding Auto-Installation"
 
