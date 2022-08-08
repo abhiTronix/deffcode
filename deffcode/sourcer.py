@@ -476,7 +476,7 @@ class Sourcer:
             filtered_audio_samplerate = re.findall(
                 r",\s[0-9]+\sHz", selected_stream.strip()
             )
-            # get audio bitrate and samplerate metadata
+            # get audio bitrate metadata
             if filtered_audio_bitrate:
                 filtered = filtered_audio_bitrate[0].split(" ")[1:3]
                 result["bitrate"] = "{}{}".format(
@@ -485,10 +485,12 @@ class Sourcer:
                 )
             else:
                 result["bitrate"] = ""
-            if filtered_audio_samplerate:
-                result["samplerate"] = filtered_audio_samplerate[0].split(", ")[1]
-            else:
-                result["samplerate"] = ""
+            # get audio samplerate metadata
+            result["samplerate"] = (
+                filtered_audio_samplerate[0].split(", ")[1]
+                if filtered_audio_samplerate
+                else ""
+            )
         return result if result and (len(result) == 2) else {}
 
     def __extract_resolution_framerate(self, default_stream=0):

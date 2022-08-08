@@ -171,11 +171,13 @@ def test_frame_format(pixfmts):
                     "John",
                     ("inner_tuple"),
                 ),
+                "output_frames_pixfmt": 1234, # invalid pixformat
+                "source_video_resolution": [640], # invalid resolution
             },
             False,
         ),
         (
-            {"output_frames_pixfmt": "invalid", "source_video_resolution": ["invalid"]},
+            {"output_frames_pixfmt": "invalid"},
             False,
         ),
         (["invalid"], False),
@@ -201,11 +203,11 @@ def test_metadata(custom_params, checks):
     decoder = None
     source = return_testvideo_path(fmt="vo")
     try:
+        # custom vars
+        ffparams = {"-framerate": None} if not checks else {}
         # formulate the decoder with suitable source(for e.g. foo.mp4)
         decoder = FFdecoder(
-            source,
-            custom_ffmpeg=return_static_ffmpeg(),
-            verbose=True,
+            source, custom_ffmpeg=return_static_ffmpeg(), verbose=True, **ffparams
         ).formulate()
         # re-test
         decoder.formulate()
@@ -238,10 +240,27 @@ def test_metadata(custom_params, checks):
     "ffparams, pixfmts",
     [
         (
-            {"-ss": "00:00:01.45", "-frames:v": 1, "-custom_resolution": [640, 480]},
+            {
+                "-ss": "00:00:01.45",
+                "-frames:v": 1,
+                "-custom_resolution": [640, 480],
+                "-passthrough_audio": "invalid",  # just for test
+                "-vcodec": "unknown",
+            },
             "rgba",
         ),
-        ({"-ss": "00:02.45", "-vframes": 1, "-custom_resolution": "invalid"}, "gray"),
+        (
+            {
+                "-ss": "00:02.45",
+                "-vframes": 1,
+                "-custom_resolution": "invalid",
+                "-ffprefixes": "invalid",
+                "-clones": "invalid",
+                "-framerate": "invalid",
+                "-vcodec": None,
+            },
+            "gray",
+        ),
     ],
 )
 def test_seek_n_save(ffparams, pixfmts):

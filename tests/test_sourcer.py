@@ -38,33 +38,46 @@ logger.setLevel(logging.DEBUG)
 
 
 @pytest.mark.parametrize(
-    "source, sourcer_params",
+    "source, sourcer_params, custom_ffmpeg",
     [
-        (return_testvideo_path(), {}),
-        (
-            "rtmp://live.twitch.tv/",
-            {"-ffmpeg_download_path": ["invalid"]},
-        ),
-        ("unknown://invalid.com/", {}),
-        ("unknown://invalid.com/", {"-force_validate_source": True}),
-        (return_testvideo_path(fmt="ao"), {"-force_validate_source": ["invalid"]}),
         (
             return_generated_frames_path(return_static_ffmpeg()),
-            {"-force_validate_source": "invalid"},
+            {"-ffprefixes": "invalid"},  # invalid ffprefixes
+            return_static_ffmpeg(),
+        ),
+        (
+            "rtmp://live.twitch.tv/",
+            {"-ffmpeg_download_path": ["invalid"]},  # invalid FFmpeg download path
+            return_static_ffmpeg(),
+        ),
+        (
+            "unknown://invalid.com/",  # invalid source-1
+            {"-force_validate_source": True},  # force_validate_source
+            return_static_ffmpeg(),
+        ),
+        (
+            return_testvideo_path(fmt="ao"),
+            {"-force_validate_source": ["invalid"]},  # invalid force_validate_source
+            return_static_ffmpeg(),
+        ),
+        (
+            return_testvideo_path(),
+            {},
+            "invalid_ffmpeg",  # invalid FFmpeg
         ),
     ],
 )
-def test_source(source, sourcer_params):
+def test_source(source, sourcer_params, custom_ffmpeg):
     """
     Paths Source - Test various source paths/urls supported by Sourcer.
     """
     try:
         sourcer = Sourcer(
-            source, custom_ffmpeg=return_static_ffmpeg(), verbose=True, **sourcer_params
+            source, custom_ffmpeg=custom_ffmpeg, verbose=True, **sourcer_params
         ).probe_stream()
         logger.debug("Found Metadata: `{}`".format(sourcer.retrieve_metadata()))
     except Exception as e:
-        if isinstance(e, (ValueError, ValueError)):
+        if isinstance(e, ValueError) or custom_ffmpeg == "invalid_ffmpeg":
             pytest.xfail("Test Passed!")
         else:
             pytest.fail(str(e))
@@ -74,6 +87,7 @@ def test_source(source, sourcer_params):
     "source, default_stream_indexes, params",
     [
         (return_testvideo_path(), [0, 0], ["source_has_video", "source_has_audio"]),
+        ("mandelbrot=size=1280x720:rate=30", [0, 0], ["source_has_video"]),
         (return_testvideo_path(fmt="ao"), [3, 2], ["source_has_audio"]),
         (
             "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8",
