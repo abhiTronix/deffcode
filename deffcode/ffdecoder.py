@@ -133,8 +133,7 @@ class FFdecoder:
         # cleans and reformat user-defined parameters
         self.__extra_params = {
             str(k).strip(): str(v).strip()
-            if not (v is None)
-            and not isinstance(v, (dict, list, int, float, tuple))
+            if not (v is None) and not isinstance(v, (dict, list, int, float, tuple))
             else v
             for k, v in ffparams.items()
         }
@@ -596,26 +595,33 @@ class FFdecoder:
             self.__verbose_logs and logger.info("Updating Metadata...")
             # extract any source metadata keys
             default_keys = set(value).intersection(self.__source_metadata)
-            # iterate over source metadata keys (if defined) and sanitize it
-            if default_keys:
-                for key in default_keys:
-                    if key == "source":
-                        # `source` metadata value cannot be altered
-                        logger.info(
-                            "`source` metadata value cannot be altered. Discarding!"
-                        )
-                    elif isinstance(value[key], type(self.__source_metadata[key])):
-                        # check if correct datatype as original
-                        # update source metadata if valid
-                        self.__source_metadata.update(value)
-                    else:
-                        # otherwise discard and log it
-                        logger.warning(
-                            "Manually assigned `{}` metadata value is invalid. Discarding!"
-                        ).format(key)
-            else:
-                # update user-defined metadata
-                self.__user_metadata.update(value)
+            # iterate over source metadata keys and sanitize it
+            for key in default_keys or []:
+                if key == "source":
+                    # `source` metadata value cannot be altered
+                    logger.warning(
+                        "`source` metadata value cannot be altered. Discarding!"
+                    )
+                elif isinstance(value[key], type(self.__source_metadata[key])):
+                    # check if correct datatype as original
+                    # update source metadata if valid
+                    self.__source_metadata.update(value)
+                    continue
+                else:
+                    # otherwise discard and log it
+                    logger.warning(
+                        "Manually assigned `{}` metadata value is invalid type. Discarding!"
+                    ).format(key)
+                # delete invalid key
+                del value[key]
+            # There is no concept of a tuple in the JSON format.
+            # Python's `json` module converts Python tuples to JSON lists
+            # because that's the closest thing in JSON to a tuple.
+            any(isinstance(value[x], tuple) for x in value) and logger.warning(
+                "All TUPLE metadata values will be converted to LIST datatype. Read docs for more info."
+            )
+            # update user-defined metadata
+            self.__user_metadata.update(value)
         else:
             # otherwise raise error
             raise ValueError("Invalid datatype metadata assigned. Aborting!")

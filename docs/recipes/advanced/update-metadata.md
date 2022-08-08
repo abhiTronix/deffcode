@@ -24,7 +24,7 @@ limitations under the License.
 
 We'll discuss video metadata extraction using both these APIs briefly in the following recipes:
 
-!!! quote "This feature is not yet fully explored, but in the near future you'll be able to use it to dynamically alter FFmpeg Pipeline in FFdecoder API for changing any property _(frame-size, pixel-format, etc.)_ of your video frames in real-time like a pro. Stay tuned :wink:"
+!!! quote "This feature is not yet fully explored, but in the near future you'll be able to use it to dynamically alter any FFmpeg Pipeline property of your video frames _(such as frame-size, pixel-format, etc.)_ in real-time like a pro. Stay tuned :smiley:"
 
 &thinsp;
 
@@ -220,4 +220,4 @@ decoder.terminate()
 
 &nbsp;
 
-[^1]: Make sure your property with desired datatype can be inputted to `json.dump`. 
+[^1]: :warning: **There is no concept of `tuple` datatype in the JSON format.** Thereby, Python's [`json`](https://docs.python.org/3/library/json.html) module auto-converts all `tuple` python values into JSON `list` because that's the closest thing in JSON format to a tuple.

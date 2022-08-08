@@ -163,7 +163,17 @@ def test_frame_format(pixfmts):
 @pytest.mark.parametrize(
     "custom_params, checks",
     [
-        ({"source": "Custom_Value"}, False),
+        (
+            {
+                "source": "Custom_Value",  # source cannot be altered
+                "mytuple": (  # Python's `json` module converts Python tuples to JSON lists
+                    1,
+                    "John",
+                    ("inner_tuple"),
+                ),
+            },
+            False,
+        ),
         (
             {"output_frames_pixfmt": "invalid", "source_video_resolution": ["invalid"]},
             False,
@@ -174,7 +184,6 @@ def test_frame_format(pixfmts):
                 mystring="abcd",  # string data
                 myint=1234,  # integers data
                 mylist=[1, "Rohan", ["inner_list"]],  # list data
-                mytuple=(1, "John", ("inner_tuple")),  # tuple data
                 mydict={"anotherstring": "hello"},  # dictionary data
                 myjson=json.loads(
                     '{"name": "John", "age": 30, "city": "New York"}'
