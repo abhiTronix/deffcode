@@ -100,12 +100,13 @@ If this is your first time using DeFFcode, head straight to the **[Installation 
 
 ### Recipes _a.k.a_ Examples:
 
-Once you have DeFFcode installed, checkout our **[Well-Documented Recipes 🍱][basic-recipes] for usage examples**:
+Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][basic-recipes] for usage examples**:
 
 > **Note** In case you're run into any problems, consult our [Help section][help].
 
 ### A. [**Basic Recipes 🍰**][basic-recipes]: _Recipes for beginners of any skill level to get started._
 
+<br>
 <div align="center">
   <a href="https://abhitronix.github.io/deffcode/latest/recipes/basic/transcode-live-frames-simplegraphs/#transcoding-trimmed-and-reversed-video"><img src="docs/overrides/assets/gifs/bigbuckbunny_reversed.gif" alt="Big Buck Bunny Reversed" title="Click to view source code" width="70%" /> </a>
   <br>
@@ -114,8 +115,8 @@ Once you have DeFFcode installed, checkout our **[Well-Documented Recipes 🍱][
 
 <br>
 
-<details>
-  <summary><b>Basic Decoding Recipes</b> <i>(click-to-reveal)</i></summary>
+<details open>
+  <summary><b>Basic Decoding Recipes</b></summary>
 
 - [Capturing RGB frames from a video file][capturing-rgb-frames-from-a-video-file]
 - [Capturing and Previewing BGR frames from a video file][capturing-and-previewing-bgr-frames-from-a-video-file] _(OpenCV Support)_
@@ -129,7 +130,7 @@ Once you have DeFFcode installed, checkout our **[Well-Documented Recipes 🍱][
 
 </details>
 
-<details>
+<details open>
   <summary><b>Basic Transcoding Recipes</b></summary>
 
 - [Transcoding video using OpenCV VideoWriter API][transcoding-video-using-opencv-videowriter-api]
@@ -143,7 +144,7 @@ Once you have DeFFcode installed, checkout our **[Well-Documented Recipes 🍱][
 - [Generating Thumbnail with a Fancy filter][generating-thumbnail-with-a-fancy-filter]
 </details>
 
-<details>
+<details open>
   <summary><b>Basic Metadata Recipes</b></summary>
 
 - [Extracting video metadata using Sourcer API][extracting-video-metadata-using-sourcer-api]
@@ -156,6 +157,7 @@ Once you have DeFFcode installed, checkout our **[Well-Documented Recipes 🍱][
 
 ### B. [**Advanced Recipes 🥐**][advanced-recipes]: _Recipes to take your skills to the next level._
 
+<br>
 <p align="center">
   <a href="https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-mandelbrot-test-pattern-with-vectorscope-waveforms"><img src="docs/overrides/assets/gifs/mandelbrot_vectorscope_waveforms.gif" alt="mandelbrot test pattern" title="Click to view source code" width="70%" /></a>
   <br>
@@ -164,8 +166,8 @@ Once you have DeFFcode installed, checkout our **[Well-Documented Recipes 🍱][
 
 <br>
 
-<details>
-  <summary><b>Advanced Decoding Recipes</b> <i>(click-to-reveal)</i></summary>
+<details open>
+  <summary><b>Advanced Decoding Recipes</b></summary>
 
 - [Generate and Decode frames from Sierpinski pattern][generate-and-decode-frames-from-sierpinski-pattern]
 - [Generate and Decode frames from Test Source pattern][generate-and-decode-frames-from-test-source-pattern]
@@ -176,7 +178,7 @@ Once you have DeFFcode installed, checkout our **[Well-Documented Recipes 🍱][
 
 </details>
 
-<details>
+<details open>
   <summary><b>Advanced Transcoding Recipes</b></summary>
 
 - [Transcoding video with Live Custom watermark image overlay][transcoding-video-with-live-custom-watermark-image-overlay]
@@ -189,7 +191,7 @@ Once you have DeFFcode installed, checkout our **[Well-Documented Recipes 🍱][
 
 </details>
 
-<details>
+<details open>
   <summary><b>Advanced Metadata Recipes</b></summary>
 
 - [Added new attributes to metadata in FFdecoder API][added-new-attributes-to-metadata-in-ffdecoder-api]
