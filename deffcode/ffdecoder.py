@@ -219,26 +219,23 @@ class FFdecoder:
         )
 
         # handle user-defined framerate
-        self.__inputframerate = self.__extra_params.pop("-framerate", 0.0)
-        if isinstance(self.__inputframerate, (float, int)):
-            self.__inputframerate = (
-                float(self.__inputframerate) if self.__inputframerate > 0 else 0.0
-            )
-        elif self.__inputframerate is None:
-            # special case for discarding framerate value
-            pass
+        __framerate = self.__extra_params.pop("-framerate", 0.0)
+        if not (__framerate is None) and isinstance(__framerate, (float, int)):
+            self.__inputframerate = float(__framerate) if __framerate > 0.0 else 0.0
         else:
             # warn if wrong type
             logger.warning(
-                "Discarding `-framerate` value of wrong type `{}`!".format(
-                    type(self.__inputframerate)
+                "Discarding invalid `-framerate` value of wrong type `{}`!".format(
+                    type(__framerate).__name__
                 )
             )
+            # reset to default
+            self.__inputframerate = 0.0
 
         # FFmpeg parameter `-s` is unsupported
         if not (self.__extra_params.pop("-s", None) is None):
             logger.warning(
-                "Discarding user-defined `-s` FFmpeg parameter as it can only be assigned with `-custom_resolution`!"
+                "Discarding user-defined `-s` FFmpeg parameter as it can only be assigned with `-custom_resolution` attribute! Read docs for more details."
             )
         # handle user defined decoded frame resolution(must be a tuple or list)
         self.__custom_resolution = self.__extra_params.pop("-custom_resolution", None)
@@ -248,7 +245,7 @@ class FFdecoder:
         ):
             # log it
             logger.warning(
-                "Discarding invalid `-custom_resolution` value:`{}`!".format(
+                "Discarding invalid `-custom_resolution` value: `{}`!".format(
                     self.__custom_resolution
                 )
             )
@@ -260,8 +257,8 @@ class FFdecoder:
         if not isinstance(self.__ffmpeg_prefixes, list):
             # log it
             logger.warning(
-                "Discarding invalid `-ffprefixes` of wrong type `{}`!".format(
-                    type(self.__ffmpeg_prefixes)
+                "Discarding invalid `-ffprefixes` value of wrong type: `{}`!".format(
+                    type(self.__ffmpeg_prefixes).__name__
                 )
             )
             # reset improper values
@@ -347,7 +344,7 @@ class FFdecoder:
             # assigning `-pix_fmt` parameter cannot be assigned directly
             if "-pix_fmt" in self.__extra_params:
                 logger.warning(
-                    "Discarding user-defined `-pix_fmt` value as it can only be assigned with `frame_format` parameter!"
+                    "Discarding user-defined `-pix_fmt` value as it can only be assigned with `frame_format` parameter! Read docs for more details."
                 )
                 self.__extra_params.pop("-pix_fmt", None)
             # assign output raw-frames pixel format
@@ -431,13 +428,20 @@ class FFdecoder:
             )
             output_params["-s"] = str(dimensions)
 
-            # dynamically calculate raw-frame frame-rate based on source (if not assigned by user).
-            framerate = (
-                self.__inputframerate
-                if self.__inputframerate > 0.0
-                else self.__source_metadata["source_video_framerate"]
-            )
-            output_params["-framerate"] = str(framerate)
+            # dynamically calculate raw-frame framerate based on source (if not assigned by user).
+            if self.__inputframerate > 0.0:
+                # assign if assigned by user
+                output_params["-framerate"] = str(self.__inputframerate)
+            elif self.__source_metadata["source_video_framerate"] > 0.0:
+                # calculate raw-frame framerate based on source
+                output_params["-framerate"] = str(
+                    self.__source_metadata["source_video_framerate"]
+                )
+            else:
+                # otherwise raise error
+                raise RuntimeError(
+                    "Invalid `source_video_framerate` metadata value detected!"
+                )
 
             # add rest to output parameters
             output_params.update(self.__extra_params)
@@ -618,7 +622,7 @@ class FFdecoder:
             # Python's `json` module converts Python tuples to JSON lists
             # because that's the closest thing in JSON to a tuple.
             any(isinstance(value[x], tuple) for x in value) and logger.warning(
-                "All TUPLE metadata values will be converted to LIST datatype. Read docs for more info."
+                "All TUPLE metadata values will be converted to LIST datatype. Read docs for more details."
             )
             # update user-defined metadata
             self.__user_metadata.update(value)

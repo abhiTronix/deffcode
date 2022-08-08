@@ -117,8 +117,8 @@ class Sourcer:
         if not isinstance(self.__ffmpeg_prefixes, list):
             # log it
             logger.warning(
-                "Discarding invalid `-ffprefixes` of wrong type `{}`!".format(
-                    type(self.__ffmpeg_prefixes)
+                "Discarding invalid `-ffprefixes` value of wrong type `{}`!".format(
+                    type(self.__ffmpeg_prefixes).__name__
                 )
             )
             # reset improper values
