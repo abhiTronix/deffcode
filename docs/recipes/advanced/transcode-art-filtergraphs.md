@@ -90,7 +90,7 @@ We'll discuss the Transcoding Video Art with Filtergraphs in the following recip
 
 !!! quote "This Video Art idea credits goes to [ffmpeg-artschool](https://amiaopensource.github.io/ffmpeg-artschool/) - An AMIA workshop featuring scripts, exercises, and activities to make art using FFmpeg."
 
-In this example we will generate 8 seconds of **Bitplane Visualization** by binding the bit position of the `Y`, `U`, and `V` planes of a video file _(say `foo.mp4`)_ by using FFmpeg's `lutyuv` filter and assigning them random values _(between `-1`(no change) and `10`(noisiest))_, and decode live **BGR24** video frames in FFdecoder API. We'll also be encoding those decoded frames in real-time into lossless video file using WriteGear API with controlled framerate.
+In this example we will generate 8 seconds of **Bitplane Visualization** by binding the bit position of the `Y`, `U`, and `V` planes of a video file _(say `foo.mp4`)_ by using FFmpeg's [`lutyuv`](https://ffmpeg.org/ffmpeg-filters.html#toc-lut_002c-lutrgb_002c-lutyuv) filter and assigning them random values _(between `-1`(no change) and `10`(noisiest))_, and decode live **BGR24** video frames in FFdecoder API. We'll also be encoding those decoded frames in real-time into lossless video file using WriteGear API with controlled framerate.
 
 ```python
 # import the necessary packages
@@ -152,7 +152,7 @@ writer.close()
 
 ## Transcoding video art with Jetcolor effect 
 
-> This video art uses FFmpeg's `pseudocolor` filter to create a **Jetcolor effect** which is high contrast, high brightness, and high saturation colormap that ranges from blue to red, and passes through the colors cyan, yellow, and orange. The jet colormap is associated with an astrophysical fluid jet simulation from the National Center for Supercomputer Applications. 
+> This video art uses FFmpeg's [`pseudocolor`](https://ffmpeg.org/ffmpeg-filters.html#toc-pseudocolor) filter to create a **Jetcolor effect** which is high contrast, high brightness, and high saturation colormap that ranges from blue to red, and passes through the colors cyan, yellow, and orange. The jet colormap is associated with an astrophysical fluid jet simulation from the National Center for Supercomputer Applications. 
 
 <figure markdown>
   ![Jetcolor effect](../../../assets/gifs/jetcolor_effect.gif)
@@ -161,7 +161,7 @@ writer.close()
 
 !!! quote "This Video Art idea credits goes to [ffmpeg-artschool](https://amiaopensource.github.io/ffmpeg-artschool/) - An AMIA workshop featuring scripts, exercises, and activities to make art using FFmpeg."
 
-In this example we will generate 8 seconds of **Jetcolor effect** by changing frame colors of a video file _(say `foo.mp4`)_ using  FFmpeg's `pseudocolor` filter in different modes _(values between `0` (cleaner) **[default]** and `2`(noisiest))_, and decode live **BGR24** video frames in FFdecoder API. We'll also be encoding those decoded frames in real-time into lossless video file using WriteGear API with controlled framerate.
+In this example we will generate 8 seconds of **Jetcolor effect** by changing frame colors of a video file _(say `foo.mp4`)_ using  FFmpeg's [`pseudocolor`](https://ffmpeg.org/ffmpeg-filters.html#toc-pseudocolor) filter in different modes _(values between `0` (cleaner) **[default]** and `2`(noisiest))_, and decode live **BGR24** video frames in FFdecoder API. We'll also be encoding those decoded frames in real-time into lossless video file using WriteGear API with controlled framerate.
 
 ```python
 # import the necessary packages
@@ -229,7 +229,7 @@ writer.close()
 
 ## Transcoding video art with Ghosting effect
 
-> This video art using FFmpeg’s `lagfun` filter to create a video echo/ghost/trailing effect.
+> This video art using FFmpeg’s [`lagfun`](https://ffmpeg.org/ffmpeg-filters.html#toc-lagfun) filter to create a video echo/ghost/trailing effect.
 
 <figure markdown>
   ![Ghosting effect](../../../assets/gifs/ghosting_effect.gif)
@@ -238,7 +238,7 @@ writer.close()
 
 !!! quote "This Video Art idea credits goes to [ffmpeg-artschool](https://amiaopensource.github.io/ffmpeg-artschool/) - An AMIA workshop featuring scripts, exercises, and activities to make art using FFmpeg."
 
-In this example we will generate 8 seconds of **Ghosting effect** using FFmpeg's `lagfun` filter on a video file _(say `foo.mp4`)_, and decode live **BGR24** video frames in FFdecoder API. We'll also be encoding those decoded frames in real-time into lossless video file using WriteGear API with controlled framerate.
+In this example we will generate 8 seconds of **Ghosting effect** using FFmpeg's [`lagfun`](https://ffmpeg.org/ffmpeg-filters.html#toc-lagfun) filter on a video file _(say `foo.mp4`)_, and decode live **BGR24** video frames in FFdecoder API. We'll also be encoding those decoded frames in real-time into lossless video file using WriteGear API with controlled framerate.
 
 ```python
 # import the necessary packages

@@ -79,7 +79,7 @@ We'll discuss the transcoding of live simple filtergraphs in the following recip
 </figure>
 
 
-In this example we will take the first 5 seconds of a video clip _(using `trim` filter)_ and reverse it _(by applying `reverse` filter)_, and encode them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
+In this example we will take the first 5 seconds of a video clip _(using [`trim`](https://ffmpeg.org/ffmpeg-filters.html#toc-trim) filter)_ and reverse it _(by applying [`reverse`](https://ffmpeg.org/ffmpeg-filters.html#toc-reverse) filter)_, and encode them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
@@ -143,7 +143,7 @@ writer.release()
 </figure>
 
 
-In this example we will crop real-time video frames by an area with size 2/3 of the input video _(say `foo.mp4`)_ by applying `crop` filter in FFdecoder API, all while encoding them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
+In this example we will crop real-time video frames by an area with size 2/3 of the input video _(say `foo.mp4`)_ by applying [`crop`](https://ffmpeg.org/ffmpeg-filters.html#crop) filter in FFdecoder API, all while encoding them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
@@ -201,7 +201,7 @@ writer.release()
 
 ## Transcoding Rotated video (with `rotate` filter)
 
-!!! quote "FFmpeg features "Rotate" Filter that is used to rotate videos by an arbitrary angle (expressed in radians)."
+!!! quote "FFmpeg features **Rotate** Filter that is used to rotate videos by an arbitrary angle (expressed in radians)."
 
 <figure markdown>
   ![Big Buck Bunny Rotated](../../../assets/gifs/bigbuckbunny_rotate.gif)
@@ -209,7 +209,7 @@ writer.release()
 </figure>
 
 
-In this example we will rotate real-time video frames at an arbitrary angle by applying `rotate` filter in FFdecoder API and also using green color to fill the output area not covered by the rotated image, all while encoding them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
+In this example we will rotate real-time video frames at an arbitrary angle by applying [`rotate`](https://ffmpeg.org/ffmpeg-filters.html#toc-rotate) filter in FFdecoder API and also using green color to fill the output area not covered by the rotated image, all while encoding them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
@@ -265,14 +265,14 @@ writer.release()
 
 ## Transcoding Rotated video (with `transpose` filter) 
 
-!!! quote "FFmpeg also features "Transpose" Filter that is used to rotate videos by 90 degrees clockwise and counter-clockwise direction as well as flip them vertically and horizontally."
+!!! quote "FFmpeg also features **Transpose** Filter that is used to rotate videos by 90 degrees clockwise and counter-clockwise direction as well as flip them vertically and horizontally."
 
 <figure markdown>
   ![Big Buck Bunny Rotated](../../../assets/gifs/bigbuckbunny_transpose.gif)
   <figcaption>Big Buck Bunny Rotated (with <code>transpose</code> filter)</figcaption>
 </figure>
 
-In this example we will rotate real-time video frames by 90 degrees counterclockwise and preserve portrait geometry by applying `transfom` filter in FFdecoder API, all while encoding them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
+In this example we will rotate real-time video frames by 90 degrees counterclockwise and preserve portrait geometry by applying [`transpose`](https://ffmpeg.org/ffmpeg-filters.html#toc-transpose-1) filter in FFdecoder API, all while encoding them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
@@ -333,7 +333,7 @@ writer.release()
   <figcaption>Big Buck Bunny Horizontally flipped and Scaled</figcaption>
 </figure>
 
-In this example we will horizontally flip and scale real-time video frames to half its original size by applying `hflip` and `scale` filter one-by-one in FFdecoder API, all while encoding them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
+In this example we will horizontally flip and scale real-time video frames to half its original size by applying [`hflip`](https://ffmpeg.org/ffmpeg-filters.html#toc-hflip) and [`scale`](https://ffmpeg.org/ffmpeg-filters.html#toc-scale-1) filter one-by-one in FFdecoder API, all while encoding them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 

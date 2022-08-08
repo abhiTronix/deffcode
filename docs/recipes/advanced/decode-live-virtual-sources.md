@@ -62,14 +62,14 @@ We'll discuss the recipies for generating Live Fake Sources briefly below:
 
 ## Generate and Decode frames from Sierpinski pattern
 
-> The `sierpinski` graph generates a Sierpinski carpet/triangle fractal, and randomly pan around.
+> The [`sierpinski`](https://ffmpeg.org/ffmpeg-filters.html#toc-sierpinski) graph generates a Sierpinski carpet/triangle fractal, and randomly pan around by a single pixel each frame.
 
 <figure markdown>
   ![sierpinski pattern](../../../assets/gifs/sierpinski.gif){ width="500" }
   <figcaption>Sierpinski carpet fractal</figcaption>
 </figure>
 
-In this example we will generate and decode 8 seconds of a **Sierpinski carpet fractal pattern** of `1280x720` frame size and `30` framerate using `sierpinski` graph source with `lavfi` input virtual device in FFdecoder API, and preview decoded frames using OpenCV Library's `cv2.imshow()` method in real-time. 
+In this example we will generate and decode 8 seconds of a **Sierpinski carpet fractal pattern** of `1280x720` frame size and `30` framerate using [`sierpinski`](https://ffmpeg.org/ffmpeg-filters.html#toc-sierpinski) graph source with `lavfi` input virtual device in FFdecoder API, and preview decoded frames using OpenCV Library's `cv2.imshow()` method in real-time. 
 
 !!! alert "By default, OpenCV expects `BGR` format frames in its `cv2.imshow()` method."
 
@@ -119,14 +119,14 @@ decoder.terminate()
 
 ## Generate and Decode frames from Test Source pattern
 
-> The `testsrc` graph generates a test video pattern showing a color pattern, a scrolling gradient, and a timestamp. This is useful for testing purposes.
+> The [`testsrc`](https://ffmpeg.org/ffmpeg-filters.html#toc-allrgb_002c-allyuv_002c-color_002c-colorchart_002c-colorspectrum_002c-haldclutsrc_002c-nullsrc_002c-pal75bars_002c-pal100bars_002c-rgbtestsrc_002c-smptebars_002c-smptehdbars_002c-testsrc_002c-testsrc2_002c-yuvtestsrc) graph generates a test video pattern showing a color pattern, a scrolling gradient, and a timestamp. This is useful for testing purposes.
 
 <figure markdown>
   ![testsrc pattern](../../../assets/gifs/testsrc.gif){ width="500" }
   <figcaption>Test Source pattern</figcaption>
 </figure>
 
-In this example we will generate and decode `10` seconds of a **Test Source pattern** _(`1280x720` frame size & `30` framerate)_ using `testsrc` graph source with `lavfi` input virtual device in FFdecoder API, all while previewing decoded frames using OpenCV Library's `cv2.imshow()` method in real-time. 
+In this example we will generate and decode `10` seconds of a **Test Source pattern** _(`1280x720` frame size & `30` framerate)_ using [`testsrc`](https://ffmpeg.org/ffmpeg-filters.html#toc-allrgb_002c-allyuv_002c-color_002c-colorchart_002c-colorspectrum_002c-haldclutsrc_002c-nullsrc_002c-pal75bars_002c-pal100bars_002c-rgbtestsrc_002c-smptebars_002c-smptehdbars_002c-testsrc_002c-testsrc2_002c-yuvtestsrc) graph source with `lavfi` input virtual device in FFdecoder API, all while previewing decoded frames using OpenCV Library's `cv2.imshow()` method in real-time. 
 
 !!! alert "By default, OpenCV expects `BGR` format frames in its `cv2.imshow()` method."
 
@@ -178,16 +178,16 @@ decoder.terminate()
 
 ## Generate and Decode frames from Gradients with custom Text effect
 
-> The `gradients` graph (as name suggests) generates several random gradients.
+> The [`gradients`](https://ffmpeg.org/ffmpeg-filters.html#toc-gradients) graph (as name suggests) generates several random gradients.
 
 <figure markdown>
   ![gradients test pattern](../../../assets/gifs/gradients.gif){ width="500" }
   <figcaption>Gradients pattern with real-time text output</figcaption>
 </figure>
 
-In this example we will generate and decode `15` seconds of **Gradients** using `gradients` graph source with `lavfi` input virtual device and also draw real-time text output _(format `HH::MM::SS`)_ scrolling upward direction on it using `drawtext` filter in FFdecoder API, all while previewing decoded frames using OpenCV Library's `cv2.imshow()` method in real-time. 
+In this example we will generate and decode `15` seconds of **Gradients** using [`gradients`](https://ffmpeg.org/ffmpeg-filters.html#toc-gradients) graph source with `lavfi` input virtual device and also draw real-time text output _(format `HH::MM::SS`)_ scrolling upward direction on it using [`drawtext`](https://ffmpeg.org/ffmpeg-filters.html#toc-drawtext-1) filter in FFdecoder API, all while previewing decoded frames using OpenCV Library's `cv2.imshow()` method in real-time. 
 
-!!! warning "This example assumes you're running :fontawesome-brands-windows: Windows machine. If not, then change `fontfile` path in `drawtext` video filtergraph definition accordingly." 
+!!! warning "This example assumes you're running :fontawesome-brands-windows: Windows machine. If not, then change `fontfile` parameter path in `drawtext` video filtergraph definition accordingly." 
 
 !!! alert "By default, OpenCV expects `BGR` format frames in its `cv2.imshow()` method."
 
@@ -201,7 +201,7 @@ ffparams = {
     "-ffprefixes": ["-t", "15"],  # playback time of 15 seconds
     "-vf": "drawtext="  # draw text
     + "text='%{localtime\:%X}':"  # real time text (HH::MM::SS)
-    + "fontfile='c\:\/windows\/fonts\/arial.ttf':"  # fontfile path (Windows)
+    + "fontfile='c\:\/windows\/fonts\/arial.ttf':"  # fontfile path (Only Windows)
     + "x=(w-text_w)/2:y=h-40*t:"  # scroll upward effect
     + "fontsize=50:"  # font size 50
     + "fontcolor=white",  # font color white
@@ -246,7 +246,7 @@ decoder.terminate()
 
 ## Generate and Decode frames from Mandelbrot test pattern with vectorscope & waveforms
 
-> The `mandelbrot` graph generate a [**Mandelbrot set fractal**](https://en.wikipedia.org/wiki/Mandelbrot_set), that progressively zoom towards a specfic point.
+> The [`mandelbrot`](https://ffmpeg.org/ffmpeg-filters.html#toc-mandelbrot) graph generate a [**Mandelbrot set fractal**](https://en.wikipedia.org/wiki/Mandelbrot_set), that progressively zoom towards a specfic point.
 
 <figure markdown>
   ![mandelbrot test pattern](../../../assets/gifs/mandelbrot_vectorscope_waveforms.gif){ width="500" }
@@ -254,7 +254,7 @@ decoder.terminate()
 </figure>
 
 
-In this example we will generate and decode `20` seconds of a **Mandelbrot test pattern** _(`1280x720` frame size & `30` framerate)_ using `mandelbrot` graph source with `lavfi` input virtual device with a [vectorscope](https://www.studiobinder.com/blog/what-is-a-vectorscope-definition/) _(plots 2 color component values)_ & two [waveforms](https://ffmpeg.org/ffmpeg-filters.html#toc-waveform) _(plots YUV color component intensity)_ stacked to it in FFdecoder API, all while previewing decoded frames using OpenCV Library's `cv2.imshow()` method in real-time. 
+In this example we will generate and decode `20` seconds of a **Mandelbrot test pattern** _(`1280x720` frame size & `30` framerate)_ using [`mandelbrot`](https://ffmpeg.org/ffmpeg-filters.html#toc-mandelbrot) graph source with `lavfi` input virtual device with a [vectorscope](https://www.studiobinder.com/blog/what-is-a-vectorscope-definition/) _(plots 2 color component values)_ & two [waveforms](https://ffmpeg.org/ffmpeg-filters.html#toc-waveform) _(plots YUV color component intensity)_ stacked to it in FFdecoder API, all while previewing decoded frames using OpenCV Library's `cv2.imshow()` method in real-time. 
 
 !!! alert "By default, OpenCV expects `BGR` format frames in its `cv2.imshow()` method."
 
@@ -313,14 +313,14 @@ decoder.terminate()
 
 ## Generate and Decode frames from Game of Life Visualization
 
-> The `life` graph generates a life pattern based on a generalization of John Conway’s life game. The sourced input represents a life grid, each pixel represents a cell which can be in one of two possible states, alive or dead. Every cell interacts with its eight neighbours, which are the cells that are horizontally, vertically, or diagonally adjacent. At each interaction the grid evolves according to the adopted rule, which specifies the number of neighbor alive cells which will make a cell stay alive or born.
+> The [`life`](https://ffmpeg.org/ffmpeg-filters.html#toc-life) graph generates a life pattern based on a generalization of John Conway’s life game. The sourced input represents a life grid, each pixel represents a cell which can be in one of two possible states, alive or dead. Every cell interacts with its eight neighbours, which are the cells that are horizontally, vertically, or diagonally adjacent. At each interaction the grid evolves according to the adopted rule, which specifies the number of neighbor alive cells which will make a cell stay alive or born.
 
 <figure markdown>
   ![life pattern](../../../assets/gifs/life.gif){ width="500" }
   <figcaption>Game of Life Visualization</figcaption>
 </figure>
 
-In this example we will generate and decode `25` seconds of **Game of Life Visualization**  using `life` graph source with `lavfi` input virtual device in FFdecoder API, all while previewing decoded frames using OpenCV Library's `cv2.imshow()` method in real-time. 
+In this example we will generate and decode `25` seconds of **Game of Life Visualization**  using [`life`](https://ffmpeg.org/ffmpeg-filters.html#toc-life) graph source with `lavfi` input virtual device in FFdecoder API, all while previewing decoded frames using OpenCV Library's `cv2.imshow()` method in real-time. 
 
 
 

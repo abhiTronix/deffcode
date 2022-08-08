@@ -83,7 +83,7 @@ We'll discuss the transcoding of live complex filtergraphs in the following reci
 </figure>
 
 
-In this example we will apply a watermark image _(say `watermark.png` with transparent background)_ overlay to the `10` seconds of video file _(say `foo.mp4`)_ using FFmpeg's `overlay` filter with some additional filtering, , and decode live **BGR24** video frames in FFdecoder API. We'll also be encoding those decoded frames in real-time into lossless video file using WriteGear API with controlled framerate.
+In this example we will apply a watermark image _(say `watermark.png` with transparent background)_ overlay to the `10` seconds of video file _(say `foo.mp4`)_ using FFmpeg's [`overlay`](https://ffmpeg.org/ffmpeg-filters.html#toc-overlay-1) filter with some additional filtering, , and decode live **BGR24** video frames in FFdecoder API. We'll also be encoding those decoded frames in real-time into lossless video file using WriteGear API with controlled framerate.
 
 !!! info "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps Source Metadata as JSON to retrieve source framerate and frame-size."
 
