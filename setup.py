@@ -61,7 +61,9 @@ setup(
     keywords=[
         "FFmpeg",
         "Decoder",
+        "Realtime",
         "Framework",
+        "Cross-platform"
         "Video Processing",
         "Computer Vision",
         "Video Decoding",
