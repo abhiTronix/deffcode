@@ -20,11 +20,11 @@ limitations under the License.
 
 # :material-cog-refresh: Updating Video Metadata
 
-> In addition of using [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object in FFdecoder API for probing metadata information _(only as JSON string)_  for each multimedia stream available in the given video source, you can also easily update the video metadata on-the-fly by assigning desired data as python dictionary to the same overloaded `metadata` property object. This metadata information is used by FFdecoder API to formulate its default FFmpeg Pipeline for real-time video-frames generation.
+> In addition of using [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object in FFdecoder API for probing metadata information _(only as JSON string)_  for each multimedia stream available in the given video source, you can also easily update the video metadata on-the-fly by assigning desired data as python dictionary to the same overloaded `metadata` property object. This feature can be used either for adding new custom properties to metadata, or to override source metadata properties used by FFdecoder API to formulate its default Decoder Pipeline for real-time video-frames generation.
 
 We'll discuss video metadata extraction using both these APIs briefly in the following recipes:
 
-!!! quote "This feature is not yet fully explored, but in the near future you'll be able to use it to dynamically alter any FFmpeg Pipeline property of your video frames _(such as frame-size, pixel-format, etc.)_ in real-time like a pro. Stay tuned :smiley:"
+!!! quote "This feature is not yet fully explored, but in the near future you'll be able to use it to dynamically override any Video frames Decoder Pipeline property _(such as frame-size, pixel-format, etc.)_ in real-time like a pro. Stay tuned for more updates :eyes:"
 
 &thinsp;
 
@@ -127,19 +127,19 @@ decoder.terminate()
 &nbsp;
 
 
-## Updating source video metadata in FFdecoder API
+## Overriding source video metadata in FFdecoder API
 
-> In FFdecoder API, you can also use its `metadata` to alter the source video properties _(as frame-size, frame pixel-format, video-framerate, video-decoder etc.)_ that directly affects its default Video frames Decoder pipeline that decodes real-time video-frames.
+> In FFdecoder API, you can also use its `metadata` to manually override the source properties _(as frame-size, frame pixel-format, video-framerate, video-decoder etc.)_ that directly affects its default Video frames Decoder pipeline that decodes real-time video-frames.
 
-!!! alert "The `"source"` property in metadata cannot be altered in any manner."
+!!! info "The `"source"` property in metadata cannot be altered in any manner."
 
-??? danger "Source Video metadata values must be handled carefully"
+??? warning "Source Video metadata values must be handled carefully"
 
-    > Source Video metadata information is used by FFdecoder API to formulate its default Video frames Decoder pipeline, and any improper or invalid inputted video property could crash the pipeline with `RuntimeError`. 
+    > Source Video metadata information is used by FFdecoder API to formulate its default Video frames Decoder pipeline, and any improper or invalid inputted source property could crash the pipeline with `RuntimeError`. 
 
     Therefore to safeguard against it, **FFdecoder API discards any Source Video metadata dictionary keys, if its value's datatype fails to match the exact valid datatype defined in following table:**
 
-    !!! info "Only either `source_demuxer` or `source_extension` key can be present in source video metadata." 
+    !!! info "Only either `source_demuxer` or `source_extension` property can be present in source metadata." 
 
     !!! quote "Not all Source Video metadata properties directly affects the pipeline _(as mentioned in the table)_. But this might change in future versions."
 
@@ -167,11 +167,11 @@ decoder.terminate()
     Hence for instance, if "source_video_resolution" is assigned `"1280x720"` _(i.e. `string` datatype value instead of `list`)_, then it will be discarded.
 
 
-In this example we will probe all metadata information available within `foo.mp4` video file, and alter frame size _(originally `1920x1080`)_ and pixel-format  _(originally `rgb24`)_ to our desired values through overloaded `metadata` property object in FFdecoder API, and thereby preview them using OpenCV Library's `cv2.imshow()` method.
+In this example we will probe all metadata information available within `foo.mp4` video file, and override frame size _(originally `1920x1080`)_ and pixel-format  _(originally `rgb24`)_ to our desired values through overloaded `metadata` property object in FFdecoder API, and thereby preview them using OpenCV Library's `cv2.imshow()` method.
 
-!!! warning "The value assigned to [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object can be of [`dictionary`](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) datatype only. Any other type will immediately raise `ValueError`!"
+!!! danger "The value assigned to [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object can be of [`dictionary`](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) datatype only. Any other type will immediately raise `ValueError`!"
 
-!!! note "Once the [`formulate()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.formulate) method is called, the metadata information present in FFdecoder API is finalized and thereby used to formulate its default pipeline for decoding real-time video-frames. Therefore make all changes to video properties beforehand."
+!!! alert "Once the [`formulate()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.formulate) method is called, the metadata information present in FFdecoder API is finalized and thereby used to formulate its default pipeline for decoding real-time video-frames. Therefore make all changes to video properties beforehand."
 
 ```python
 # import the necessary packages
@@ -181,7 +181,7 @@ import cv2
 # initialize and formulate the decoder using suitable source
 decoder = FFdecoder("foo.mp4", verbose=True)
 
-# assign custom source metadata values
+# override source metadata values
 # !!! [WARNING] Make sure each value datatype matches the table !!!
 decoder.metadata = {
     "output_frames_pixfmt": "gray",  # gray frame-pixfmt

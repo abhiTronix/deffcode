@@ -195,7 +195,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
   <summary><b>Advanced Metadata Recipes</b></summary>
 
 - [Added new attributes to metadata in FFdecoder API][added-new-attributes-to-metadata-in-ffdecoder-api]
-- [Updating source video metadata in FFdecoder API][updating-source-video-metadata-in-ffdecoder-api]
+- [Overriding source video metadata in FFdecoder API][overriding-source-video-metadata-in-ffdecoder-api]
 
 </details>
 
@@ -400,7 +400,7 @@ Advanced Recipes
 [transcoding-video-art-with-pixelation-effect]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-art-filtergraphs/#transcoding-video-art-with-pixelation-effect
 [gpu-accelerated-hardware-based-video-transcoding-with-writegear-api]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#gpu-accelerated-hardware-based-video-transcoding-with-writegear-api
 [added-new-attributes-to-metadata-in-ffdecoder-api]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#added-new-attributes-to-metadata-in-ffdecoder-api
-[updating-source-video-metadata-in-ffdecoder-api]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#updating-source-video-metadata-in-ffdecoder-api
+[overriding-source-video-metadata-in-ffdecoder-api]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#overriding-source-video-metadata-in-ffdecoder-api
 
 <!--
 CI Apps URLs

@@ -76,7 +76,7 @@ The following challenging recipes will take your skills to the next level and wi
 
 - [x] **[:material-cog-refresh: Updating Video Metadata](../advanced/update-metadata/#updating-video-metadata)**
     - [Added new attributes to metadata in FFdecoder API](../advanced/update-metadata/#added-new-attributes-to-metadata-in-ffdecoder-api)
-    - [Updating source video metadata in FFdecoder API](../advanced/update-metadata/#updating-source-video-metadata-in-ffdecoder-api)
+    - [Overriding source video metadata in FFdecoder API](../advanced/update-metadata/#overriding-source-video-metadata-in-ffdecoder-api)
 
 
 &thinsp;
