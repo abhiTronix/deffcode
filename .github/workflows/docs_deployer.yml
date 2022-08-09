@@ -47,8 +47,7 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike
-          pip install mkdocstrings==0.17.0
+          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
           pip install jinja2==3.0.*
         if: success()
       - name: git configure
@@ -95,8 +94,7 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike
-          pip install mkdocstrings==0.17.0
+          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
           pip install jinja2==3.0.*
         if: success()
       - name: git configure
@@ -145,8 +143,7 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike
-          pip install mkdocstrings==0.17.0
+          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
           pip install jinja2==3.0.*
         if: success()
       - name: git configure

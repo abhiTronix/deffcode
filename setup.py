@@ -33,6 +33,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = long_description.replace(
         "(#", "(https://github.com/abhiTronix/deffcode#"
     )
+    long_description = long_description.replace(
+        "docs/overrides/", "(https://abhitronix.github.io/deffcode/latest/"
+    )
     # patch for unicodes
     long_description = long_description.replace("➶", ">>")
     long_description = long_description.replace("©", "(c)")
@@ -41,7 +44,7 @@ setup(
     name="deffcode",
     packages=["deffcode"],
     version=pkg_version["__version__"],
-    description="High-performance Real-time FFmpeg based Video-Decoder in python.",
+    description="A Cross-platform High-performance & Flexible Video Frames Decoder in python.",
     license="Apache License 2.0",
     author="Abhishek Thakur",
     install_requires=[
@@ -58,6 +61,9 @@ setup(
     keywords=[
         "FFmpeg",
         "Decoder",
+        "Realtime",
+        "Framework",
+        "Cross-platform"
         "Video Processing",
         "Computer Vision",
         "Video Decoding",

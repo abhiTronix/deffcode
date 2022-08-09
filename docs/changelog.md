@@ -20,10 +20,187 @@ limitations under the License.
 
 # Release Notes
 
+## v0.2.2 (2022-09-08) :material-new-box:
 
-## v0.2.1 (2022-07-14) :material-new-box:
+??? new "New Features"
+    - [x] **Sourcer API:**
+        * Added support for `-ffprefixes` attribute through Sourcer API's `sourcer_param` dictionary parameter _(similar to FFdecoder API)_.
+    - [x] **FFdecoder API:** 
+        * Added new `output_frames_pixfmt` metadata property to preview and handle output frames pixel-format.
+    - [x] **Docs:**
+        * Added separate "Basic" and "Advanced" Recipes markdowns files with self-explanatory text, related usage code, asset _(such as images, diagrams, GIFs, etc.)_, and UI upgrades for bringing standard quality to visual design. 
+        * Added separate `index.md` for Basic and Advanced Recipes with introductory text and curated hyperlinks for quick references to various recipes _(separated with sub-categories "Decoding", "Transcoding", and "Extracting Video Metadata")_.
+        * Added related admonitions to specify python dependencies as well as other requirements and relevant information required for each of these recipes.
+        * Added new Basic Decoding Recipes:
+            * Added Decoding Video files with various pixel formats recipes.
+            * Added Decoding Live Feed Devices recipes with `source_demuxer` FFdecoder API parameter.
+            * Added Decoding Image sequences recipes supporting Sequential, Glob pattern , Single (looping) image.
+            * Added Decoding Network Streams recipes.
+        * Added new Basic Transcoding Recipes:
+            * Added Transcoding Live frames recipes with OpenCV and WriteGear.
+            * Added Transcoding Live Simple Filtergraphs recipes with OpenCV.
+            * Added Saving Key-frames as Image recipes with different image processing libraries.
+        * Added new Basic Extracting Video Metadata Recipes:
+            * Added Extracting Video Metadata recipes with FFdecoder and Sourcer APIs.
+        * Added new Advanced Decoding Recipes:
+            * Added Hardware-Accelerated Video Decoding recipe using NVIDIA's H.264 CUVID Video-decoder(`h264_cuvid`).
+            * Added Decoding Live Virtual Sources recipes with many test patterns using `lavfi` input virtual device.
+        * Added new Advanced Decoding Recipes:
+            * Added lossless Hardware-Accelerated Video Transcoding recipe with WriteGear API.
+            * Added Transcoding Live Complex Filtergraphs recipes with WriteGear API.
+            * Added Transcoding Video Art with Filtergraphs recipes with WriteGear API for creating real-time artistic generative video art using simple and complex filtergraphs.
+        * Added new Advanced Updating Video Metadata Recipes:
+            * Added Updating Video Metadata recipes with user-defined as well as source metadata in FFdecoder API.
+        * Added new dark and light theme logo support.
+        * Added new recipes GIF assets to `gifs` folder.
+        * Added new dark logo `deffcode-dark.png` asset to `images` folder.
+        * Added new `ffdecoder.png` and `sourcer.png` Image assets to `images` folder.
+        * Added new `navigation.tabs` feature.
+        * Added Material Announcement-Bar notifying recent changes.
 
-??? tip "New Features"
+??? success "Updates/Improvements"  
+    - [x] Sourcer API:
+        * Implemented new validation checks to ensure given `source` has usable video stream available by checking availability of either `video bitrate` or both `frame-size` and `framerate`_ properties in the source metadata.
+        * Improved `extract_resolution_framerate` method for making framerate extraction more robust by falling back to extracting `TBR` value when no framerate value available in the source metadata.
+    - [x] FFdecoder API:
+        * Updated `metadata` property object to validate and override source metadata properties directly by overloading same property object before formulating Frames Decoder Pipeline:
+            * Implemented validation checks to verify each validate manually assigned source metadata property against specific datatype before overriding.
+            * Updated logging to notify invalid datatype values when assigned through `metadata` property object.
+            * Added support for overriding `source_video_resolution` source metadata property to control frame-size directly through metadata.
+            * Added support for overriding `output_frames_pixfmt` metadata attribute to be used as default pixel-format, when `frame_format` parameter value is None-type.
+            * Improved handling of source metadata keys in metadata property object.
+        * Updated `metadata` property object to handle and assign User-defined metadata directly by overloading the same property object:
+            * Added new internal `user_metadata` class variable to handle all User-defined metadata information separately.            
+            * FFdecoder API's `metadata` property object now returns User-defined metadata information merged with Source Video metadata.
+            * Added `tuple` value warning log to notify users `json` module converts Python `tuples` to JSON `lists`.
+        * Improved logic to test validity of `-custom_resolution` attribute value through `ffparams` dictionary parameter.
+        * Improved handling of FFmpeg pipeline framerate with both user-defined and metadata defined values.
+        * Added `tuple` to exception in datatype check for `ffparams` dictionary parameter.
+        * Added datatype validation check for `frame_format` parameter.
+        * Improved handling of `-framerate` parameter. 
+    - [x] Maintenance:
+        * Reformatted all Core class and methods text descriptions:
+            * Rewritten introductory each API class description.
+            * Moved reference block from `index.md` to class description.
+            * Fixed missing class and methods parameter description.
+            * Fixed typos and context in texts.
+            * Reformatted code comments.
+        * Simplified `for` loop with `if` condition checking in metadata property object.
+        * Updated logging comments.
+    - [x] Setup:
+          * Updated project description in metadata.
+          * Bumped version to `0.2.2`.
+    - [x] Docs:
+        * Updated Introduction doc:
+            * Added new text sections such as "Getting Started", "Installation Notes", "Recipes a.k.a Examples" and "API in a nutshell".
+            * Rewritten Introduction(`index.md`) with recent Information, redefined context, UI changes, updated recipe codes, curated hyperlinks to various recipes(separated with categories), and relatable GIFs.
+            * Updated spacing in `index.md` using `spacer` class within `<div>` tag and `&nbsp;`.
+            * Reformatted and centered DeFFcode Introductory description.
+            * Reformatted FFmpeg Installation doc and Issue & PR guidelines.
+            * Updated static FFmpeg binaries download URLs in FFmpeg Installation doc.
+            * Refashioned text contexts, icons, and recipes codes.
+            * Updated Key Features section with reflecting new features.
+        * Updated README.md:
+            * Updated README.md w.r.t recent changes in Introduction(`index.md`) doc.
+            * Simplified and Reformatted text sections similar to Introduction doc. 
+            * Imported new "Contributions" and "Donations" sections from VidGear docs.
+            * Added collapsible text and output section using `<summary>` and `<detail>` tags.
+            * Added experimental note GitHub blockquote to simulate admonition in README.md.
+            * Removed tag-line from README.md and related image asset.
+            * Simplified and Grouped README URL hyperlinks.
+            * Removed Roadmap section.
+        * Updated Recipes docs:
+            * Revamped DeFFcode Introduction `index.md` with new Information, Context and UI changes, Updated example codes and hyperlinks.
+            * Updated Announcement Bar to fix `announcement_link` variable and text.
+            * Updated footer note to notify users regarding `tuple` value warning in FFdecoder API.
+            * Rewritten recipes w.r.t breaking changes in APIs.
+        * Updated Reference docs:
+            * Completely revamped API's parameter reference docs.
+            * Added new Functional Block Diagrams to FFdecoder and Sourcer API References.
+            * Rewritten and Reformatted FFdecoder and Sourcer API's parameter reference docs with new information w.r.t recent changes.
+            * Implemented new admonitions explaining new changes, related warnings/errors, usage examples etc.
+            * Removed redundant `advanced.md` and `basic.md` docs.
+            * Added new abstracts to FFhelper and Utils docs.
+        * Updated docs site navigation and titles:
+            * Reformatted `index.md` and `installation/index.md`.
+            * Renamed `help/index.md` to `help/help.md`.
+            * Moved basic and advanced recipes from `example` to `recipes` folder.
+            * Imported "Donations" sections from VidGear docs to `help.md`.
+            * Added updated page-title and navigation hyperlinks in `mkdocs.yml` to new markdown files incorporated recently.
+            * Updated internal navigation hyperlinks in docs and removed old redundant file links.
+        * Updated docs UI:
+            * Added custom `spacer` class in CSS for custom vertical spacing.
+            * Imported new "New", "Advance", "Alert", "Danger" and "Bug" admonitions custom CSS UI patches from vidgear.
+            * Updated all admonitions icons with new custom icon SVG+XML URLs.
+            * Reformatted `custom.css` and added missing comments.
+            * Updated docs fonts:
+                * Updated text font to `Heebo`.
+                * Updated code font to `JetBrains Mono`.
+            * Updated primary and accent colors:
+                * Updated primary light color to `light green`.
+                * Updated primary dark color to `amber`.
+                * Updated accent light color to `green`.
+                * Updated accent dark color to `lime`.
+            * Replaced admonitions with appropriate ones.
+            * Changed Color palette toggle icons.
+            * Updated icons in title headings.
+        * Updated admonitions messages.
+        * Updated `changelog.md`.
+    - [x] CI:
+        * Pinned `jinja2` version to `<3.1.0`, since `jinja2>=3.1.0` breaks mkdocs (mkdocs/mkdocs#2799).
+        * Updated unittests w.r.t recent changes in APIs: 
+            * Updated `test_frame_format` unittest to include manually assign output pixel-format via `metadata` property object.
+            * Updated `test_metadata` unittest to include new `checks` parameter to decide whether to perform Assertion test on assigned `metadata` properties in FFdecoder API.
+            * Added new parametrize attributes in `test_metadata` and `test_seek_n_save` unittests to cover every use-cases.
+            * Replaced `IOError` with `ValueError` in Sourcer API unittests.
+        * Updated `test_metadata` unittest to verify `tuple` value warning.
+        * Updated unittests to increase code coverage significantly.
+        
+
+??? danger "Breaking Updates/Changes"
+    * **Sourcer API:**
+        - [x] :skull_crossbones: Sourcer API's  `retrieve_metadata()` method now returns parsed metadata either as JSON string or dictionary type.
+            * Added new `pretty_json` boolean parameter to `retrieve_metadata()`, that is when `True`, returns metadata formatted as JSON string instead of default python dictionary.
+        - [x] :skull_crossbones: Changed `IOError` to `ValueError` in Sourcer API, raised when source with no decodable audio or video stream is provided.
+    * **FFdecoder API:**
+        - [x] :skull_crossbones: Rename `extraparams` dictionary parameter to `ffparams` in FFdecoder API. 
+        - [x] :skull_crossbones: The `source` metadata value cannot be altered through `metadata` property object in FFdecoder API. 
+        - [x] :skull_crossbones: Removed `-ffpostfixes` attribute support from `ffparams` dictionary parameter in FFdecoder API, since totally redundant in favor of similar `-ffprefixes` and `-clones` attributes.
+
+??? bug "Bug-fixes"
+    - [x] FFdecoder API:
+        * Fixed `metadata` property object unable to process user-defined keys when any source metadata keys are defined.
+        * Fixed `TypeError` bug with string type `-framerate` parameter values.
+    - [x] Sourcer API:
+        * Fixed Sourcer API throws `IOError` for videos containing streams without both source bitrate and framerate defined _(such as from `lavfi` input virtual device)_.
+        * Fixed `AttributeError` bug due to typo in variable name.
+    - [x] CI:
+        * Fixed support for newer mkdocstring version in DeFFcode Docs Deployer workflow.
+            * Added new `mkdocstrings-python-legacy` dependency.
+            * Replaced `rendering` variable with `options`.
+            * Removed pinned `mkdocstrings==0.17.0` version.
+            * Removed redundant variables.
+        * Updated `test_metadata` unittest to fix `AssertionError` Bug.
+    - [x] Docs:
+        * Fixed some admonitions icons not showing bug using `!important` rule in CSS.
+        * Fixed `404.html` static page not showing up.
+        * Fixed invalid internal navigation hyperlinks and asset paths.
+        * Removed `quote/cite/summary` admonition custom UI patches.
+        * Removed redundant information texts.
+        * Fixed typos in code comments.
+        * Fixed typos in example code.
+        
+
+??? question "Pull Requests"
+    * PR #23
+
+&nbsp; 
+
+&nbsp; 
+
+## v0.2.1 (2022-07-14)
+
+??? new "New Features"
     - [x] **Sourcer API:**
         * Implemented support for extracting metadata from live input devices/sources.
         * Added new `source_demuxer` and `forced_validate` parameters to `validate_source` internal method.
@@ -68,7 +245,6 @@ limitations under the License.
           * Bumped version to 0.2.1.
     - [x] Docs:
           * Updated Changelog.md
-          * Updated Roadmap in README.md
 
 ??? danger "Breaking Updates/Changes"
     - [x] :skull_crossbones: **Implement support for live input devices/sources.**
@@ -105,7 +281,7 @@ limitations under the License.
 
 ## v0.2.0 (2022-03-21)
 
-??? tip "New Features"
+??? new "New Features"
     - [x] Sourcer API:
         - **Added a new `source_audio_samplerate` metadata parameter:**
             - Re-implemented  `__extract_audio_bitrate` internal function from scratch as `__extract_audio_bitrate_nd_samplerate`.
@@ -390,7 +566,7 @@ limitations under the License.
 
 ## v0.1.0 (2022-03-07)
 
-??? tip "New Features"
+??? new "New Features"
     - [x] **:tada: Open-Sourced DeFFcode under the Apache 2.0 License.**
     - [x] **Added new Classes(APIs):**
         * FFdecoder: Performant Real-time **Video frames Generator** for generating blazingly fast video frames(RGB ndarray by default).

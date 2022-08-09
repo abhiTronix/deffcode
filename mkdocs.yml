@@ -36,6 +36,7 @@ theme:
   language: en
   features:
     - navigation.tracking
+    - navigation.tabs
     - navigation.indexes
     - navigation.top
     - search.suggest
@@ -46,26 +47,29 @@ theme:
     # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: green
-      accent: dark green
+      primary: light green
+      accent: green
       toggle:
-        icon: material/home-lightning-bolt-outline
+        icon: fontawesome/regular/lightbulb
         name: Switch to dark mode
     # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: teal
-      accent: light green
+      primary: amber
+      accent: lime
       toggle:
-        icon: material/home-lightning-bolt
+        icon: fontawesome/solid/lightbulb
         name: Switch to light mode
   font: # font
-    text: Quicksand
-    code: Fira Code
+    text: Heebo
+    code: JetBrains Mono
   icon: # icon
     logo: logo
   logo: assets/images/android-chrome-192x192.png
   favicon: assets/images/favicon-32x32.png
+  # 404 page
+  static_templates:
+    - 404.html
 
 # Plugins
 plugins:
@@ -74,11 +78,9 @@ plugins:
   - minify:
       minify_html: true
   - mkdocstrings:
-      custom_templates: ""
-      default_handler: python
       handlers:
         python:
-          rendering:
+          options:
             show_root_heading: false
             show_root_toc_entry: false
             show_source: true
@@ -155,13 +157,37 @@ markdown_extensions:
 
 # Page tree
 nav:
-  - Getting Started: 
-    - Introduction: index.md
+  - Home: 
+    - Introduction: 
+      - Introduction: index.md
     - Installation Notes: 
-      - Introduction: installation/index.md
+      - Overview: installation/index.md
       - FFmpeg Installation: installation/ffmpeg_install.md
-    - Basic Recipies: examples/basic.md
-  - Advanced Recipies: examples/advanced.md
+    - Contribution Guidelines:
+      - Overview: contribution/index.md
+      - Issue Guidelines: contribution/issue.md
+      - Pull Request(PR) Guidelines: contribution/PR.md 
+    - Changelog: changelog.md
+    - License: license.md
+  - Recipies:
+    - Basic Recipes: 
+      - Overview: recipes/basic/index.md
+      - Decoding Video Files: recipes/basic/decode-video-files.md
+      - Decoding Live Feed Devices: recipes/basic/decode-live-feed-devices.md
+      - Decoding Network Streams: recipes/basic/decode-network-streams.md
+      - Decoding Image sequences: recipes/basic/decode-image-sequences.md
+      - Transcoding Live frames: recipes/basic/transcode-live-frames.md 
+      - Transcoding Live Simple Filtergraphs: recipes/basic/transcode-live-frames-simplegraphs.md
+      - Saving Key-frames as Image: recipes/basic/save-keyframe-image.md
+      - Extracting video metadata: recipes/basic/extract-video-metadata.md
+    - Advanced Recipies: 
+      - Overview: recipes/advanced/index.md
+      - Decoding Live Virtual Sources: recipes/advanced/decode-live-virtual-sources.md
+      - Hardware-Accelerated Video Decoding: recipes/advanced/decode-hw-acceleration.md
+      - Transcoding Live Complex Filtergraphs: recipes/advanced/transcode-live-frames-complexgraphs.md
+      - Transcoding Video Art with Filtergraphs: recipes/advanced/transcode-art-filtergraphs.md
+      - Hardware-Accelerated Video Transcoding: recipes/advanced/transcode-hw-acceleration.md 
+      - Updating Video Metadata: recipes/advanced/update-metadata.md 
   - API References:
     - deffcode.FFdecoder: 
       - API: reference/ffdecoder/index.md
@@ -171,15 +197,8 @@ nav:
       - API Parameters: reference/sourcer/params.md
     - deffcode.ffhelper: reference/ffhelper.md
     - deffcode.utils: reference/utils.md
-  - Help:
-    - Help Section: 
-      - Helping Us: help/index.md
-      - Getting Help: help/get_help.md 
-    - Contribution:
-      - Overview: contribution/index.md
-      - Issue Guidelines: contribution/issue.md
-      - Pull Request(PR) Guidelines: contribution/PR.md
-  - Extras:
-    - Changelog: changelog.md
-    - License: license.md
+  - Help Section:
+    - Help Us: help.md
+    - Get Help: help/get_help.md
+    
 

@@ -25,12 +25,8 @@ The following guidelines tells you how to submit a valid PR for DeFFcode:
 
 !!! question "Working on your first Pull Request for DeFFcode?" 
 
-    * If you don't know how to contribute to an Open Source Project on GitHub, then You can learn about it from [here ➶](https://opensource.guide/how-to-contribute/)
-
+    * You can learn about "**How to contribute to an Open Source Project on GitHub**" from [this doc ➶](https://opensource.guide/how-to-contribute/)
     * If you're stuck at something, please join our [Gitter community channel](https://gitter.im/DeFFcode/community). We will help you get started!
-
-    * Kindly follow the [EXEMPLARY :medal:](https://github.com/abhiTronix/deffcode/pulls?q=is%3Apr+label%3A%22EXEMPLARY+%3Amedal_military%3A%22+) tag for some finest PR examples.
-
 
 &nbsp; 
 
@@ -73,12 +69,12 @@ There are some important checks you need to perform while submitting your Pull R
   * Explain what the PR adds, fixes, or improves.
   * In case of bug fixes, add a new unit test case that would fail against your bug fix.
   * Provide output or screenshots, if you can.
-  * Make sure your pull request passed all the CI checks _(triggers automatically on pushing commits against dev branch)_. If it's somehow failing, then ask the maintainer for a review.
-  * Click "ready for review" when finished.
+  * Make sure your pull request passed all the CI checks _(triggers automatically on pushing commits against `master` branch)_. If it's somehow failing, then ask the maintainer for a review.
+  * Click "**ready for review**" when finished.
 
 - [x] **Test, Format & lint code locally:**
 
-  * Make sure to test, format, and lint the modified code locally before every commit. The details are discussed [below ➶](#dev-formatting-linting)
+  * Make sure to test, format, and lint the modified code locally before every commit. The details are discussed [below ➶](#formatting-linting)
 
 - [x] **Make sensible commit messages:**
 
@@ -90,15 +86,15 @@ There are some important checks you need to perform while submitting your Pull R
     !!! warning "Any duplicate pull request will be Rejected!"
 
   * Search GitHub if there's a similar open or closed PR that relates to your submission.
-  * Check if your purpose code matches the overall direction, simplicity, and structure of the DeFFcode and improves it.
-  * Retain copyright for your contributions, but also agree to license them for usage by the project and author(s) under the [Apache 2.0 license ➶](https://github.com/abhiTronix/deffcode/blob/master/LICENSE).
+  * Check if your purpose code matches the overall direction of the DeFFcode APIs and improves it.
+  * Retain copyright for your contributions, but also agree to license them for usage by the project and author(s) under the [**Apache 2.0 license ➶**](https://github.com/abhiTronix/deffcode/blob/master/LICENSE).
 
 - [x] **Link your Issues:**
 
-    !!! tip "For more information on Linking a pull request to an issue, See [this wiki doc➶](https://docs.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue)"
+    !!! tip "For more information on Linking a pull request to an issue, See [this doc➶](https://docs.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue)"
 
   * Finally, when you're confident enough, make your pull request public. 
-  * You can link an issue to a pull request manually or using a supported keyword in the pull request description. It helps collaborators see that someone is working on the issue. 
+  * You can link an issue to a pull request manually or using a supported keyword in the pull request description. It helps collaborators see that someone is working on the issue. For more information, see [this doc➶](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue)
 
 &nbsp; 
 
@@ -118,30 +114,35 @@ Testing DeFFcode requires additional test dependencies and dataset, which can be
 
     ```sh
     # Install opencv(only if not installed previously)
-    pip install opencv-python 
+    $ pip install opencv-python
+
     # install rest of dependencies
-    pip install --upgrade flake8 black pytest vidgear[core]
+    $ pip install --upgrade flake8 black pytest vidgear[core]
     ```
 
 - [x] **Download Tests Dataset:** 
 
     To perform tests, you also need to download additional dataset *(to your temp dir)* by running [`prepare_dataset.sh`](https://github.com/abhiTronix/deffcode/blob/master/scripts/bash/prepare_dataset.sh)  bash script as follows:
 
-    ```sh
-    # On linux or macOS
-    chmod +x scripts/bash/prepare_dataset.sh
-    ./scripts/bash/prepare_dataset.sh
+    === "On Linux/MacOS"
 
-    # On Windows 
-    sh scripts/bash/prepare_dataset.sh
-    ```
+        ```sh
+        $ chmod +x scripts/bash/prepare_dataset.sh
+        $ ./scripts/bash/prepare_dataset.sh
+        ```
+
+    === "On Windows"
+
+        ```sh
+        $ sh scripts/bash/prepare_dataset.sh
+        ```
 
 ### Running Tests
 
 All tests can be run with [`pytest`](https://docs.pytest.org/en/stable/)(*in DeFFcode's root folder*) as follows:
 
    ```sh
-    pytest -sv  #-sv for verbose output.
+   $ pytest -sv  #-sv for verbose output.
    ```
 
 ### Formatting & Linting
@@ -151,13 +152,13 @@ For formatting and linting, following libraries are used:
 - [x] **Flake8:** You must run [`flake8`](https://flake8.pycqa.org/en/latest/manpage.html) linting for checking the code base against the coding style (PEP8), programming errors and other cyclomatic complexity:
 
     ```sh
-    flake8 {source_file_or_directory} --count --select=E9,F63,F7,F82 --show-source --statistics
+    $ flake8 {source_file_or_directory} --count --select=E9,F63,F7,F82 --show-source --statistics
     ```
 
 - [x] **Black:**  DeFFcode follows [`black`](https://github.com/psf/black) formatting to make code review faster by producing the smallest diffs possible. You must run it with sensible defaults as follows: 
 
     ```sh
-    black {source_file_or_directory}
+    $ black {source_file_or_directory}
     ```
 
 &nbsp; 
@@ -169,7 +170,8 @@ For formatting and linting, following libraries are used:
 
 **Q1. Why do my changes taking so long to be Reviewed and/or Merged?**
 
-!!! info "Submission Aftermaths"
+!!! success "Submission Aftermaths"
+
     * After your PR is merged, you can safely delete your branch and pull the changes from the main (upstream) repository.
     * The changes will remain in `dev` branch until next DeFFcode version is released, then it will be merged into `master` branch.
     * After a successful Merge, your newer contributions will be given priority over others. 

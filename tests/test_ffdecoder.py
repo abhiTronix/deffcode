@@ -116,7 +116,7 @@ def test_source_playback(source, custom_ffmpeg, output):
 
 
 @pytest.mark.parametrize(
-    "pixfmts", ["bgr24", "gray", "rgba", "invalid", "yuvj422p", "yuv444p", "bgr48be"]
+    "pixfmts", ["bgr24", "gray", "rgba", "invalid", "invalid2", "yuv444p", "bgr48be"]
 )
 def test_frame_format(pixfmts):
     """
@@ -126,15 +126,26 @@ def test_frame_format(pixfmts):
     frame_num = 0
     source = return_testvideo_path(fmt="vo")
     actual_frame_num, actual_frame_shape = actual_frame_count_n_frame_size(source)
-    extraparams = {"-pix_fmt": "bgr24"}
+    ffparams = {"-pix_fmt": "bgr24"}
     try:
         # formulate the decoder with suitable source(for e.g. foo.mp4)
-        decoder = FFdecoder(
-            source,
-            frame_format=pixfmts,
-            custom_ffmpeg=return_static_ffmpeg(),
-            **extraparams,
-        ).formulate()
+        if pixfmts != "invalid2":
+            decoder = FFdecoder(
+                source,
+                frame_format=pixfmts,
+                custom_ffmpeg=return_static_ffmpeg(),
+                **ffparams,
+            ).formulate()
+        else:
+            decoder = FFdecoder(
+                source,
+                custom_ffmpeg=return_static_ffmpeg(),
+                **ffparams,
+            )
+            # assign manually pix-format via `metadata` property object {special case}
+            decoder.metadata = dict(output_frames_pixfmt="yuvj422p")
+            # formulate decoder
+            decoder.formulate()
 
         # grab RGB24(default) 3D frames from decoder
         for frame in decoder.generateFrame():
@@ -150,20 +161,53 @@ def test_frame_format(pixfmts):
 
 
 @pytest.mark.parametrize(
-    "custom_params", [{"source_has_video": "Custom_Value"}, ["invalid"], {"foo": 1234}]
+    "custom_params, checks",
+    [
+        (
+            {
+                "source": "Custom_Value",  # source cannot be altered
+                "mytuple": (  # Python's `json` module converts Python tuples to JSON lists
+                    1,
+                    "John",
+                    ("inner_tuple"),
+                ),
+                "output_frames_pixfmt": 1234, # invalid pixformat
+                "source_video_resolution": [640], # invalid resolution
+            },
+            False,
+        ),
+        (
+            {"output_frames_pixfmt": "invalid"},
+            False,
+        ),
+        (["invalid"], False),
+        (
+            dict(
+                mystring="abcd",  # string data
+                myint=1234,  # integers data
+                mylist=[1, "Rohan", ["inner_list"]],  # list data
+                mydict={"anotherstring": "hello"},  # dictionary data
+                myjson=json.loads(
+                    '{"name": "John", "age": 30, "city": "New York"}'
+                ),  # json data
+                source_video_resolution=[640, 480],
+            ),
+            True,
+        ),
+    ],
 )
-def test_metadata(custom_params):
+def test_metadata(custom_params, checks):
     """
     Testing `metadata` print and updation
     """
     decoder = None
     source = return_testvideo_path(fmt="vo")
     try:
+        # custom vars
+        ffparams = {"-framerate": None} if not checks else {}
         # formulate the decoder with suitable source(for e.g. foo.mp4)
         decoder = FFdecoder(
-            source,
-            custom_ffmpeg=return_static_ffmpeg(),
-            verbose=True,
+            source, custom_ffmpeg=return_static_ffmpeg(), verbose=True, **ffparams
         ).formulate()
         # re-test
         decoder.formulate()
@@ -177,11 +221,13 @@ def test_metadata(custom_params):
         # print metadata as `json.dump`
         logger.debug(decoder.metadata)
 
-        assert all(
-            json.loads(decoder.metadata)[x] == custom_params[x] for x in custom_params
-        ), "Test failed"
+        if checks:
+            assert all(
+                json.loads(decoder.metadata)[x] == custom_params[x]
+                for x in custom_params
+            ), "Test failed"
     except Exception as e:
-        if custom_params == ["invalid"]:
+        if not checks:
             pytest.xfail(str(e))
         else:
             pytest.fail(str(e))
@@ -191,13 +237,33 @@ def test_metadata(custom_params):
 
 
 @pytest.mark.parametrize(
-    "extraparams, pixfmts",
+    "ffparams, pixfmts",
     [
-        ({"-ss": "00:00:01.45", "-frames:v": 1}, "rgba"),
-        ({"-ss": "00:02.45", "-vframes": 1}, "gray"),
+        (
+            {
+                "-ss": "00:00:01.45",
+                "-frames:v": 1,
+                "-custom_resolution": [640, 480],
+                "-passthrough_audio": "invalid",  # just for test
+                "-vcodec": "unknown",
+            },
+            "rgba",
+        ),
+        (
+            {
+                "-ss": "00:02.45",
+                "-vframes": 1,
+                "-custom_resolution": "invalid",
+                "-ffprefixes": "invalid",
+                "-clones": "invalid",
+                "-framerate": "invalid",
+                "-vcodec": None,
+            },
+            "gray",
+        ),
     ],
 )
-def test_seek_n_save(extraparams, pixfmts):
+def test_seek_n_save(ffparams, pixfmts):
     """
     Testing `frame_format` with different colorspaces.
     """
@@ -210,7 +276,7 @@ def test_seek_n_save(extraparams, pixfmts):
             frame_format=pixfmts,
             custom_ffmpeg=return_static_ffmpeg(),
             verbose=True,
-            **extraparams,
+            **ffparams,
         ).formulate()
 
         # grab the RGB24(default) frame from the decoder
@@ -273,8 +339,8 @@ test_data_class = [
 ]
 
 
-@pytest.mark.parametrize("source, extraparams, result", test_data_class)
-def test_FFdecoder_params(source, extraparams, result):
+@pytest.mark.parametrize("source, ffparams, result", test_data_class)
+def test_FFdecoder_params(source, ffparams, result):
     """
     Testing FFdecoder API with different parameters and save output
     """
@@ -283,7 +349,7 @@ def test_FFdecoder_params(source, extraparams, result):
     f_name = os.path.join(*[tempfile.gettempdir(), "temp_write", "output_foo.avi"])
     try:
         # initialize and formulate the decode with suitable source
-        decoder = FFdecoder(source, frame_format="bgr24", **extraparams).formulate()
+        decoder = FFdecoder(source, frame_format="bgr24", **ffparams).formulate()
 
         # retrieve JSON Metadata and convert it to dict
         metadata_dict = json.loads(decoder.metadata)

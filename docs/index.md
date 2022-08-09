@@ -20,98 +20,177 @@ limitations under the License.
 
 # Introduction
 
-<img src="assets/images/deffcode.png" alt="DeFFcode" title="Logo designed by Abhishek Thakur(@abhiTronix), under CC-BY-NC-SA 4.0 License" loading="lazy" width="87%" class="shadow2" />
+![DeFFcode](assets/images/deffcode.png#only-light){ loading=lazy }
+![DeFFcode](assets/images/deffcode-dark.png#only-dark){ loading=lazy }
 
-> DeFFcode is a powerful High-performance Real-time **Video frames Generator** that wraps FFmpeg pipeline inside a subprocess module for generating blazingly fast video frames in python :fire:
+<center>DeFFcode - A cross-platform **High-performance Video Frames Decoder** that flexibly executes <br>FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code :zap:</center>
 
-The primary purpose of DeFFcode is to provide a cross-platform solution for fast and low-overhead decoding of a wide range of video streams into 3D [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray) frames while providing **complete control over the underlying FFmpeg pipeline** without the need to go deeper into hefty documentation and in just a few lines of python code.
+<div class="spacer"></div>
 
-DeFFcode can **extract frames in real-time with any custom specification imaginable** such as Framerate, Resolution, Hardware decoding, Complex Filters into any pixel format while giving users the complete freedom to play with any desired FFmpeg supported parameter. On top of that, DeFFcode enables **effortless and precise FFmpeg Frame Seeking** natively. 
+**==Highly Adaptive== -** DeFFcode APIs implements a **standalone highly-extensible wrapper around [FFmpeg][ffmpeg]** multimedia framework. These APIs **supports a wide-ranging media streams as input** source such as live USB/Virtual/IP camera feeds, regular multimedia files, screen recordings, image sequences, network protocols _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth.
 
-Finally, DeFFcode APIs are designed with **simplicity, flexibility, and modularity** in mind for the best developer experience. 
+**==Highly Flexible== -** DeFFcode APIs gains an edge over other Wrappers by providing **complete control over the underline pipeline** including **access to almost any FFmpeg specification thinkable** such as specifying framerate, resolution, hardware decoder(s), filtergraph(s), and <br>pixel-format(s) that are readily **supported by all well known Computer Vision libraries**.
 
-
-&thinsp;
-
-## Key Features
-
-DeFFcode APIs are build on ==[**FFmpeg**][ffmpeg] - a leading multimedia framework==, that gives you the following:
-
-- [x] Extremely exceptional real-time performance :zap: with low-memory footprints.
-- [x] Flexible API with access to almost every parameter available within FFmpeg.
-- [x] Fast dedicated [Hardware-Accelerated Decoding](examples/advanced/#gpu-enabled-hardware-accelerated-decoding).
-- [x] Precise FFmpeg [Frame Seeking](examples/basic/#saving-keyframes-as-image) with pinpoint accuracy.
-- [x] Extensive support for real-time [Complex FFmpeg Filters](examples/advanced/#generating-video-with-complex-filter-applied).
-- [x] Out-of-the-box support for Computer Vision libraries like OpenCV, Pytorch, etc.
-- [x] Support a wide range of media files, devices, image-sequence and network streams.
-- [x] Easier to ingest streams into any pixel format that FFmpeg supports.
-- [x] Lossless Transcoding support with [WriteGear](https://abhitronix.github.io/deffcode/latest/gears/writegear/introduction/).
-- [x] Fewer hard dependencies, and easy to install. 
-- [x] Designed modular for best developer experience.
-- [x] Cross-platform and runs on Python 3.7+
+**==Highly Convenient== -**  FFmpeg has a steep learning curve especially for users unfamiliar with a command line interface. DeFFcode helps users by keeping the **same [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) _(Python API for OpenCV)_ coding syntax for its APIs**, thereby making it even **easier to learn, create, and develop FFmpeg based apps** in Python.
 
 &thinsp;
+
+## Key features of DeFFcode
+
+Here are some key features that stand out:
+
+- [x] High-performance, low-overhead video frames decoding with robust error-handling.
+- [x] Flexible API with access to almost any FFmpeg specification thinkable.
+- [x] Supports a wide-range of media streams/devices/protocols as input source. 
+- [x] Curated list of well-documented recipes ranging from [**Basic**](recipes/basic/) to [**Advanced**](recipes/advanced/) skill levels.
+- [x] Easy to code **Live [Simple](recipes/basic/transcode-live-frames-simplegraphs/#transcoding-live-simple-filtergraphs) & [Complex](recipes/advanced/transcode-live-frames-complexgraphs/#transcoding-live-complex-filtergraphs) Filtergraphs**. _(Yes, You read it correctly "Real-time"!)_
+- [x] Lightning fast dedicated **:fontawesome-solid-microchip: GPU-Accelerated Video [Decoding](recipes/advanced/decode-hw-acceleration/#hardware-accelerated-video-decoding) & [Transcoding](recipes/advanced/transcode-hw-acceleration/#hardware-accelerated-video-transcoding)**.
+- [x] Enables precise FFmpeg [**Frame Seeking**](recipes/basic/save-keyframe-image/#extracting-key-frames-as-png-image) with pinpoint accuracy.
+- [x] Effortless [**Metadata Extraction**](recipes/basic/extract-video-metadata/#extracting-video-metadata) from all streams available in the source.
+- [x] Maintains the standard easy to learn [**OpenCV-Python**](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) coding syntax.
+- [x] Out-of-the-box support for all prominent Computer Vision libraries.
+- [x] Cross-platform, runs on Python 3.7+, and easy to install. 
+
+??? question "Still missing a key feature in DeFFcode?"
+
+      Please review [**DeFFcode's Roadmap**](https://github.com/abhiTronix/deffcode/issues/21#issue-1309685018). If you still can't find the desired feature there, then you can request one simply by **Commenting :speaking_head:** or **Upvoting an existing comment :thumbsup:** [on that issue](https://github.com/abhiTronix/deffcode/issues/21).
+
+
+<!--
+- [x] Lossless Transcoding support with [WriteGear](gears/writegear/introduction/). #TODO
+-->
+
+
+&nbsp;
+
 
 ## Getting Started
 
-!!! tip "In case you're run into any problems, consult our [Help](help/get_help) section."
+<div class="spacer"></div>
 
-If this is your first time using DeFFcode, head straight to the [**Installation Notes**](installation/) to install DeFFcode.
+!!! tip "In case you're run into any problems, consult our [Help section](help/get_help)."
 
-The default function of DeFFcode's [**FFdecoder API**](reference/ffdecoder/#ffdecoder-api) is to generate 24-bit RGB (3D [`ndarray`](https://numpy.org/doc/stable/reference/arrays.ndarray.html#the-n-dimensional-array-ndarray)) frames from the given source:
+### :material-notebook-plus: Installation Notes
+
+If this is your first time using DeFFcode, head straight to the **[Installation Notes](installation/#installation-notes) to install DeFFcode on your machine**.
+
+<div class="spacer"></div>
+
+### :material-pot-steam: Recipes a.k.a Examples
+
+
+Once you have DeFFcode installed, checkout our **Well-Documented [Recipes :material-pot-steam:](recipes/basic) for usage examples**:
+
+??? question "How to Begin?"
+      
+      If you’re just starting, check out the Beginner [**Basic Recipes :cake:**](recipes/basic) and as your confidence grows, move up to [**Advanced Recipes :croissant:**](recipes/advanced). 
+
+- [x] [**Basic Recipes :cake:**](recipes/basic): Recipes for beginners of any skill level to get started.
+- [x] [**Advanced Recipes :croissant:**](recipes/advanced): Recipes to take your skills to the next level.
+
+<div class="spacer"></div>
+
+### :material-api: API in a nutshell
+
+As a user, you just have to remember only two DeFFcode APIs, namely:
+
+!!! info "See [API Reference](reference/ffdecoder/#ffdecoder-api) for more in-depth information."
+
+<div class="spacer"></div>
+
+#### A. FFdecoder API 
+
+The primary function of [**FFdecoder API**](reference/ffdecoder/#ffdecoder-api) is to **decode 24-bit RGB video frames** from the given source:
 
 ```py
 # import the necessary packages
 from deffcode import FFdecoder
 
-# formulate the decoder with suitable source(for e.g. foo.mp4)
-decoder = FFdecoder("foo.mp4").formulate()
+# formulate the decoder with suitable source
+decoder = FFdecoder("https://abhitronix.github.io/html/Big_Buck_Bunny_1080_10s_1MB.mp4").formulate()
 
 # grab RGB24(default) 3D frames from decoder
 for frame in decoder.generateFrame():
+    
     # lets print its shape
-    print(frame.shape)
-
-# print metadata as `json.dump`
-print(decoder.metadata)
+    print(frame.shape) # (1080, 1920, 3)
 
 # terminate the decoder
 decoder.terminate()
 ```
 
-**For more in-depth usage, kindly refer our [Basic Recipes :pie:](examples/basic) and [Advanced Recipes :microscope:](examples/advanced)**
+#### B. Sourcer API 
 
-&thinsp;
+The primary function of [**Sourcer API**](reference/sourcer/#sourcer-api) is to **gather information from all multimedia streams available** in the given source:
 
-## Contributions
+```python
+# import the necessary packages
+from deffcode import Sourcer
+
+# initialize and formulate the decoder using suitable source
+sourcer = Sourcer("https://abhitronix.github.io/html/Big_Buck_Bunny_1080_10s_1MB.mp4").probe_stream()
+
+# print metadata as `json.dump`
+print(sourcer.retrieve_metadata(pretty_json=True))
+```
+
+??? abstract "The resultant Terminal Output will look something as following on :fontawesome-brands-windows: Windows machine:"
+     
+      ```json
+      {
+        "ffmpeg_binary_path": "C:\\Users\\foo\\AppData\\Local\\Temp\\ffmpeg-static-win64-gpl/bin/ffmpeg.exe",
+        "source": "https://abhitronix.github.io/html/Big_Buck_Bunny_1080_10s_1MB.mp4",
+        "source_extension": ".mp4",
+        "source_video_resolution": [
+          1920,
+          1080
+        ],
+        "source_video_framerate": 60.0,
+        "source_video_pixfmt": "yuv420p",
+        "source_video_decoder": "h264",
+        "source_duration_sec": 10.0,
+        "approx_video_nframes": 600,
+        "source_video_bitrate": "832k",
+        "source_audio_bitrate": "",
+        "source_audio_samplerate": "",
+        "source_has_video": true,
+        "source_has_audio": false,
+        "source_has_image_sequence": false
+      }
+      ```
+
+
+&nbsp;
+
+## Contribution Guidelines
 
 > Contributions are welcome, and greatly appreciated!  
 
 Please read our [**Contribution Guidelines**](contribution/) for more details.
 
-&thinsp;
+&nbsp;
 
 ## Community Channel
 
 If you've come up with some new idea, or looking for the fastest way troubleshoot your problems. Please checkout our [**Gitter community channel ➶**][gitter]
 
-&thinsp; 
+&nbsp;
 
 ## Become a Stargazer
 
-You can be a [**Stargazer** :star2:{ .heart }][stargazer] by starring us on Github, it helps us a lot and you're making it easier for others to find & trust this library. Thanks!
+You can be a  [**Stargazer** :star2:{ .heart }][stargazer]  by starring us on Github, it helps us a lot and you're making it easier for others to find & trust this library. Thanks!
 
-&thinsp;
+&nbsp;
 
 ## Donations
 
 > DeFFcode is free and open source and will always remain so. :heart:{ .heart }
 
-It is something I am doing with my own free time. If you would like to say thanks, please feel free to make a donation:
+It is something I am doing with my own free time. But so much more needs to be done, and I need your help to do this. For just the price of a cup of coffee, you can make a difference :slight_smile:
 
 <script type='text/javascript' src='https://ko-fi.com/widgets/widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#eba100', 'W7W8WTYO');kofiwidget2.draw();</script> 
 
-&thinsp;
+&nbsp;
 
 <!--
 External URLs
