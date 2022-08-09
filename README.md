@@ -293,7 +293,7 @@ We're offering support for DeFFcode on [**Gitter Community Channel**][gitter]. C
 # Donations
 
 <div align="center">
-   <img src="docs/overrides/assets/images/help_us.png" alt="PiGear" width="50%" />
+   <img src="docs/overrides/assets/images/help_us.png" alt="Donation" width="50%" />
    <p><i>DeFFcode is free and open source and will always remain so. ❤️</i></p>
 </div>
 

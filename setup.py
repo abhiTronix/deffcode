@@ -30,15 +30,26 @@ with open(ver_path) as ver_file:
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
+    # patch internal hyperlinks
     long_description = long_description.replace(
         "(#", "(https://github.com/abhiTronix/deffcode#"
     )
     long_description = long_description.replace(
-        "docs/overrides/", "(https://abhitronix.github.io/deffcode/latest/"
+        "docs/overrides/", "https://abhitronix.github.io/deffcode/latest/"
+    )
+    # patch to remove github README specific text
+    long_description = (
+        long_description.replace(
+            "![DeFFcode](docs/overrides/assets/images/deffcode-dark.png#gh-dark-mode-only)",
+            "",
+        )
+        .replace("#gh-light-mode-only", "")
+        .replace("<ins>", "")
+        .replace("</ins>", "")
     )
     # patch for unicodes
-    long_description = long_description.replace("➶", ">>")
-    long_description = long_description.replace("©", "(c)")
+    long_description = long_description.replace("➶", ">>").replace("©", "(c)")
+
 
 setup(
     name="deffcode",
@@ -63,7 +74,7 @@ setup(
         "Decoder",
         "Realtime",
         "Framework",
-        "Cross-platform"
+        "Cross-platform",
         "Video Processing",
         "Computer Vision",
         "Video Decoding",
