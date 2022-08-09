@@ -20,7 +20,7 @@ limitations under the License.
 
 # Release Notes
 
-## v0.2.2 (2022-09-08) :material-new-box:
+## v0.2.2 (2022-08-09) :material-new-box:
 
 ??? new "New Features"
     - [x] **Sourcer API:**
