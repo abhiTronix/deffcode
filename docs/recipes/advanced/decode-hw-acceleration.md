@@ -22,7 +22,9 @@ limitations under the License.
 
 !!! abstract "FFmpeg offer access to dedicated GPU hardware with varying support on different platforms for performing a range of video-related tasks to be completed faster or using less of other resources (particularly CPU)."
 
-> By default, DeFFcode's FFdecoder API uses the Input Source's video-decoder _(extracted using Sourcer API)_ itself for decoding its input. However, you could easily change the video-decoder to your desired specific [**supported Video-Decoder**](../../reference/ffdecoder/params/#supported-decoders) using the `-vcodec` FFmpeg option by way of its [`ffparams`](../../reference/ffdecoder/params/#ffparams) dictionary parameter. This means easy access to GPU Accelerated Hardware Decoder to get better playback and accelerated video decoding on GPUs that will generate equivalent output to software decoders, but may use less power and CPU to do so.
+> By default, DeFFcode's FFdecoder API uses the Input Source's video-decoder _(extracted using Sourcer API)_ itself for decoding its input. However, you could easily change the video-decoder to your desired specific **supported Video-Decoder** using the `-vcodec` FFmpeg option by way of its [`ffparams`](../../reference/ffdecoder/params/#ffparams) dictionary parameter. This means easy access to GPU Accelerated Hardware Decoder to get better playback and accelerated video decoding on GPUs that will generate equivalent output to software decoders, but may use less power and CPU to do so.
+
+!!! tip "Use `#!sh ffmpeg -decoders` terminal command to lists all FFmpeg supported decoders."
 
 We'll discuss its Hardware-Accelerated Video Decoding capabilities briefly in the following recipes:
 

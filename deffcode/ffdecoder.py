@@ -564,15 +564,15 @@ class FFdecoder:
 
     def __enter__(self):
         """
-        Handles entry with the `with` statement. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/)
+        Handles entry with the `with` statement. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/).
 
-        **Returns:** [`formulate()`](#formulate) method.
+        **Returns:** Output of `formulate()` method.
         """
         return self.formulate()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
-        Handles exit with the `with` statement. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/)
+        Handles exit with the `with` statement. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/).
         """
         self.terminate()
 

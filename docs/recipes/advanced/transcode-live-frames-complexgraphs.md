@@ -89,6 +89,8 @@ In this example we will apply a watermark image _(say `watermark.png` with trans
 
 !!! tip "To learn about exclusive `-ffprefixes` & `-clones` parameter. See [Exclusive Parameters ➶](../../reference/ffdecoder/params/#b-exclusive-parameters)"
 
+!!! alert "Remember to replace `watermark.png` watermark image file-path with yours before using this recipe."
+
 ```python
 # import the necessary packages
 from deffcode import FFdecoder
@@ -123,7 +125,7 @@ output_params = {
 
 # Define writer with default parameters and suitable
 # output filename for e.g. `output_foo.mp4`
-writer = WriteGear(output_filename="output_foo.mp4", logging=True, **output_params)
+writer = WriteGear(output_filename="output_foo.mp4", **output_params)
 
 # grab the BGR24 frame from the decoder
 for frame in decoder.generateFrame():
@@ -226,7 +228,7 @@ output_params = {
 
 # Define writer with default parameters and suitable
 # output filename for e.g. `output_foo.mp4`
-writer = WriteGear(output_filename="output_foo.mp4", logging=True, **output_params)
+writer = WriteGear(output_filename="output_foo.mp4", **output_params)
 
 # grab the BGR24 frame from the decoder
 for frame in decoder.generateFrame():

@@ -61,7 +61,7 @@ theme:
         icon: fontawesome/solid/lightbulb
         name: Switch to light mode
   font: # font
-    text: Heebo
+    text: Libre Franklin
     code: JetBrains Mono
   icon: # icon
     logo: logo

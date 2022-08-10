@@ -118,7 +118,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 <details open>
   <summary><b>Basic Decoding Recipes</b></summary>
 
-- [Capturing RGB frames from a video file][capturing-rgb-frames-from-a-video-file]
+- [Accessing RGB frames from a video file][accessing-rgb-frames-from-a-video-file]
 - [Capturing and Previewing BGR frames from a video file][capturing-and-previewing-bgr-frames-from-a-video-file] _(OpenCV Support)_
 - [Playing with any other FFmpeg pixel formats][capturing-and-previewing-bgr-frames-from-a-video-file]
 - [Capturing and Previewing frames from a Webcam][capturing-and-previewing-frames-from-a-webcam]
@@ -378,7 +378,7 @@ Basic Recipes
 [saving-key-frames-as-image]:https://abhitronix.github.io/deffcode/latest/recipes/basic/save-keyframe-image/#saving-key-frames-as-image
 [extracting-video-metadata]:https://abhitronix.github.io/deffcode/latest/recipes/basic/extract-video-metadata/#extracting-video-metadata
 
-[capturing-rgb-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-rgb-frames-from-a-video-file
+[accessing-rgb-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#accessing-rgb-frames-from-a-video-file
 [capturing-and-previewing-bgr-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file
 [capturing-and-previewing-bgr-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file
 [capturing-and-previewing-frames-from-a-webcam]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam
