@@ -268,6 +268,8 @@ class FFdecoder:
 
         """
         This method formulates all necessary FFmpeg pipeline arguments and executes it inside the FFmpeg `subprocess` pipe.
+
+        **Returns:** A reference to the FFdecoder class object.
         """
         # assign values to class variables on first run
         if self.__initializing:
@@ -562,15 +564,17 @@ class FFdecoder:
 
     def __enter__(self):
         """
-        Handles entry
+        Handles entry with the `with` statement. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/)
+
+        **Returns:** [`formulate()`](#formulate) method.
         """
-        return self
+        return self.formulate()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
-        Handles exit
+        Handles exit with the `with` statement. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/)
         """
-        self.close()
+        self.terminate()
 
     @property
     def metadata(self):
@@ -680,9 +684,11 @@ class FFdecoder:
         # signal we are closing
         self.__verbose_logs and logger.debug("Terminating FFdecoder Pipeline...")
         self.__terminate_stream = True
-        # Attempt to close pipeline.
+        # check if no process was initiated at first place
         if self.__process is None or not (self.__process.poll() is None):
-            return  # no process was initiated at first place
+            logger.warning("Pipeline already terminated!")
+            return
+        # Attempt to close pipeline.
         # close `stdin` output
         self.__process.stdin and self.__process.stdin.close()
         # close `stdout` output
@@ -692,3 +698,6 @@ class FFdecoder:
             self.__process.terminate()
         self.__process.wait()
         self.__process = None
+        self.__verbose_logs and logger.debug(
+            "FFdecoder Pipeline terminated successfully"
+        )
