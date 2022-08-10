@@ -81,6 +81,8 @@ We'll discuss the transcoding of live simple filtergraphs in the following recip
 
 In this example we will take the first 5 seconds of a video clip _(using [`trim`](https://ffmpeg.org/ffmpeg-filters.html#toc-trim) filter)_ and reverse it _(by applying [`reverse`](https://ffmpeg.org/ffmpeg-filters.html#toc-reverse) filter)_, and encode them using OpenCV Library's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) method in real-time. 
 
+!!! warning "The `reverse` filter requires memory to buffer the entire clip, so applying [`trim`](https://ffmpeg.org/ffmpeg-filters.html#toc-trim) filter first is strongly recommended. Otherwise you might probably run Out of Memory."
+
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
 !!! tip "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve source framerate and resolution."
