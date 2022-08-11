@@ -20,7 +20,63 @@ limitations under the License.
 
 # Release Notes
 
-## v0.2.2 (2022-08-09) :material-new-box:
+
+## v0.2.3 (2022-08-11) :material-new-box:
+
+??? new "New Features"
+    - [x] **Docs:**
+        * Added Zenodo Bibtex entry and badge in docs for easily citing a DeFFcode release.
+        * Added new `<div>` tag bounding-box style to the Static FFmpeg binary download links in FFmpeg Installation Doc for better accessibility.
+    - [x] **Maintenance:** 
+        * Switched to new Issue GitHub's form schema using YAML:
+            * Added new `bug_report.yaml` Issue GitHub's form schema for Bug Reports.
+            * Added new `idea.yaml` Issue GitHub's form schema for new Ideas.
+            * Added new `question.yaml` Issue GitHub's form schema for Questions.
+            * Deleted old depreciated markdown(`.md`) files.
+            * Polished forms.
+
+??? success "Updates/Improvements"  
+    - [x] Maintenance: 
+        * Added new patterns to `.gitignore` to ignore vim files.
+    - [x] CI:
+        * Updated `test_FFdecoder_params` unittest to include `with` statement access method.
+    - [x] Setup:
+        * Added new patches for using README.md text as `long_description` metadata.  
+            * Implemented new patch to remove GitHub README UI specific text.
+        * Simplified multiple `str.replace` to chained `str.replace` of better readability.
+        * Bumped version to `0.2.3`.
+    - [x] Docs:
+        * Updated recipes to include `with` statement access method.
+            * Updated existing recipes to include `with` statement access method in FFdecoder APIs.
+            * Included new example code of accessing RGB frames using `with` statement access method.
+            * Updated Recipe title to "Accessing RGB frames from a video file" across docs.
+        * Included warning admonition for advising users to always use `trim` with `reverse` filter.
+        * Updated docs text font to `Libre Franklin`.
+        * Updated method description texts and logging messages.
+        * Update icons and admonition messages.
+        * Updated code comments.
+        * Updated `changelog.md`.
+
+??? bug "Bug-fixes"
+    - [x] FFdecoder API:
+        * Fixed Context Manager methods.
+            * Fixed `__enter__` method returning class instance instead of formulating pipeline.
+            * Fixed `__exit__` method calling wrong non-existent method.
+    - [x] Setup:
+        * Fixed missing `comma(,)` in keywords metadata.
+        * Fixed bug in patch string.
+    - [x] Docs:
+        * Fixed typos in code comments.
+        * Fixed several typos in docs.
+
+??? question "Pull Requests"
+    * PR #26
+
+&nbsp; 
+
+&nbsp; 
+
+## v0.2.2 (2022-08-09)
 
 ??? new "New Features"
     - [x] **Sourcer API:**
@@ -242,9 +298,9 @@ limitations under the License.
               * Updated date/version tag to `12-07-2022`.
               * Removed depreciated binaries download links and code.
     - [x] Setup:
-          * Bumped version to 0.2.1.
+          * Bumped version to `0.2.1`.
     - [x] Docs:
-          * Updated Changelog.md
+          * Updated `changelog.md`.
 
 ??? danger "Breaking Updates/Changes"
     - [x] :skull_crossbones: **Implement support for live input devices/sources.**

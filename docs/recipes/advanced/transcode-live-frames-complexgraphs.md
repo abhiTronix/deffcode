@@ -72,6 +72,8 @@ We'll discuss the transcoding of live complex filtergraphs in the following reci
 
 !!! note "Always use FFdecoder API's [`terminate()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.terminate) method at the end to avoid undesired behavior."
 
+!!! danger "==WriteGear's Compression Mode support for FFdecoder API is currently in beta so you can expect much higher than usual CPU utilization!=="
+
 
 &thinsp;
 
@@ -161,8 +163,6 @@ writer.close()
 
 
 In this example we will blend **`10` seconds of Mandelbrot test pattern** _(generated using `lavfi` input virtual device)_ that serves as the "top" layer with **`10` seconds of Image Sequence** that serves as the "bottom" layer, using `blend` filter _(with `heat` blend mode)_, and decode live **BGR24** video frames in FFdecoder API. We'll also be encoding those decoded frames in real-time into lossless video file using WriteGear API with controlled framerate.
-
-!!! danger "==WriteGear's Compression Mode support for FFdecoder API is currently in beta so you can expect much higher than usual CPU utilization!=="
 
 ??? tip "Extracting Image Sequences from a video"
     

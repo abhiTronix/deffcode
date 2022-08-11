@@ -240,7 +240,7 @@ def validate_ffmpeg(path, verbose=False):
     """
     ## validate_ffmpeg
 
-    Validate FFmeg Binaries. returns `True` if tests are passed.
+    Validate FFmpeg Binaries. Returns `True` if validity test passes successfully.
 
     Parameters:
         path (string): absolute path of FFmpeg binaries
@@ -273,7 +273,7 @@ def get_supported_pixfmts(path):
     """
     ## get_supported_pixfmts
 
-    Find and returns FFmpeg's supported pixel formats
+    Find and returns all FFmpeg's supported pixel formats.
 
     Parameters:
         path (string): absolute path of FFmpeg binaries
@@ -305,7 +305,7 @@ def get_supported_vdecoders(path):
     """
     ## get_supported_vdecoders
 
-    Find and returns FFmpeg's supported video decoders
+    Find and returns all FFmpeg's supported video decoders.
 
     Parameters:
         path (string): absolute path of FFmpeg binaries
@@ -332,7 +332,7 @@ def get_supported_demuxers(path):
     """
     ## get_supported_demuxers
 
-    Find and returns FFmpeg's supported demuxers
+    Find and returns all FFmpeg's supported demuxers.
 
     Parameters:
         path (string): absolute path of FFmpeg binaries
@@ -425,7 +425,7 @@ def is_valid_url(path, url=None, verbose=False):
     ## is_valid_url
 
     Checks URL validity by testing its scheme against
-    FFmpeg's supported protocols
+    FFmpeg's supported protocols.
 
     Parameters:
         path (string): absolute path of FFmpeg binaries
@@ -462,7 +462,7 @@ def check_sp_output(*args, **kwargs):
     """
     ## check_sp_output
 
-    Returns FFmpeg `stdout` output from subprocess module
+    Returns FFmpeg `stdout` output from subprocess module.
 
     Parameters:
         args (based on input): Non Keyword Arguments
