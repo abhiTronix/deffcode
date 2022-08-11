@@ -50,7 +50,7 @@ DeFFcode - A cross-platform **High-performance Video Frames Decoder** that flexi
 
 &thinsp;
 
-**<ins>Highly Adaptive</ins> -** _DeFFcode APIs implements a **standalone highly-extensible wrapper around [FFmpeg][ffmpeg]** multimedia framework. These APIs **supports a wide-ranging media streams as input** source such as [live USB/Virtual/IP camera feeds][capturing-and-previewing-frames-from-a-webcam], [regular multimedia files][capturing-rgb-frames-from-a-video-file], [screen recordings][capturing-and-previewing-frames-from-your-desktop], [image sequences][decoding-image-sequences], [network URL schemes][decoding-network-streams] (such as HTTP(s), RTP/RSTP, etc.), so on and so forth._
+**<ins>Highly Adaptive</ins> -** _DeFFcode APIs implements a **standalone highly-extensible wrapper around [FFmpeg][ffmpeg]** multimedia framework. These APIs **supports a wide-ranging media streams as input** source such as [live USB/Virtual/IP camera feeds][capturing-and-previewing-frames-from-a-webcam], [regular multimedia files][decoding-video-files], [screen recordings][capturing-and-previewing-frames-from-your-desktop], [image sequences][decoding-image-sequences], [network URL schemes][decoding-network-streams] (such as HTTP(s), RTP/RSTP, etc.), so on and so forth._
 
 **<ins>Highly Flexible</ins> -** _DeFFcode APIs gains an edge over other FFmpeg Wrappers by providing **complete control over the underline pipeline** including **access to almost any FFmpeg specification thinkable** such as specifying framerate, resolution, hardware decoder(s), filtergraph(s), and pixel-format(s) that are readily **supported by all well known Computer Vision libraries**._
 
