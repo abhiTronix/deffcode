@@ -30,13 +30,6 @@ with open(ver_path) as ver_file:
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
-    # patch internal hyperlinks
-    long_description = long_description.replace(
-        "(#", "(https://github.com/abhiTronix/deffcode#"
-    )
-    long_description = long_description.replace(
-        "docs/overrides/", "https://abhitronix.github.io/deffcode/latest/"
-    )
     # patch to remove github README specific text
     long_description = (
         long_description.replace(
@@ -49,6 +42,13 @@ with open("README.md", "r", encoding="utf-8") as fh:
     )
     # patch for unicodes
     long_description = long_description.replace("➶", ">>").replace("©", "(c)")
+    # patch internal hyperlinks
+    long_description = long_description.replace(
+        "(#", "(https://github.com/abhiTronix/deffcode#"
+    )
+    long_description = long_description.replace(
+        "docs/overrides/", "https://abhitronix.github.io/deffcode/latest/"
+    )
 
 
 setup(
