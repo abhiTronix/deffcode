@@ -171,8 +171,8 @@ def test_frame_format(pixfmts):
                     "John",
                     ("inner_tuple"),
                 ),
-                "output_frames_pixfmt": 1234, # invalid pixformat
-                "source_video_resolution": [640], # invalid resolution
+                "output_frames_pixfmt": 1234,  # invalid pixformat
+                "source_video_resolution": [640],  # invalid resolution
             },
             False,
         ),
@@ -326,8 +326,9 @@ test_data_class = [
         True,
     ),
     (
-        return_testvideo_path(),
+        "testsrc=size=1280x720:rate=30",  # virtual "testsrc" source
         {
+            "-ffprefixes": ["-t", "5"],  # playback time of 5 seconds
             "-clones": [
                 "-i",
                 "https://abhitronix.github.io/deffcode/latest/assets/images/ffmpeg.png",
@@ -349,7 +350,14 @@ def test_FFdecoder_params(source, ffparams, result):
     f_name = os.path.join(*[tempfile.gettempdir(), "temp_write", "output_foo.avi"])
     try:
         # initialize and formulate the decode with suitable source
-        with FFdecoder(source, frame_format="bgr24", **ffparams) as decoder:
+        with FFdecoder(
+            source,
+            frame_format="bgr24",
+            source_demuxer="lavfi"
+            if (isinstance(source, str) and source.startswith("testsrc"))
+            else None,
+            **ffparams,
+        ) as decoder:
 
             # retrieve JSON Metadata and convert it to dict
             metadata_dict = json.loads(decoder.metadata)
