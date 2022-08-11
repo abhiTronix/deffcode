@@ -1,16 +1,15 @@
-name: Bug Report
-description: File a bug-report for DeFFcode APIs 🐞
-title: "[Bug]: "
-labels: ["Bug :lady_beetle:", "Needs Triage :monocle_face:"]
-assignees:
-  - abhiTronix
+name: Question
+description: Have any questions regarding DeFFcode APIs ❔
+title: "[Question]: "
+labels: "Question :grey_question:"
 body:
-  - type: textarea
+  - type: checkboxes
     attributes:
-      label: Description
-      description: Please provide a brief description of the bug in 1-2 sentences.
-    validations:
-      required: true
+      label: Issue guidelines
+      description: Please read the Issue guidelines before proceeding.
+      options:
+        - label: I've read the [Issue Guidelines](https://abhitronix.github.io/deffcode/latest/contribution/issue/#submitting-an-issue-guidelines) and wholeheartedly agree.
+          required: true
   - type: checkboxes
     attributes:
       label: Issue Checklist
@@ -20,34 +19,16 @@ body:
           required: true
         - label: I have read the [Documentation](https://abhitronix.github.io/deffcode/latest) and found nothing related to my problem.
           required: true
-        - label: I've read the [Issue Guidelines](https://abhitronix.github.io/deffcode/latest/contribution/issue/#submitting-an-issue-guidelines) and wholeheartedly agree.
-          required: true
   - type: textarea
     attributes:
-      label: Expected behaviour
-      description: Please describe precisely what you'd expect to happen.
+      label: Describe your Question
+      description: Please describe your question thoroughly here. What are you trying to accomplish?
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Actual behaviour
-      description: Please describe precisely what is actually happening, and why you consider it to be a bug?
-    validations:
-      required: true
-  - type: textarea
-    attributes:
-      label: Steps to reproduce
-      description: Please describe the steps to reproduce the bug.
-      placeholder: |-
-        1. ...
-        2. ...
-        3. ...
-    validations:
-      required: true
-  - type: textarea
-    attributes:
-      label: Terminal log output
-      description: Please copy and paste any relevant terminal log output to help quickly debug bugs. You can enable verbose flag with `verbose=True` in any DeFFcode API for getting verbose terminal logs.
+      label: Terminal log output(Optional)
+      description: Copy and paste any relevant terminal log output(only if applicable) here or else leave this block empty. You can enable verbose flag with `verbose=True` in any DeFFcode API for getting verbose terminal logs.
       render: shell
   - type: textarea
     attributes:
