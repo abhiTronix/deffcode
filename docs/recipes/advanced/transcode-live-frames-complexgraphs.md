@@ -72,6 +72,8 @@ We'll discuss the transcoding of live complex filtergraphs in the following reci
 
 !!! note "Always use FFdecoder API's [`terminate()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.terminate) method at the end to avoid undesired behavior."
 
+!!! danger "==WriteGear's Compression Mode support for FFdecoder API is currently in beta so you can expect much higher than usual CPU utilization!=="
+
 
 &thinsp;
 
@@ -88,6 +90,8 @@ In this example we will apply a watermark image _(say `watermark.png` with trans
 !!! info "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps Source Metadata as JSON to retrieve source framerate and frame-size."
 
 !!! tip "To learn about exclusive `-ffprefixes` & `-clones` parameter. See [Exclusive Parameters ➶](../../reference/ffdecoder/params/#b-exclusive-parameters)"
+
+!!! alert "Remember to replace `watermark.png` watermark image file-path with yours before using this recipe."
 
 ```python
 # import the necessary packages
@@ -123,7 +127,7 @@ output_params = {
 
 # Define writer with default parameters and suitable
 # output filename for e.g. `output_foo.mp4`
-writer = WriteGear(output_filename="output_foo.mp4", logging=True, **output_params)
+writer = WriteGear(output_filename="output_foo.mp4", **output_params)
 
 # grab the BGR24 frame from the decoder
 for frame in decoder.generateFrame():
@@ -159,8 +163,6 @@ writer.close()
 
 
 In this example we will blend **`10` seconds of Mandelbrot test pattern** _(generated using `lavfi` input virtual device)_ that serves as the "top" layer with **`10` seconds of Image Sequence** that serves as the "bottom" layer, using `blend` filter _(with `heat` blend mode)_, and decode live **BGR24** video frames in FFdecoder API. We'll also be encoding those decoded frames in real-time into lossless video file using WriteGear API with controlled framerate.
-
-!!! danger "==WriteGear's Compression Mode support for FFdecoder API is currently in beta so you can expect much higher than usual CPU utilization!=="
 
 ??? tip "Extracting Image Sequences from a video"
     
@@ -226,7 +228,7 @@ output_params = {
 
 # Define writer with default parameters and suitable
 # output filename for e.g. `output_foo.mp4`
-writer = WriteGear(output_filename="output_foo.mp4", logging=True, **output_params)
+writer = WriteGear(output_filename="output_foo.mp4", **output_params)
 
 # grab the BGR24 frame from the decoder
 for frame in decoder.generateFrame():

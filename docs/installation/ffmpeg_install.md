@@ -51,9 +51,15 @@ If DeFFcode APIs do not receive any input from the user on [**`custom_ffmpeg`**]
 
 ### B. Manual Configuration
 
-* **Download:** You can also manually download the latest Linux Static Binaries(*based on your machine arch(x86/x64)*) from the link below:
-
+* **Download:** You can also manually download the latest Linux Static Binaries _(based on your machine architecture)_ from the link below:
+    
+    <div style="
+            padding: 10px; 
+            border: 2px solid lightgray;
+            border-radius: 2px 10px;
+            margin: 10px;">
     **:material-file-download: Linux Static Binaries:** http://johnvansickle.com/ffmpeg/
+    </div>
 
 * **Assignment:** Then, you can easily assign the custom path to the folder containing FFmpeg executables(`for e.g 'ffmpeg/bin'`)  or path of `ffmpeg` executable itself to the [**`custom_ffmpeg`**](../../reference/ffdecoder/params/#custom_ffmpeg) parameter in the DeFFcode APIs.
 
@@ -82,9 +88,9 @@ If DeFFcode APIs do not receive any input from the user on [**`custom_ffmpeg`**]
 
     * You can also provide a custom save path for auto-downloading **FFmpeg Static Binaries** through exclusive [`-ffmpeg_download_path`](../../reference/sourcer/params/#exclusive-parameters) attribute in Sourcer API.
 
-        ??? question "How to use  `-ffmpeg_download_path` attribute in FFdecoder API?
+        ??? question "How to use  `-ffmpeg_download_path` attribute in FFdecoder API?"
             
-            `-ffmpeg_download_path` is also available in FFdecoder API through the [`-custom_sourcer_params`](../../reference/ffdecoder/params/#b-exclusive-parameters) attribute of its `ffparams` dictionary parameter
+            `-ffmpeg_download_path` is also available in FFdecoder API through the [`-custom_sourcer_params`](../../reference/ffdecoder/params/#b-exclusive-parameters) attribute of its `ffparams` dictionary parameter.
 
     * If binaries were found at the specified path, DeFFcode APIs automatically skips the Auto-Installation step.
 
@@ -93,9 +99,15 @@ If DeFFcode APIs do not receive any input from the user on [**`custom_ffmpeg`**]
 
 ### B. Manual Configuration
 
-* **Download:** You can also manually download the latest Windows Static Binaries(*based on your machine arch(x86/x64)*) from the link below:
-   
+* **Download:** You can also manually download the latest Windows Static Binaries _(based on your machine arch(x86/x64))_ from the link below:
+    
+    <div style="
+            padding: 10px; 
+            border: 2px solid lightgray;
+            border-radius: 2px 10px;
+            margin: 10px;">
       **:material-file-download: Windows Static Binaries:** https://ffmpeg.org/download.html#build-windows
+    </div>
 
 *  **Assignment:** Then, you can easily assign the custom path to the folder containing FFmpeg executables(`for e.g 'C:/foo/Downloads/ffmpeg/bin'`) or path of `ffmpeg.exe` executable itself to the [**`custom_ffmpeg`**](../../reference/ffdecoder/params/#custom_ffmpeg) parameter in the DeFFcode APIs.
 
@@ -120,9 +132,15 @@ If DeFFcode APIs do not receive any input from the user on [**`custom_ffmpeg`**]
 
 ### B. Manual Configuration
 
-* **Download:** You can also manually download the latest MacOS Static Binaries(*only x64 Binaries*) from the link below:
-  
+* **Download:** You can also manually download the latest MacOS Static Binaries _(only x64 Binaries)_ from the link below:
+    
+    <div style="
+            padding: 10px; 
+            border: 2px solid lightgray;
+            border-radius: 2px 10px;
+            margin: 10px;">
     **:material-file-download: MacOS Static Binaries:** https://ffmpeg.org/download.html#build-mac
+    </div>
 
 * **Assignment:** Then, you can easily assign the custom path to the folder containing FFmpeg executables(`for e.g 'ffmpeg/bin'`) or path of `ffmpeg` executable itself to the [**`custom_ffmpeg`**](../../reference/ffdecoder/params/#custom_ffmpeg) parameter in the DeFFcode APIs.
 

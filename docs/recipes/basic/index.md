@@ -52,7 +52,7 @@ The following recipes should be reasonably accessible to beginners of any skill 
 ## Basic :material-movie-play: Decoding Recipes
 
 - [x] **[:material-file-eye: Decoding Video files](../basic/decode-video-files/#decoding-video-files)**
-    - [Capturing RGB frames from a video file](../basic/decode-video-files/#capturing-rgb-frames-from-a-video-file)
+    - [Accessing RGB frames from a video file](../basic/decode-video-files/#accessing-rgb-frames-from-a-video-file)
     - [Capturing and Previewing BGR frames from a video file](../basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file) _(OpenCV Support)_
     - [Playing with any other FFmpeg pixel formats](../basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file)
 - [x] **[:material-webcam: Decoding Live Feed Devices](../basic/decode-live-feed-devices/#decoding-live-feed-devices)**

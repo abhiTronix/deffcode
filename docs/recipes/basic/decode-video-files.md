@@ -61,19 +61,19 @@ We'll discuss its video files support and pixel format capabilities briefly in t
 &thinsp;
 
 
-## Capturing RGB frames from a video file
+## Accessing RGB frames from a video file
 
 
 !!! abstract "The default function of FFdecoder API is to **decode 24-bit RGB video frames** from the given source."
 
-> FFdecoder API's [`generateFrame()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.generateFrame) function can be used both as a **Generator** _(Recommended Approach)_ and **Iterator**. 
+> FFdecoder API's [`generateFrame()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.generateFrame) function can be used in multiple methods to access RGB frames from a given source, such as **as a Generator** _(Recommended Approach)_, **calling `with` Statement**, and **as a Iterator**. 
 
-In this example we will decode the default **RGB24** video frames from a given Video file _(say `foo.mp4`)_ using both approaches:
+In this example we will decode the default **RGB24** video frames from a given Video file _(say `foo.mp4`)_ using above mentioned  accessing methods:
 
 
 === "As a Generator (Recommended)"
 
-    !!! quote "This is a recommended approach for faster and safer decoding."
+    !!! quote "This is a recommended approach for faster and error-proof access of decoded frames. We'll use it throughout the recipes."
 
     ```python
     # import the necessary packages
@@ -96,6 +96,31 @@ In this example we will decode the default **RGB24** video frames from a given V
 
     # terminate the decoder
     decoder.terminate()
+    ```
+
+=== "Calling `with` Statement"
+
+    !!! quote "Calling `with` Statement approach can be used to make the code easier, cleaner, and much more readable. This approach also automatically handles management of `formulate()` and `terminate()` methods in FFdecoder API, so don't need to explicitly call them. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/) for more information on this approach."
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import cv2
+
+    # initialize and formulate the decoder
+    with FFdecoder("foo.mp4") as decoder:
+
+        # grab the BGR24 frames from decoder
+        for frame in decoder.generateFrame():
+
+            # check if frame is None
+            if frame is None:
+                break
+
+            # {do something with the frame here}
+
+            # lets print its shape
+            print(frame.shape)  # for e.g. (1080, 1920, 3)
     ```
 
 === "As a Iterator"
@@ -135,39 +160,74 @@ In this example we will decode the default **RGB24** video frames from a given V
 
 In this example we will decode **OpenCV supported** live **BGR24** video frames from a given Video file _(say `foo.mp4`)_ in FFdecoder API, and preview them using OpenCV Library's `cv2.imshow()` method.
 
-!!! alert "By default, OpenCV expects `BGR` format frames in its `cv2.imshow()` method."
+!!! alert "By default, OpenCV expects `BGR` format frames in its `cv2.imshow()` method by using two accessing methods."
 
-```python
-# import the necessary packages
-from deffcode import FFdecoder
-import cv2
+=== "As a Generator (Recommended)"
 
-# initialize and formulate the decoder for BGR24 pixel format output
-decoder = FFdecoder("foo.mp4", frame_format="bgr24").formulate()
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import cv2
 
-# grab the BGR24 frames from decoder
-for frame in decoder.generateFrame():
+    # initialize and formulate the decoder for BGR24 pixel format output
+    decoder = FFdecoder("foo.mp4", frame_format="bgr24").formulate()
 
-    # check if frame is None
-    if frame is None:
-        break
+    # grab the BGR24 frames from decoder
+    for frame in decoder.generateFrame():
 
-    # {do something with the frame here}
-    
-    # Show output window
-    cv2.imshow("Output", frame)
+        # check if frame is None
+        if frame is None:
+            break
 
-    # check for 'q' key if pressed
-    key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):
-        break
+        # {do something with the frame here}
+        
+        # Show output window
+        cv2.imshow("Output", frame)
 
-# close output window
-cv2.destroyAllWindows()
+        # check for 'q' key if pressed
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord("q"):
+            break
 
-# terminate the decoder
-decoder.terminate()
-```
+    # close output window
+    cv2.destroyAllWindows()
+
+    # terminate the decoder
+    decoder.terminate()
+    ```
+
+=== "Calling `with` Statement"
+
+    !!! quote "Calling `with` Statement approach can be used to make the code easier, cleaner, and much more readable. This approach also automatically handles management of `formulate()` and `terminate()` methods in FFdecoder API, so don't need to explicitly call them. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/) for more information on this approach."
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import cv2
+
+    # initialize and formulate the decoder for BGR24 pixel format output
+    with FFdecoder("foo.mp4", frame_format="bgr24") as decoder:
+
+        # grab the BGR24 frames from decoder
+        for frame in decoder.generateFrame():
+
+            # check if frame is None
+            if frame is None:
+                break
+
+            # {do something with the frame here}
+
+            # Show output window
+            cv2.imshow("Output", frame)
+
+            # check for 'q' key if pressed
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
+                break
+
+    # close output window
+    cv2.destroyAllWindows()
+    ```
 
 &nbsp;
 

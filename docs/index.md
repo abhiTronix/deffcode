@@ -23,13 +23,13 @@ limitations under the License.
 ![DeFFcode](assets/images/deffcode.png#only-light){ loading=lazy }
 ![DeFFcode](assets/images/deffcode-dark.png#only-dark){ loading=lazy }
 
-<center>DeFFcode - A cross-platform **High-performance Video Frames Decoder** that flexibly executes <br>FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code :zap:</center>
+<center>A cross-platform **:fontawesome-solid-gauge-high: High-performance Video Frames Decoder** that flexibly executes FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code :fontawesome-solid-fire-flame-curved:</center>
 
 <div class="spacer"></div>
 
 **==Highly Adaptive== -** DeFFcode APIs implements a **standalone highly-extensible wrapper around [FFmpeg][ffmpeg]** multimedia framework. These APIs **supports a wide-ranging media streams as input** source such as live USB/Virtual/IP camera feeds, regular multimedia files, screen recordings, image sequences, network protocols _(such as HTTP(s), RTP/RSTP, etc.)_, so on and so forth.
 
-**==Highly Flexible== -** DeFFcode APIs gains an edge over other Wrappers by providing **complete control over the underline pipeline** including **access to almost any FFmpeg specification thinkable** such as specifying framerate, resolution, hardware decoder(s), filtergraph(s), and <br>pixel-format(s) that are readily **supported by all well known Computer Vision libraries**.
+**==Highly Flexible== -** DeFFcode APIs gains an edge over other Wrappers by providing **complete control over the underline pipeline** including **access to almost any FFmpeg specification thinkable** such as specifying framerate, resolution, hardware decoder(s), filtergraph(s), and pixel-format(s) that are readily **supported by all well known Computer Vision libraries**.
 
 **==Highly Convenient== -**  FFmpeg has a steep learning curve especially for users unfamiliar with a command line interface. DeFFcode helps users by keeping the **same [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) _(Python API for OpenCV)_ coding syntax for its APIs**, thereby making it even **easier to learn, create, and develop FFmpeg based apps** in Python.
 
@@ -43,7 +43,7 @@ Here are some key features that stand out:
 - [x] Flexible API with access to almost any FFmpeg specification thinkable.
 - [x] Supports a wide-range of media streams/devices/protocols as input source. 
 - [x] Curated list of well-documented recipes ranging from [**Basic**](recipes/basic/) to [**Advanced**](recipes/advanced/) skill levels.
-- [x] Easy to code **Live [Simple](recipes/basic/transcode-live-frames-simplegraphs/#transcoding-live-simple-filtergraphs) & [Complex](recipes/advanced/transcode-live-frames-complexgraphs/#transcoding-live-complex-filtergraphs) Filtergraphs**. _(Yes, You read it correctly "Real-time"!)_
+- [x] Memory efficient **Live [Simple](recipes/basic/transcode-live-frames-simplegraphs/#transcoding-live-simple-filtergraphs) & [Complex](recipes/advanced/transcode-live-frames-complexgraphs/#transcoding-live-complex-filtergraphs) Filtergraphs**. _(Yes, You read it correctly "Live"!)_
 - [x] Lightning fast dedicated **:fontawesome-solid-microchip: GPU-Accelerated Video [Decoding](recipes/advanced/decode-hw-acceleration/#hardware-accelerated-video-decoding) & [Transcoding](recipes/advanced/transcode-hw-acceleration/#hardware-accelerated-video-transcoding)**.
 - [x] Enables precise FFmpeg [**Frame Seeking**](recipes/basic/save-keyframe-image/#extracting-key-frames-as-png-image) with pinpoint accuracy.
 - [x] Effortless [**Metadata Extraction**](recipes/basic/extract-video-metadata/#extracting-video-metadata) from all streams available in the source.
@@ -191,6 +191,28 @@ It is something I am doing with my own free time. But so much more needs to be d
 <script type='text/javascript' src='https://ko-fi.com/widgets/widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#eba100', 'W7W8WTYO');kofiwidget2.draw();</script> 
 
 &nbsp;
+
+## Citation
+
+Here is a Bibtex entry you can use to cite this project in a publication:
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6976948.svg)](https://doi.org/10.5281/zenodo.6976948)
+
+```BibTeX
+@software{deffcode,
+  author       = {Abhishek Thakur},
+  title        = {abhiTronix/deffcode: v0.2.2},
+  month        = aug,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {v0.2.2},
+  doi          = {10.5281/zenodo.6976948},
+  url          = {https://doi.org/10.5281/zenodo.6976948}
+}
+```
+
+&nbsp;
+
 
 <!--
 External URLs

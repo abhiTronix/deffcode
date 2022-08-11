@@ -349,28 +349,28 @@ def test_FFdecoder_params(source, ffparams, result):
     f_name = os.path.join(*[tempfile.gettempdir(), "temp_write", "output_foo.avi"])
     try:
         # initialize and formulate the decode with suitable source
-        decoder = FFdecoder(source, frame_format="bgr24", **ffparams).formulate()
+        with FFdecoder(source, frame_format="bgr24", **ffparams) as decoder:
 
-        # retrieve JSON Metadata and convert it to dict
-        metadata_dict = json.loads(decoder.metadata)
+            # retrieve JSON Metadata and convert it to dict
+            metadata_dict = json.loads(decoder.metadata)
 
-        # prepare OpenCV parameters
-        FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
-        FRAMERATE = metadata_dict["source_video_framerate"]
-        FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+            # prepare OpenCV parameters
+            FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+            FRAMERATE = metadata_dict["source_video_framerate"]
+            FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
 
-        # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
-        writer = cv2.VideoWriter(f_name, FOURCC, FRAMERATE, FRAMESIZE)
+            # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
+            writer = cv2.VideoWriter(f_name, FOURCC, FRAMERATE, FRAMESIZE)
 
-        # grab the BGR24 frame from the decoder
-        for frame in decoder.generateFrame():
+            # grab the BGR24 frame from the decoder
+            for frame in decoder.generateFrame():
 
-            # check if frame is None
-            if frame is None:
-                break
+                # check if frame is None
+                if frame is None:
+                    break
 
-            # writing BGR24 frame to writer
-            writer.write(frame)
+                # writing BGR24 frame to writer
+                writer.write(frame)
     except Exception as e:
         if result:
             pytest.fail(str(e))
@@ -378,7 +378,6 @@ def test_FFdecoder_params(source, ffparams, result):
             pytest.xfail(str(e))
     finally:
         # terminate the decoder
-        not (decoder is None) and decoder.terminate()
         not (writer is None) and writer.release() and remove_file_safe(f_name)
 
 

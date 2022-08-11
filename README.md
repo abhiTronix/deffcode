@@ -118,7 +118,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 <details open>
   <summary><b>Basic Decoding Recipes</b></summary>
 
-- [Capturing RGB frames from a video file][capturing-rgb-frames-from-a-video-file]
+- [Accessing RGB frames from a video file][accessing-rgb-frames-from-a-video-file]
 - [Capturing and Previewing BGR frames from a video file][capturing-and-previewing-bgr-frames-from-a-video-file] _(OpenCV Support)_
 - [Playing with any other FFmpeg pixel formats][capturing-and-previewing-bgr-frames-from-a-video-file]
 - [Capturing and Previewing frames from a Webcam][capturing-and-previewing-frames-from-a-webcam]
@@ -293,7 +293,7 @@ We're offering support for DeFFcode on [**Gitter Community Channel**][gitter]. C
 # Donations
 
 <div align="center">
-   <img src="docs/overrides/assets/images/help_us.png" alt="PiGear" width="50%" />
+   <img src="docs/overrides/assets/images/help_us.png" alt="Donation" width="50%" />
    <p><i>DeFFcode is free and open source and will always remain so. ❤️</i></p>
 </div>
 
@@ -301,6 +301,31 @@ It is something I am doing with my own free time. But so much more needs to be d
 
 <a href='https://ko-fi.com/W7W8WTYO' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=4' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
+
+&nbsp;
+
+&nbsp;
+
+
+
+# Citation
+
+Here is a Bibtex entry you can use to cite this project in a publication:
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6976948.svg)](https://doi.org/10.5281/zenodo.6976948)
+
+```BibTeX
+@software{deffcode,
+  author       = {Abhishek Thakur},
+  title        = {abhiTronix/deffcode: v0.2.2},
+  month        = aug,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {v0.2.2},
+  doi          = {10.5281/zenodo.6976948},
+  url          = {https://doi.org/10.5281/zenodo.6976948}
+}
+```
 
 &nbsp;
 
@@ -353,7 +378,7 @@ Basic Recipes
 [saving-key-frames-as-image]:https://abhitronix.github.io/deffcode/latest/recipes/basic/save-keyframe-image/#saving-key-frames-as-image
 [extracting-video-metadata]:https://abhitronix.github.io/deffcode/latest/recipes/basic/extract-video-metadata/#extracting-video-metadata
 
-[capturing-rgb-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-rgb-frames-from-a-video-file
+[accessing-rgb-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#accessing-rgb-frames-from-a-video-file
 [capturing-and-previewing-bgr-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file
 [capturing-and-previewing-bgr-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file
 [capturing-and-previewing-frames-from-a-webcam]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam

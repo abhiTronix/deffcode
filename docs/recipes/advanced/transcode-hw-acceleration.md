@@ -170,7 +170,7 @@ output_params = {
 
 # Define writer with defined parameters and suitable
 # output filename for e.g. `output_foo.mp4`
-writer = WriteGear(output_filename="output_foo.mp4", logging=True, **output_params)
+writer = WriteGear(output_filename="output_foo.mp4", **output_params)
 
 # grab the BGR24 frame from the decoder
 for frame in decoder.generateFrame():
