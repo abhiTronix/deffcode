@@ -186,7 +186,7 @@ In this example we will capture video frames from a Single Looping image using F
 from deffcode import FFdecoder
 import cv2
 
-# define `-loop 1` for looping
+# define `-loop 1` for infinite looping
 ffparams = {"-ffprefixes":["-loop", "1"]}
 
 # initialize and formulate the decoder with suitable source

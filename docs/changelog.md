@@ -25,7 +25,7 @@ limitations under the License.
 
 ??? new "New Features"
     - [x] **Docs:**
-        * Added Zenodo Bibtex entry and badge in docs for easily citing a DeFFcode release.
+        * Added Zenodo Bibtex entry and badge in docs for easy citation.
         * Added new `<div>` tag bounding-box style to the Static FFmpeg binary download links in FFmpeg Installation Doc for better accessibility.
     - [x] **Maintenance:** 
         * Switched to new Issue GitHub's form schema using YAML:
