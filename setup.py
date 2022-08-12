@@ -23,11 +23,14 @@ import setuptools
 from setuptools import setup
 from distutils.util import convert_path
 
+# parse PKG version
 pkg_version = {}
 ver_path = convert_path("deffcode/version.py")
 with open(ver_path) as ver_file:
     exec(ver_file.read(), pkg_version)
 
+# apply various patches to README text and prepare
+# valid long_description
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
     # patch to remove github README specific text
@@ -55,7 +58,7 @@ setup(
     name="deffcode",
     packages=["deffcode"],
     version=pkg_version["__version__"],
-    description="A Cross-platform High-performance & Flexible Video Frames Decoder in python.",
+    description="A cross-platform High-performance & Flexible Real-time Video Frames Decoder in Python.",
     license="Apache License 2.0",
     author="Abhishek Thakur",
     install_requires=[
