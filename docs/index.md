@@ -196,18 +196,18 @@ It is something I am doing with my own free time. But so much more needs to be d
 
 Here is a Bibtex entry you can use to cite this project in a publication:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6976948.svg)](https://doi.org/10.5281/zenodo.6976948)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6984364.svg)](https://doi.org/10.5281/zenodo.6984364)
 
 ```BibTeX
 @software{deffcode,
   author       = {Abhishek Thakur},
-  title        = {abhiTronix/deffcode: v0.2.2},
+  title        = {abhiTronix/deffcode: v0.2.3},
   month        = aug,
   year         = 2022,
   publisher    = {Zenodo},
-  version      = {v0.2.2},
-  doi          = {10.5281/zenodo.6976948},
-  url          = {https://doi.org/10.5281/zenodo.6976948}
+  version      = {v0.2.3},
+  doi          = {10.5281/zenodo.6984364},
+  url          = {https://doi.org/10.5281/zenodo.6984364}
 }
 ```
 
