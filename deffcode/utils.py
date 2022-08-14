@@ -132,3 +132,32 @@ def delete_file_safe(file_path):
             dfile.exists() and dfile.unlink()
     except Exception as e:
         logger.exception(str(e))
+
+
+def validate_device_index(index):
+    """
+    ## validate_device_index
+
+    Validates if given device index is valid or not? Only Integers or String of integers are valid indexes.
+
+    Parameters:
+        index (int/str): Index of the device
+
+    **Returns:** A boolean value, confirming whether valid, or not?.
+    """
+    # validate index value
+    if isinstance(index, int):
+        # return true
+        return True
+    elif isinstance(index, str):
+        # remove any whitespaces
+        index.replace(" ", "")
+        # return true
+        return (
+            True
+            if (index.isnumeric() or (index.startswith("-") and index[1:].isnumeric()))
+            else False
+        )
+    else:
+        # return false otherwise
+        return False
