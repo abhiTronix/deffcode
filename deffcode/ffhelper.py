@@ -350,6 +350,184 @@ def get_supported_demuxers(path):
     return [o.strip() if not ("," in o) else o.split(",")[-1].strip() for o in outputs]
 
 
+def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
+    """
+    ## get_valid_devicepath
+
+    Discovers and extracts all Video-Capture device(s) name/path/index present on system and 
+    supported by valid OS specific FFmpeg demuxer.
+
+    Parameters:
+        path (string): absolute path of FFmpeg binaries.
+        machine_OS(string): OS running _(Must be a value of `platform.system()` module)_.
+        verbose (bool): enables/disables verbose.
+
+    **Returns:** Tuple of list of supported device(s) path/name/index and OS specific demuxer used.
+    """
+    # validate `machine_OS` parameter value
+    assert not (machine_OS is None) and isinstance(
+        machine_OS, str
+    ), "`machine_OS` parameter value is empty or invalid type. Aborting!"
+
+    # initialize params
+    devices = []  # handles devices discovered
+    req_demuxer = None  # handle required demuxer
+
+    # define all valid FFmpeg demuxers w.r.t OS platforms
+    valid_demuxers = dict(Windows="dshow", Darwin="avfoundation", Linux="v4l2")
+
+    # check OS is supported
+    if not machine_OS.strip() in list(valid_demuxers.keys()):
+        # raise error if OS isn't supported
+        raise ValueError(
+            """Unsupported OS detected! The `source_demuxer='auto'` value isn't supported on your OS, 
+                Kindly assign `source` and `source_demuxer` parameter values manually."""
+        )
+    else:
+        # assign required demuxer
+        req_demuxer = valid_demuxers[machine_OS.strip()]
+
+    # log if specified
+    verbose and logger.debug("Auto-Searching for valid devices...")
+
+    # assert if demuxer is supported by provided ffmpeg.
+    assert req_demuxer in get_supported_demuxers(
+        path
+    ), "Required `{}` demuxer isn't supported by provided FFmpeg binaries. Kindly compile FFmpeg with \
+            suitable flags or manually assign `source` and `source_demuxer` parameter values. Aborting!".format(
+        valid_demuxers[machine_OS]
+    )
+    # create default ffmpeg command (for Windows and MacOS)
+    default_ffcommand = "-hide_banner -list_devices true -f {} -i dummy".format(
+        req_demuxer
+    )
+
+    # find all OS specific FFmpeg devices path and demuxer
+    if machine_OS == "Windows":
+        # get metadata
+        metadata = check_sp_output(
+            [path] + default_ffcommand.split(" "),
+            force_retrieve_stderr=True,
+        )
+        # clean and split metadata
+        splitted = [x.decode("utf-8").strip() for x in metadata.split(b"\n")]
+        # find video only
+        head, sep, tail = "\n".join(splitted).partition("DirectShow audio")
+        if head.strip():
+            # compile regex
+            finder = re.compile(r'"(.*?[^\\])"')
+            # find all outputs
+            outputs = finder.findall(head.strip())
+            # return output findings
+            devices = [o.strip() for o in outputs if not (o.startswith("@device"))]
+    elif machine_OS == "Linux":
+        # get devices if `video4linux` drivers are correctly configured.
+        metadata = check_sp_output(
+            ["v4l2-ctl", "--list-devices"],
+        )
+        # decode metadata
+        decoded = metadata.decode("utf-8").strip()
+        # check if command executed properly
+        if not decoded or set(["command", "not", "found"]).issubset(decoded.split(" ")):
+            logger.error(
+                "Cannot execute `v4l2-ctl` command! Kindly install `v4l-utils` package on your linux machine."
+            )
+        else:
+            # clean metadata
+            clean_n_splitted = [
+                x.strip() for x in decoded.split("\n\n") if "/dev/video" in x
+            ]
+            # compile regex
+            finder = re.compile(r"^[a-zA-Z0-9_.\- ]*")
+            # iterate over data
+            for data in clean_n_splitted:
+                # find all valid device names
+                device_name = [dev.strip() for dev in finder.findall(data) if dev]
+                dev_paths = [x.strip() for x in data.split("\n") if "/dev/video" in x]
+                # patch for multiple /dev/video paths for single device
+                if len(dev_paths) > 1:
+                    # warn users about this
+                    verbose and logger.warning(
+                        "Multiple `/dev/video` paths detected for {} device. This might take a while!".format(
+                            device_name
+                        )
+                    )
+                    # iterate over each device's paths
+                    for path in dev_paths:
+                        # search in path properties
+                        metadata_path = check_sp_output(
+                            ["v4l2-ctl", "--device={}".format(path), "--all"],
+                        )
+                        # decode path metadata
+                        decoded_path = metadata_path.decode("utf-8").strip()
+                        if set(["command", "not", "found"]).issubset(
+                            decoded_path.split(" ")
+                        ):
+                            # throw error if permissions are missing
+                            logger.error(
+                                "v4l2-ctl: Permission denied! Add your username to the `video` group to fix this error."
+                            )
+                        elif (
+                            "Width/Height" in decoded_path
+                            and "Pixel Format" in decoded_path
+                        ):
+                            # append once required Width/Height and Pixel Format detected
+                            devices.append({path: device_name})
+                        else:
+                            # skip path otherwise
+                            pass
+                elif len(dev_paths) == 1:
+                    # append path directly if only one
+                    devices.append({dev_paths[0]: device_name})
+                else:
+                    pass
+    else:  # Darwin OSes
+        # get metadata
+        metadata = check_sp_output(
+            [path] + default_ffcommand.split(" "),
+            force_retrieve_stderr=True,
+        )
+        # clean and split metadata
+        splitted = [x.decode("utf-8").strip() for x in metadata.split(b"\n")]
+        # find video only
+        head, sep, tail = "\n".join(splitted).partition("AVFoundation audio")
+        if head.strip():
+            # compile regex
+            finder = re.compile(r"\[[0-9]\](.*)")
+            # find all outputs
+            outputs = finder.findall(head)
+            # return output findings
+            devices = [o.strip() for o in outputs]
+
+    # check if any devices were found
+    if devices:
+        # log everything if `verbose=True`
+        if verbose:
+            for idx, dev in enumerate(devices):
+                logger.info(
+                    "[{}]: {}".format(
+                        idx,
+                        dev
+                        if machine_OS != "Linux"
+                        else "{} at path `{}`".format(
+                            next(iter(dev.values()))[0], next(iter(dev.keys()))
+                        ),
+                    )
+                )
+            logger.debug(
+                "Auto-Search completed successfully! Found `{}` valid device(s).".format(
+                    len(devices)
+                )
+            )
+        # return list of device name/path/index and related demuxer
+        return (devices, req_demuxer)
+    else:
+        # otherwise raise error
+        raise RuntimeError(
+            "API unable to discover any valid device(s) connected your machine. Aborting!"
+        )
+
+
 def validate_imgseqdir(source, extension="jpg", verbose=False):
     """
     ## validate_imgseqdir
