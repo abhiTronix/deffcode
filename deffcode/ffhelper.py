@@ -436,9 +436,11 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
         ):
             logger.error(
                 "Cannot execute `v4l2-ctl` command! "
-                + "Kindly install `v4l-utils` package on your linux machine."
-                if set(["command", "not", "found"]).issubset(decoded.split(" "))
-                else "Permission denied."
+                + (
+                    "Kindly install `v4l-utils` package on your linux machine."
+                    if set(["command", "not", "found"]).issubset(decoded.split(" "))
+                    else "Permission denied."
+                )
             )
         else:
             # clean metadata
