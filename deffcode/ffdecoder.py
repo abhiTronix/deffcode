@@ -477,7 +477,7 @@ class FFdecoder:
         """
         assert not (
             self.__process is None
-        ), "Pipeline is not running! Check if you called `create()` method."
+        ), "Pipeline is not running! You must call `formulate()` method first."
 
         # formulated raw frame size
         raw_frame_size = (
@@ -513,7 +513,7 @@ class FFdecoder:
         if frame is None:
             return frame
         elif self.__raw_frame_pixfmt.startswith("gray"):
-            # reconstruct gray frames
+            # reconstruct exclusive `gray` frames
             frame = frame.reshape(
                 (
                     self.__raw_frame_resolution[1],
@@ -522,7 +522,7 @@ class FFdecoder:
                 )
             )[:, :, 0]
         elif self.__raw_frame_pixfmt == "yuv444p":
-            # reconstruct exclusive frames
+            # reconstruct exclusive `yuv444p` frames
             frame = frame.reshape(
                 (
                     self.__raw_frame_depth,
@@ -548,14 +548,14 @@ class FFdecoder:
         _(also an Iterator using `next()`)_ of video frames, grabbed continuously from the buffer.
         """
         if self.__raw_frame_num is None or not self.__raw_frame_num:
-            while not self.__terminate_stream:
+            while not self.__terminate_stream:  # infinite raw frames
                 frame = self.__fetchNextFrame()
                 if frame is None:
                     self.__terminate_stream = True
-                    continue
+                    break
                 yield frame
         else:
-            for _ in range(self.__raw_frame_num):
+            for _ in range(self.__raw_frame_num):  # finite raw frames
                 frame = self.__fetchNextFrame()
                 if frame is None:
                     self.__terminate_stream = True
@@ -670,23 +670,26 @@ class FFdecoder:
         if self.__verbose_logs:
             logger.debug("Executing FFmpeg command: `{}`".format(_cmd))
             # In debugging mode
-            self.__process = sp.Popen(cmd, stdin=sp.PIPE, stdout=sp.PIPE, stderr=None)
+            self.__process = sp.Popen(
+                cmd, stdin=sp.DEVNULL, stdout=sp.PIPE, stderr=None
+            )
         else:
             # In silent mode
             self.__process = sp.Popen(
-                cmd, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.DEVNULL
+                cmd, stdin=sp.DEVNULL, stdout=sp.PIPE, stderr=sp.DEVNULL
             )
 
     def terminate(self):
         """
         Safely terminates all processes.
         """
+
         # signal we are closing
         self.__verbose_logs and logger.debug("Terminating FFdecoder Pipeline...")
         self.__terminate_stream = True
         # check if no process was initiated at first place
         if self.__process is None or not (self.__process.poll() is None):
-            logger.warning("Pipeline already terminated!")
+            logger.note("Pipeline already terminated!")
             return
         # Attempt to close pipeline.
         # close `stdin` output
@@ -695,7 +698,7 @@ class FFdecoder:
         self.__process.stdout and self.__process.stdout.close()
         # wait if still process is still processing some information
         if self.__process.poll() is None:
-            self.__process.terminate()
+            self.__process.kill()
         self.__process.wait()
         self.__process = None
         self.__verbose_logs and logger.debug(

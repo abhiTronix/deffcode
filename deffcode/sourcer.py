@@ -21,19 +21,21 @@ limitations under the License.
 # import required libraries
 import re
 import os
+import copy
 import json
 import logging
 import platform
 import numpy as np
 
 # import utils packages
-from .utils import logger_handler
+from .utils import logger_handler, validate_device_index
 from .ffhelper import (
     check_sp_output,
     get_supported_demuxers,
     is_valid_url,
     is_valid_image_seq,
     get_valid_ffmpeg_path,
+    extract_device_n_demuxer,
 )
 
 # define logger
@@ -73,7 +75,7 @@ class Sourcer:
         source_demuxer=None,
         custom_ffmpeg="",
         verbose=False,
-        **sourcer_params
+        **sourcer_params,
     ):
         """
         This constructor method initializes the object state and attributes of the Sourcer Class.
@@ -86,7 +88,7 @@ class Sourcer:
             sourcer_params (dict): provides the flexibility to control supported internal and FFmpeg parameters.
         """
         # checks if machine in-use is running windows os or not
-        self.__os_windows = True if os.name == "nt" else False
+        self.__machine_OS = platform.system()
 
         # define internal parameters
         self.__verbose_logs = (  # enable verbose if specified
@@ -133,7 +135,7 @@ class Sourcer:
         # validate the FFmpeg assets and return location (also downloads static assets on windows)
         self.__ffmpeg = get_valid_ffmpeg_path(
             str(custom_ffmpeg),
-            self.__os_windows,
+            True if self.__machine_OS == "Windows" else False,
             ffmpeg_download_path=__ffmpeg_download_path,
             verbose=self.__verbose_logs,
         )
@@ -149,14 +151,53 @@ class Sourcer:
                 "[DeFFcode:ERROR] :: Failed to find FFmpeg assets on this system. Kindly compile/install FFmpeg or provide a valid custom FFmpeg binary path!"
             )
 
-        # define externally accessible parameters
-        self.__source = source  # handles source stream
+        # sanitize externally accessible parameters and assign them
         # handles source demuxer
-        self.__source_demuxer = (
-            source_demuxer.strip().lower() if isinstance(source_demuxer, str) else None
-        )
-        # handles source stream extension
-        self.__source_extension = os.path.splitext(source)[-1]
+        if source is None:
+            # first check if source value is empty
+            # raise error if true
+            raise ValueError("Input `source` parameter is empty!")
+        elif isinstance(source_demuxer, str):
+            # assign if valid demuxer value
+            self.__source_demuxer = source_demuxer.strip().lower()
+            # assign if valid demuxer value
+            assert self.__source_demuxer != "auto" or validate_device_index(
+                source
+            ), "Invalid `source_demuxer='auto'` value detected with source: `{}`. Aborting!".format(
+                source
+            )
+        else:
+            # otherwise find valid default source demuxer value
+            # enforce "auto" if valid index device
+            self.__source_demuxer = "auto" if validate_device_index(source) else None
+            # log if not valid index device and invalid type
+            self.__verbose_logs and not self.__source_demuxer in [
+                "auto",
+                None,
+            ] and logger.warning(
+                "Discarding invalid `source_demuxer` parameter value of wrong type: `{}`".format(
+                    type(source_demuxer).__name__
+                )
+            )
+            # log if not valid index device and invalid type
+            self.__verbose_logs and self.__source_demuxer == "auto" and logger.critical(
+                "Given source `{}` is a valid device index. Enforcing 'auto' demuxer.".format(
+                    source
+                )
+            )
+
+        # handles source stream
+        self.__source = source
+
+        # create shallow copy for further usage #TODO
+        self.__source_org = copy.copy(self.__source)
+        self.__source_demuxer_org = copy.copy(self.__source_demuxer)
+
+        # handles all extracted devices names/paths list
+        # when source_demuxer = "auto"
+        self.__extracted_devices_list = []
+
+        # various source stream params
         self.__default_video_resolution = ""  # handle stream resolution
         self.__default_video_framerate = ""  # handle stream framerate
         self.__default_video_bitrate = ""  # handle stream's video bitrate
@@ -167,7 +208,7 @@ class Sourcer:
         self.__default_audio_bitrate = ""  # handle stream's audio bitrate
         self.__default_audio_samplerate = ""  # handle stream's audio samplerate
 
-        # handle flags
+        # handle various stream flags
         self.__contains_video = False  # contain video
         self.__contains_audio = False  # contain audio
         self.__contains_images = False  # contain image-sequence
@@ -270,7 +311,7 @@ class Sourcer:
             self.__metadata_probed
         ), "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
         # log it
-        self.__verbose_logs and logger.debug("Retrieving Metadata...")
+        self.__verbose_logs and logger.debug("Extracting Metadata...")
         # create metadata dictionary from information populated in private class variables
         metadata = {
             "ffmpeg_binary_path": self.__ffmpeg,
@@ -279,7 +320,7 @@ class Sourcer:
         # Only either `source_demuxer` or `source_extension` attribute can be
         # present in metadata.
         metadata.update(
-            {"source_extension": self.__source_extension}
+            {"source_extension": os.path.splitext(self.__source)[-1]}
             if self.__source_demuxer is None
             else {"source_demuxer": self.__source_demuxer}
         )
@@ -303,6 +344,10 @@ class Sourcer:
                 "source_has_image_sequence": self.__contains_images,
             }
         )
+        # log it
+        self.__verbose_logs and logger.debug(
+            "Metadata Extraction completed successfully!"
+        )
         # return metadata as either JSON string or Python dictionary
         return json.dumps(metadata, indent=2) if pretty_json else metadata
 
@@ -316,16 +361,88 @@ class Sourcer:
 
         **Returns:** `True` if passed tests else `False`.
         """
+        # validate source demuxer(if defined)
+        if not (source_demuxer is None):
+            # check if "auto" demuxer is specified
+            if source_demuxer == "auto":
+                # integerise source to get index
+                index = int(source)
+                # extract devices list and actual demuxer value
+                (
+                    self.__extracted_devices_list,
+                    source_demuxer,
+                ) = extract_device_n_demuxer(
+                    self.__ffmpeg,
+                    machine_OS=self.__machine_OS,
+                    verbose=self.__verbose_logs,
+                )
+                # valid indexes range
+                valid_indexes = [
+                    x
+                    for x in range(
+                        -len(self.__extracted_devices_list),
+                        len(self.__extracted_devices_list),
+                    )
+                ]
+                # check index is within valid range
+                if self.__extracted_devices_list and index in valid_indexes:
+                    # overwrite actual source device name/path/index
+                    if self.__machine_OS == "Windows":
+                        # Windows OS requires "video=" suffix
+                        self.__source = source = "video={}".format(
+                            self.__extracted_devices_list[index]
+                        )
+                    elif self.__machine_OS == "Darwin":
+                        # Darwin OS requires only device indexes
+                        self.__source = source = (
+                            str(index)
+                            if index >= 0
+                            else str(len(self.__extracted_devices_list) + index)
+                        )
+                    else:
+                        # Linux OS require /dev/video format
+                        self.__source = source = next(
+                            iter(self.__extracted_devices_list[index].keys())
+                        )
+                    # overwrite source_demuxer global variable
+                    self.__source_demuxer = source_demuxer
+                    self.__verbose_logs and logger.debug(
+                        "Successfully configured device `{}` at index `{}` with demuxer `{}`.".format(
+                            self.__extracted_devices_list[index]
+                            if self.__machine_OS != "Linux"
+                            else next(
+                                iter(self.__extracted_devices_list[index].values())
+                            )[0],
+                            index
+                            if index >= 0
+                            else len(self.__extracted_devices_list) + index,
+                            self.__source_demuxer,
+                        )
+                    )
+                else:
+                    # raise error otherwise
+                    raise ValueError(
+                        "Given source `{}` is not a valid device index. Possible values index values can be: {}".format(
+                            source,
+                            ",".join(f"{x}" for x in valid_indexes),
+                        )
+                    )
+            # otherwise validate against supported demuxers
+            elif not (source_demuxer in get_supported_demuxers(self.__ffmpeg)):
+                # raise if fails
+                raise ValueError(
+                    "Installed FFmpeg failed to recognize `{}` demuxer. Check `source_demuxer` parameter value again!".format(
+                        source_demuxer
+                    )
+                )
+            else:
+                pass
+
         # assert if valid source
         assert source and isinstance(
             source, str
-        ), "Input source is empty or invalid type!"
-        # assert if valid source demuxer
-        assert source_demuxer is None or source_demuxer in get_supported_demuxers(
-            self.__ffmpeg
-        ), "Installed FFmpeg failed to recognise `{}` demuxer. Check ``source_demuxer`` parameter value again!".format(
-            source_demuxer
-        )
+        ), "Input `source` parameter is of invalid type!"
+
         # Differentiate input
         if forced_validate:
             source_demuxer is None and logger.critical(
