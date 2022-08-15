@@ -354,7 +354,7 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
     """
     ## get_valid_devicepath
 
-    Discovers and extracts all Video-Capture device(s) name/path/index present on system and 
+    Discovers and extracts all Video-Capture device(s) name/path/index present on system and
     supported by valid OS specific FFmpeg demuxer.
 
     Parameters:
@@ -424,6 +424,7 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
         # get devices if `video4linux` drivers are correctly configured.
         metadata = check_sp_output(
             ["v4l2-ctl", "--list-devices"],
+            force_retrieve_stderr=True,
         )
         # decode metadata
         decoded = metadata.decode("utf-8").strip()
@@ -457,6 +458,7 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
                         # search in path properties
                         metadata_path = check_sp_output(
                             ["v4l2-ctl", "--device={}".format(path), "--all"],
+                            force_retrieve_stderr=True,
                         )
                         # decode path metadata
                         decoded_path = metadata_path.decode("utf-8").strip()
@@ -666,7 +668,7 @@ def check_sp_output(*args, **kwargs):
     retcode = process.poll()
     # handle return code
     if retcode and not (retrieve_stderr):
-        logger.error("[Pipline-Error] :: {}".format(output))
+        logger.error("[Pipline-Error] :: {}".format(output.decode("utf-8")))
         cmd = kwargs.get("args")
         if cmd is None:
             cmd = args[0]
@@ -675,7 +677,9 @@ def check_sp_output(*args, **kwargs):
         raise error
     # raise error if no output
     bool(output) or bool(stderr) or logger.error(
-        "FFmpeg Pipline failed to exact any metadata!"
+        "[Pipline-Error] :: Pipline failed to exact any data from command: {}!".format(
+            args[0] if args else []
+        )
     )
     # return output otherwise
-    return output if not (retrieve_stderr) else stderr
+    return stderr if retrieve_stderr and stderr else output
