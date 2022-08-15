@@ -412,7 +412,7 @@ test_data_class = [
 ]
 
 
-@pytest.mark.parametrize("source, ffparams, result", test_data_class)
+@pytest.mark.parametrize("source, source_demuxer, result", test_data_class)
 def test_camera_capture(source, source_demuxer, result):
     """
     Tests FFdecoder's realtime Webcam and Virtual playback capabilities
