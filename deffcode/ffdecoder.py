@@ -689,7 +689,7 @@ class FFdecoder:
         self.__terminate_stream = True
         # check if no process was initiated at first place
         if self.__process is None or not (self.__process.poll() is None):
-            logger.note("Pipeline already terminated!")
+            logger.info("Pipeline already terminated!")
             return
         # Attempt to close pipeline.
         # close `stdin` output
