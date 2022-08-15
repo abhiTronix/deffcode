@@ -432,7 +432,10 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
         if (
             not decoded
             or set(["command", "not", "found"]).issubset(decoded.split(" "))
-            or set(["Cannot", "open", "device"]).issubset(decoded.split(" "))
+            or (
+                set(["Cannot", "open", "device"]).issubset(decoded.split(" "))
+                and not ("):" in decoded)
+            )
         ):
             logger.error(
                 "Cannot execute `v4l2-ctl` command! "
@@ -445,7 +448,9 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
         else:
             # clean metadata
             clean_n_splitted = [
-                x.strip() for x in decoded.split("\n\n") if "/dev/video" in x
+                x.strip()
+                for x in decoded.split("\n\n")
+                if "/dev/video" in x and "):" in x
             ]
             # compile regex
             finder = re.compile(r"^[a-zA-Z0-9_.\- ]*")
