@@ -64,20 +64,15 @@ steps:
 
 - script: |
     python -m pip install --upgrade pip wheel numpy
-    pip install --upgrade vidgear[core] opencv-python-headless codecov pytest pytest-cov pytest-azurepipelines pytest-session2file
+    pip install --upgrade vidgear[core] opencv-python-headless codecov pytest pytest-cov pytest-azurepipelines
     pip install --upgrade .
   displayName: 'Install pip dependencies'
 
 - script: |
-    timeout 1500 pytest --verbose --cov=deffcode --cov-report=xml --cov-report=html --cov-report term-missing --session2file=test.log tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "##vso[task.setvariable variable=exit_code]$code"; fi
+    timeout 1500 pytest -sv --cov=deffcode --cov-report=xml --cov-report=html --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "##vso[task.setvariable variable=exit_code]$code"; fi
   displayName: 'pytest'
   
 - bash: |
-    if [ -e test.log ]; then
-        cat test.log
-    else 
-        echo "Log file does not exist"
-    fi 
     echo "Exit Code was: $(exit_code)"
     curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
     curl -Os https://uploader.codecov.io/latest/macos/codecov
