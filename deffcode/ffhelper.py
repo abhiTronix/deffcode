@@ -429,9 +429,16 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
         # decode metadata
         decoded = metadata.decode("utf-8").strip()
         # check if command executed properly
-        if not decoded or set(["command", "not", "found"]).issubset(decoded.split(" ")):
+        if (
+            not decoded
+            or set(["command", "not", "found"]).issubset(decoded.split(" "))
+            or set(["Cannot", "open", "device"]).issubset(decoded.split(" "))
+        ):
             logger.error(
-                "Cannot execute `v4l2-ctl` command! Kindly install `v4l-utils` package on your linux machine."
+                "Cannot execute `v4l2-ctl` command! "
+                + "Kindly install `v4l-utils` package on your linux machine."
+                if set(["command", "not", "found"]).issubset(decoded.split(" "))
+                else "Permission denied."
             )
         else:
             # clean metadata
@@ -462,12 +469,12 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
                         )
                         # decode path metadata
                         decoded_path = metadata_path.decode("utf-8").strip()
-                        if set(["command", "not", "found"]).issubset(
+                        if set(["Cannot", "open", "device"]).issubset(
                             decoded_path.split(" ")
                         ):
                             # throw error if permissions are missing
                             logger.error(
-                                "v4l2-ctl: Permission denied! Add your username to the `video` group to fix this error."
+                                "Cannot execute `v4l2-ctl` command! Permission denied."
                             )
                         elif (
                             "Width/Height" in decoded_path
