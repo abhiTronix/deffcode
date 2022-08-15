@@ -666,6 +666,7 @@ def check_sp_output(*args, **kwargs):
     retcode = process.poll()
     # handle return code
     if retcode and not (retrieve_stderr):
+        logger.error("[Pipline-Error] :: {}".format(output))
         cmd = kwargs.get("args")
         if cmd is None:
             cmd = args[0]

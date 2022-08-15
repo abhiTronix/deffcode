@@ -125,7 +125,11 @@ def test_probe_stream_n_retrieve_metadata(source, default_stream_indexes, params
         metadata = sourcer.retrieve_metadata()
         logger.debug("Found Metadata: `{}`".format(metadata))
         assert all(metadata[x] == True for x in params), "Test Failed!"
-        if source.startswith("http") or source.endswith("png"):
+        if (
+            source.startswith("http")
+            or source.endswith("png")
+            or source == "mandelbrot=size=1280x720:rate=30"
+        ):
             logger.debug("Skipped check!")
         else:
             assert (
