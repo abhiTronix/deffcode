@@ -386,22 +386,46 @@ def test_FFdecoder_params(source, ffparams, result):
             pytest.xfail(str(e))
     finally:
         # terminate the decoder
-        not (writer is None) and writer.release() and remove_file_safe(f_name)
+        if not (writer is None):
+            writer.release()
+            remove_file_safe(f_name)
 
 
-@pytest.mark.skipif(
-    (platform.system() != "Linux"),
-    reason="This test not supported yet on platforms other than Linux!",
-)
-def test_camera_capture():
+test_data_class = [
+    (
+        "/dev/video2",
+        "v4l2",
+        True if platform.system() == "Linux" else False,
+    ),  # manual source and demuxer
+    (
+        0,
+        None,
+        True if platform.system() == "Linux" else False,
+    ),  # +ve index and no demuxer
+    (
+        "-1",
+        "auto",
+        True if platform.system() == "Linux" else False,
+    ),  # -ve index and "auto" demuxer
+    ("5", "auto", False),  # out-of-range index and "auto" demuxer
+    ("/dev/video2", "invalid", False),  # manual source and invalid demuxer
+]
+
+
+@pytest.mark.parametrize("source, ffparams, result", test_data_class)
+def test_camera_capture(source, source_demuxer, result):
     """
-    Tests FFdecoder's realtime camera playback capabilities
+    Tests FFdecoder's realtime Webcam and Virtual playback capabilities
+    as well as Index based Camera Device Capturing
     """
     decoder = None
     try:
         # initialize and formulate the decode with suitable source
         decoder = FFdecoder(
-            "/dev/video2", source_demuxer="v4l2", frame_format="bgr24"
+            source,
+            source_demuxer=source_demuxer,
+            frame_format="bgr24",
+            verbose=True,
         ).formulate()
         # capture 10 camera frames
         for i in range(10):
@@ -411,8 +435,11 @@ def test_camera_capture():
             if frame_recv is None:
                 raise AssertionError("Test Failed!")
     except Exception as e:
-        # catch errors
-        pytest.fail(str(e))
+        if result:
+            # catch errors
+            pytest.fail(str(e))
+        else:
+            pytest.xfail(str(e))
     finally:
         # terminate
         not (decoder is None) and decoder.terminate()
