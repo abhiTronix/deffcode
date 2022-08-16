@@ -96,8 +96,7 @@ if [ $OS_NAME = "linux" ]; then
   ffmpeg -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 "$TMPFOLDER"/temp_images/out%d.png
   echo "Setting up ffmpeg v4l2loopback"
   sudo modprobe v4l2loopback devices=1 video_nr=0 exclusive_caps=1 card_label='VCamera'
-  sudo update-initramfs -c -k $(uname -r)
+  nohup sudo ffmpeg -hide_banner -re -stream_loop -1 -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 -f v4l2 -pix_fmt yuv420p /dev/video0 &
   v4l2-ctl --list-devices
-  nohup sudo ffmpeg -hide_banner -re -stream_loop -1 -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 -f v4l2 -pix_fmt yuv420p /dev/video2 &
   echo "Done"
 fi
