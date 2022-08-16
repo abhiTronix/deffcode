@@ -93,7 +93,7 @@ test_data = [
 
 
 @pytest.mark.parametrize("file_path, result", test_data)
-def test_delete_file_safe():
+def test_delete_file_safe(file_path, result):
     """
     Testing delete_file_safe method
     """
