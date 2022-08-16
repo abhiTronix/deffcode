@@ -408,6 +408,7 @@ test_data_class = [
         True if platform.system() in ["Linux", "Darwin"] else False,
     ),  # -ve index and "auto" demuxer
     ("5", "auto", False),  # out-of-range index and "auto" demuxer
+    ("invalid", "auto", False),  # invalid source and "auto" demuxer
     ("/dev/video0", "invalid", False),  # manual source and invalid demuxer
 ]
 

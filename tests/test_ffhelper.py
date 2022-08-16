@@ -40,6 +40,7 @@ from deffcode.ffhelper import (
     is_valid_image_seq,
     is_valid_url,
     check_sp_output,
+    extract_device_n_demuxer,
 )
 
 # define test logger
@@ -141,7 +142,7 @@ def test_get_valid_ffmpeg_path(paths, ffmpeg_download_paths, results):
 @pytest.mark.xfail(raises=Exception)
 def test_check_sp_output():
     """
-    Testing validation function of WebGear API
+    Testing check_sp_output method
     """
     check_sp_output(["ffmpeg", "-Vv"])
 
@@ -156,7 +157,7 @@ def test_check_sp_output():
 )
 def test_is_valid_url(URL, result):
     """
-    Testing is_valid_url function
+    Testing is_valid_url method
     """
     try:
         result_url = is_valid_url(return_static_ffmpeg(), url=URL, verbose=True)
@@ -179,7 +180,7 @@ def test_is_valid_url(URL, result):
 )
 def test_is_valid_image_seq(source, result):
     """
-    Testing test_is_valid_image_seq function
+    Testing test_is_valid_image_seq method
     """
     try:
         result_url = is_valid_image_seq(
@@ -199,10 +200,18 @@ def test_is_valid_image_seq(source, result):
 )
 def test_validate_imgseqdir(path, result):
     """
-    Testing validate_imgseqdir function
+    Testing validate_imgseqdir method
     """
     try:
         output = validate_imgseqdir(path, extension="png", verbose=True)
         assert output == result, "Image sequence directory validity test Failed!"
     except Exception as e:
         result and pytest.fail(str(e))
+
+
+@pytest.mark.xfail(raises=ValueError)
+def test_extract_device_n_demuxer():
+    """
+    Testing extract_device_n_demuxer method
+    """
+    extract_device_n_demuxer(return_static_ffmpeg(), machine_OS="invalid", verbose=True)
