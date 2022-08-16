@@ -400,12 +400,12 @@ test_data_class = [
     (
         0,
         None,
-        True if platform.system() == "Linux" else False,
+        True if platform.system() in ["Linux", "Darwin"] else False,
     ),  # +ve index and no demuxer
     (
         "-1",
         "auto",
-        True if platform.system() == "Linux" else False,
+        True if platform.system() in ["Linux", "Darwin"] else False,
     ),  # -ve index and "auto" demuxer
     ("5", "auto", False),  # out-of-range index and "auto" demuxer
     ("/dev/video0", "invalid", False),  # manual source and invalid demuxer
