@@ -393,7 +393,7 @@ def test_FFdecoder_params(source, ffparams, result):
 
 test_data_class = [
     (
-        "/dev/video2",
+        "/dev/video0",
         "v4l2",
         True if platform.system() == "Linux" else False,
     ),  # manual source and demuxer
@@ -408,7 +408,7 @@ test_data_class = [
         True if platform.system() == "Linux" else False,
     ),  # -ve index and "auto" demuxer
     ("5", "auto", False),  # out-of-range index and "auto" demuxer
-    ("/dev/video2", "invalid", False),  # manual source and invalid demuxer
+    ("/dev/video0", "invalid", False),  # manual source and invalid demuxer
 ]
 
 
