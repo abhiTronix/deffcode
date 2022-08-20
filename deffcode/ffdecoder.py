@@ -414,9 +414,9 @@ class FFdecoder:
                 else:
                     not (self.__frame_format is None) and logger.warning(
                         "Provided FFmpeg not supports `{}` pixel-format. Switching to default `{}`!".format(
-                            self.__frame_format
+                            self.__sourcer_metadata["output_frames_pixfmt"]
                             if "output_frames_pixfmt" in self.__sourcer_metadata
-                            else self.__sourcer_metadata["output_frames_pixfmt"],
+                            else self.__frame_format,
                             default_pixfmt,
                         )
                     )
