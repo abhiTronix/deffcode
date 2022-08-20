@@ -586,7 +586,7 @@ class FFdecoder:
             # TODO Added support for `-re -stream_loop` and `-loop`
             if "-frames:v" in input_params:
                 self.__raw_frame_num = input_params["-frames:v"]
-            elif self.__sourcer_metadata["approx_video_nframes"]:
+            elif self.__sourcer_metadata["approx_video_nframes"] > 0:
                 self.__raw_frame_num = self.__sourcer_metadata["approx_video_nframes"]
             else:
                 self.__raw_frame_num = None
@@ -746,10 +746,10 @@ class FFdecoder:
             default_keys = set(value).intersection(self.__sourcer_metadata)
             # iterate over source metadata keys and sanitize it
             for key in default_keys or []:
-                if key == "source":
-                    # `source` metadata value cannot be altered
+                if key in ["source", "source_video_pixfmt"]:
+                    # metadata properties that cannot be altered
                     logger.warning(
-                        "`source` metadata value cannot be altered. Discarding!"
+                        "`{}` metadata property value cannot be altered. Discarding!".format(key)
                     )
                 elif isinstance(value[key], type(self.__sourcer_metadata[key])):
                     # check if correct datatype as original
@@ -759,7 +759,7 @@ class FFdecoder:
                 else:
                     # otherwise discard and log it
                     logger.warning(
-                        "Manually assigned `{}` metadata value is invalid type. Discarding!"
+                        "Manually assigned `{}` metadata property value is of invalid type. Discarding!"
                     ).format(key)
                 # delete invalid key
                 del value[key]
@@ -767,7 +767,7 @@ class FFdecoder:
             # Python's `json` module converts Python tuples to JSON lists
             # because that's the closest thing in JSON to a tuple.
             any(isinstance(value[x], tuple) for x in value) and logger.warning(
-                "All TUPLE metadata values will be converted to LIST datatype. Read docs for more details."
+                "All TUPLE metadata properties will be converted to LIST datatype. Read docs for more details."
             )
             # update user-defined metadata
             self.__user_metadata.update(value)
