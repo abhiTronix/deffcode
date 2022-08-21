@@ -769,7 +769,7 @@ class FFdecoder:
                             key
                         )
                     )
-                elif self.__missing_prop != {} and key in self.__missing_prop:
+                elif key in self.__missing_prop:
                     # missing metadata properties are unavailable and read-only
                     # notify user about alternative counterpart property (if available)
                     logger.warning(
@@ -785,14 +785,13 @@ class FFdecoder:
                 elif isinstance(value[key], type(self.__sourcer_metadata[key])):
                     # check if correct datatype as original
                     # update source metadata if valid
-                    self.__sourcer_metadata.update(value)
+                    self.__sourcer_metadata[key] = value[key]
                     # also update missing counterpart property (if available)
                     counter_key = next(
                         (k for k, v in counterpart_prop.items() if v == key), ""
                     )
                     if counter_key:
                         self.__missing_prop[counter_key] = value[key]
-                    continue
                 else:
                     # otherwise discard and log it
                     logger.warning(
