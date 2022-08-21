@@ -784,6 +784,15 @@ class FFdecoder:
                     )
                 elif isinstance(value[key], type(self.__sourcer_metadata[key])):
                     # check if correct datatype as original
+                    self.__verbose_logs and logger.info(
+                        "Updating `{}`{} metadata property to `{}`.".format(
+                            key,
+                            " and its counterpart"
+                            if key in counterpart_prop.values()
+                            else "",
+                            value[key],
+                        )
+                    )
                     # update source metadata if valid
                     self.__sourcer_metadata[key] = value[key]
                     # also update missing counterpart property (if available)
