@@ -522,9 +522,9 @@ def test_discard_n_filter_params(frame_format, ffparams, result):
             )
             # assign manually pix-format via `metadata` property object {special case}
             decoder.metadata = (
-                {"source_video_resolution": [0], "output_video_resolution": [0]}
+                {"source_video_resolution": [0], "output_frames_resolution": [0]}
                 if frame_format == "invalid2"
-                else {"source_video_framerate": 0.0, "output_video_framerate": 0.0}
+                else {"source_video_framerate": 0.0, "output_framerate": 0.0}
             )
             # formulate decoder
             decoder.formulate()

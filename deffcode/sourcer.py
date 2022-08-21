@@ -215,8 +215,8 @@ class Sourcer:
 
         # handles output parameters through filters
         self.__metadata_output = None  # handles output stream metadata
-        self.__output_video_resolution = ""  # handles output stream resolution
-        self.__output_video_framerate = ""  # handles output stream framerate
+        self.__output_frames_resolution = ""  # handles output stream resolution
+        self.__output_framerate = ""  # handles output stream framerate
         self.__output_frames_pixfmt = ""  # handles output frame pixel format
 
         # check whether metadata probed or not?
@@ -259,8 +259,8 @@ class Sourcer:
                 default_stream=default_stream_indexes[0], extract_output=True
             )
             if out_video_rfparams:
-                self.__output_video_resolution = out_video_rfparams["resolution"]
-                self.__output_video_framerate = out_video_rfparams["framerate"]
+                self.__output_frames_resolution = out_video_rfparams["resolution"]
+                self.__output_framerate = out_video_rfparams["framerate"]
             # parse output pixel-format
             self.__output_frames_pixfmt = self.__extract_video_pixfmt(
                 default_stream=default_stream_indexes[0], extract_output=True
@@ -319,14 +319,15 @@ class Sourcer:
         # return reference to the instance object.
         return self
 
-    def retrieve_metadata(self, pretty_json=False):
+    def retrieve_metadata(self, pretty_json=False, force_retrieve_missing=False):
         """
         This method returns Parsed/Probed Metadata of the given source.
 
         Parameters:
             pretty_json (bool): whether to return metadata as JSON string(if `True`) or Dictionary(if `False`) type?
+            force_retrieve_output (bool): whether to also return metadata missing in current Pipeline. If `True` this method returns `(metadata, metadata_missing)` tuple instead of `metadata`.
 
-        **Returns:** metadata formatted as JSON string or python dictionary.
+        **Returns:** `metadata` or `(metadata, metadata_missing)` if `force_retrieve_output=True`, formatted as JSON string or python dictionary.
         """
         # check if metadata has been probed or not
         assert (
@@ -339,18 +340,23 @@ class Sourcer:
             "ffmpeg_binary_path": self.__ffmpeg,
             "source": self.__source,
         }
+        metadata_missing = {}
         # Only either `source_demuxer` or `source_extension` attribute can be
         # present in metadata.
-        metadata.update(
-            {"source_extension": os.path.splitext(self.__source)[-1]}
-            if self.__source_demuxer is None
-            else {"source_demuxer": self.__source_demuxer}
-        )
+        if self.__source_demuxer is None:
+            metadata.update({"source_extension": os.path.splitext(self.__source)[-1]})
+            # update missing
+            force_retrieve_missing and metadata_missing.update({"source_demuxer": ""})
+        else:
+            metadata.update({"source_demuxer": self.__source_demuxer})
+            # update missing
+            force_retrieve_missing and metadata_missing.update({"source_extension": ""})
+        # add source video metadata properties
         metadata.update(
             {
                 "source_video_resolution": self.__default_video_resolution,
-                "source_video_framerate": self.__default_video_framerate,
                 "source_video_pixfmt": self.__default_video_pixfmt,
+                "source_video_framerate": self.__default_video_framerate,
                 "source_video_decoder": self.__default_video_decoder,
                 "source_duration_sec": self.__default_source_duration,
                 "approx_video_nframes": (
@@ -366,21 +372,38 @@ class Sourcer:
                 "source_has_image_sequence": self.__contains_images,
             }
         )
-        # handle output parameter if available
+        # add output metadata properties (if available)
         if not (self.__metadata_output is None):
             metadata.update(
                 {
-                    "output_video_resolution": self.__output_video_resolution,
-                    "output_video_framerate": self.__output_video_framerate,
+                    "output_frames_resolution": self.__output_frames_resolution,
                     "output_frames_pixfmt": self.__output_frames_pixfmt,
+                    "output_framerate": self.__output_framerate,
+                }
+            )
+        else:
+            # since output stream metadata properties are only available when additional
+            # FFmpeg parameters(such as filters) are defined manually, thereby missing
+            # output stream properties are handled by assigning them counterpart source
+            # stream metadata property values
+            force_retrieve_missing and metadata_missing.update(
+                {
+                    "output_frames_resolution": self.__default_video_resolution,
+                    "output_frames_pixfmt": self.__default_video_pixfmt,
+                    "output_framerate": self.__default_video_framerate,
                 }
             )
         # log it
         self.__verbose_logs and logger.debug(
             "Metadata Extraction completed successfully!"
         )
-        # return metadata as either JSON string or Python dictionary
-        return json.dumps(metadata, indent=2) if pretty_json else metadata
+        # parse as JSON string(`json.dumps`), if defined
+        metadata = json.dumps(metadata, indent=2) if pretty_json else metadata
+        metadata_missing = (
+            json.dumps(metadata_missing, indent=2) if pretty_json else metadata_missing
+        )
+        # return `metadata` or `(metadata, metadata_missing)`
+        return metadata if not force_retrieve_missing else (metadata, metadata_missing)
 
     def __validate_source(self, source, source_demuxer=None, forced_validate=False):
         """

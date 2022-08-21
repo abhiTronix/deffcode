@@ -184,7 +184,7 @@ class FFdecoder:
         # define dict to store user-defined parameters
         self.__user_metadata = {}
         # extract and assign source metadata as dict
-        self.__sourcer_metadata = (
+        (self.__sourcer_metadata, self.__missing_prop) = (
             Sourcer(
                 source=source,
                 source_demuxer=source_demuxer,
@@ -193,7 +193,7 @@ class FFdecoder:
                 **sourcer_params
             )
             .probe_stream(default_stream_indexes=default_stream_indexes)
-            .retrieve_metadata()
+            .retrieve_metadata(force_retrieve_missing=True)
         )
 
         # handle valid FFmpeg assets location
@@ -227,9 +227,9 @@ class FFdecoder:
                 "Unable to find any usable video stream in the given source!"
             )
         # store as metadata
-        self.__sourcer_metadata[
-            "ffdecoder_operational_mode"
-        ] = self.__supported_opmodes[self.__opmode]
+        self.__missing_prop["ffdecoder_operational_mode"] = self.__supported_opmodes[
+            self.__opmode
+        ]
 
         # handle user-defined output framerate
         __framerate = self.__extra_params.pop("-framerate", None)
@@ -360,22 +360,19 @@ class FFdecoder:
             # get supported FFmpeg pixfmt data with depth and bpp(bits-per-pixel)
             self.__ff_pixfmt_metadata = get_supported_pixfmts(self.__ffmpeg)
             supported_pixfmts = [fmts[0] for fmts in self.__ff_pixfmt_metadata]
+
             # calculate default pixel-format
-            if self.__frame_format != "null":
-                # choose between rgb24(default) or source pixel-format
-                default_pixfmt = (
-                    "rgb24"
-                    if "rgb24" in supported_pixfmts
-                    else self.__sourcer_metadata["source_video_pixfmt"]
-                )
-            else:
-                # Check special case - `frame_format`(or `-pix_fmt`) parameter discarded from pipeline
-                self.__sourcer_metadata["source_video_pixfmt"]
-                logger.critical(
-                    "Manually discarding `frame_format`(or `-pix_fmt`) parameter from this pipeline."
-                )
-                # only source pixel-format is used
-                default_pixfmt = self.__sourcer_metadata["source_video_pixfmt"]
+            # Check special case  - `frame_format`(or `-pix_fmt`) parameter discarded from pipeline
+            self.__frame_format == "null" and logger.critical(
+                "Manually discarding `frame_format`(or `-pix_fmt`) parameter from this pipeline."
+            )
+            # choose between rgb24(if available) or source pixel-format
+            # otherwise, only source pixel-format for special case
+            default_pixfmt = (
+                "rgb24"
+                if "rgb24" in supported_pixfmts and self.__frame_format != "null"
+                else self.__sourcer_metadata["source_video_pixfmt"]
+            )
             # assign output raw-frames pixel format
             rawframe_pixfmt = None
             if (
@@ -405,18 +402,22 @@ class FFdecoder:
                 # reset to default if not supported
                 rawframe_pixfmt = default_pixfmt
                 # log it accordingly
-                if self.__frame_format == "null":
-                    logger.warning(
-                        "No usable pixel-format defined. Switching to default source `{}` pixel-format!".format(
+                if self.__frame_format is None:
+                    logger.info(
+                        "Using default `{}` pixel-format for this pipeline.".format(
                             default_pixfmt
                         )
                     )
                 else:
-                    not (self.__frame_format is None) and logger.warning(
-                        "Provided FFmpeg not supports `{}` pixel-format. Switching to default `{}`!".format(
-                            self.__sourcer_metadata["output_frames_pixfmt"]
-                            if "output_frames_pixfmt" in self.__sourcer_metadata
-                            else self.__frame_format,
+                    logger.warning(
+                        "{} Switching to default `{}` pixel-format!".format(
+                            "Provided FFmpeg does not supports `{}` pixel-format.".format(
+                                self.__sourcer_metadata["output_frames_pixfmt"]
+                                if "output_frames_pixfmt" in self.__sourcer_metadata
+                                else self.__frame_format
+                            )
+                            if self.__frame_format != "null"
+                            else "No usable pixel-format defined.",
                             default_pixfmt,
                         )
                     )
@@ -476,14 +477,14 @@ class FFdecoder:
                     )
                 )
             elif (
-                "output_video_resolution"
+                "output_frames_resolution"
                 in self.__sourcer_metadata  # means `scale` filter is defined
-                and self.__sourcer_metadata["output_video_resolution"]
-                and len(self.__sourcer_metadata["output_video_resolution"]) == 2
+                and self.__sourcer_metadata["output_frames_resolution"]
+                and len(self.__sourcer_metadata["output_frames_resolution"]) == 2
             ):
                 # calculate raw-frame resolution/dimensions based on output.
                 self.__raw_frame_resolution = self.__sourcer_metadata[
-                    "output_video_resolution"
+                    "output_frames_resolution"
                 ]
             elif (
                 self.__sourcer_metadata["source_video_resolution"]
@@ -520,7 +521,7 @@ class FFdecoder:
             ) and logger.info(
                 "{} for this pipeline for defining output resolution.".format(
                     "FFmpeg filter values will be used"
-                    if "output_video_resolution" in self.__sourcer_metadata
+                    if "output_frames_resolution" in self.__sourcer_metadata
                     else "Default source resolution will be used"
                 )
             )
@@ -538,9 +539,9 @@ class FFdecoder:
                     )
                 )
             elif (
-                "output_video_framerate"
+                "output_framerate"
                 in self.__sourcer_metadata  # means `fps` filter is defined
-                and self.__sourcer_metadata["output_video_framerate"] > 0.0
+                and self.__sourcer_metadata["output_framerate"] > 0.0
             ):
                 # special mode to discard `-framerate/-r` FFmpeg parameter completely
                 if self.__inputframerate == "null":
@@ -550,7 +551,7 @@ class FFdecoder:
                 else:
                     # calculate raw-frame framerate based on output
                     output_params["-framerate"] = str(
-                        self.__sourcer_metadata["output_video_framerate"]
+                        self.__sourcer_metadata["output_framerate"]
                     )
                 self.__verbose_logs and logger.info(
                     "FFmpeg filter values will be used for this pipeline for defining output framerate."
@@ -727,8 +728,15 @@ class FFdecoder:
         # import dependency
         import json
 
-        # return complete (source+user-defined) metadata as JSON string
-        return json.dumps({**self.__sourcer_metadata, **self.__user_metadata}, indent=2)
+        # return complete metadata information as JSON string
+        return json.dumps(
+            {
+                **self.__sourcer_metadata,  # source video
+                **self.__missing_prop,  # missing properties
+                **self.__user_metadata,  # user-defined
+            },
+            indent=2,
+        )
 
     @metadata.setter
     def metadata(self, value):
@@ -742,19 +750,48 @@ class FFdecoder:
         if value and isinstance(value, dict):
             # log it
             self.__verbose_logs and logger.info("Updating Metadata...")
-            # extract any source metadata keys
-            default_keys = set(value).intersection(self.__sourcer_metadata)
+            # extract any source and output internal metadata keys
+            default_keys = set(value).intersection(
+                {**self.__sourcer_metadata, **self.__missing_prop}
+            )
+            # counterpart source properties for each output properties
+            counterpart_prop = {
+                "output_frames_resolution": "source_video_resolution",
+                "output_frames_pixfmt": "source_video_pixfmt",
+                "output_framerate": "source_video_framerate",
+            }
             # iterate over source metadata keys and sanitize it
             for key in default_keys or []:
-                if key in ["source", "source_video_pixfmt"]:
+                if key == "source":
                     # metadata properties that cannot be altered
                     logger.warning(
-                        "`{}` metadata property value cannot be altered. Discarding!".format(key)
+                        "`{}` metadata property value cannot be altered. Discarding!".format(
+                            key
+                        )
+                    )
+                elif self.__missing_prop != {} and key in self.__missing_prop:
+                    # missing metadata properties are unavailable and read-only
+                    # notify user about alternative counterpart property (if available)
+                    logger.warning(
+                        "`{}` metadata property is read-only".format(key)
+                        + (
+                            ". Try updating `{}` property instead!".format(
+                                counterpart_prop[key]
+                            )
+                            if key in counterpart_prop.keys()
+                            else " and cannot be updated!"
+                        )
                     )
                 elif isinstance(value[key], type(self.__sourcer_metadata[key])):
                     # check if correct datatype as original
                     # update source metadata if valid
                     self.__sourcer_metadata.update(value)
+                    # also update missing counterpart property (if available)
+                    counter_key = next(
+                        (k for k, v in counterpart_prop.items() if v == key), ""
+                    )
+                    if counter_key:
+                        self.__missing_prop[counter_key] = value[key]
                     continue
                 else:
                     # otherwise discard and log it

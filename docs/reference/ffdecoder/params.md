@@ -431,7 +431,7 @@ This parameter select the pixel format for output video frames _(such as `gray` 
 
 ??? note "Any invalid or unsupported value to `frame_format` parameter will discarded!"
 
-    Any improper `frame_format` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-pix_fmt` FFmpeg parameter value in Decoding pipeline uses `output_frames_pixfmt` metadata property extracted from Output Stream. Thereby, in case if no valid `output_video_resolution`  metadata property is found, then API finally defaults to **Default pixel-format**[^1] _(calculated variably)_.
+    Any improper `frame_format` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-pix_fmt` FFmpeg parameter value in Decoding pipeline uses `output_frames_pixfmt` metadata property extracted from Output Stream. Thereby, in case if no valid `output_frames_resolution`  metadata property is found, then API finally defaults to **Default pixel-format**[^1] _(calculated variably)_.
 
     !!! alert "The `output_frame_pixfmt` metadata property is only available when FFmpeg filters via. `-vf` or `-filter_complex` are manually defined."
 
@@ -572,9 +572,9 @@ These parameters are discussed below:
 
         !!! alert "The `output_frames_framerate` metadata property is only available when FFmpeg filters via. `-vf` or `-filter_complex` are manually defined."
 
-        Any improper `-framerate` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-framerate/-r` FFmpeg parameter value in Decoding pipeline uses `output_frames_framerate` metadata property extracted from Output Stream. Thereby, in case if no valid `output_video_framerate`  metadata property is found, then API finally defaults to `source_video_framerate` metadata property extracted from Input Source Stream.
+        Any improper `-framerate` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-framerate/-r` FFmpeg parameter value in Decoding pipeline uses `output_frames_framerate` metadata property extracted from Output Stream. Thereby, in case if no valid `output_framerate`  metadata property is found, then API finally defaults to `source_video_framerate` metadata property extracted from Input Source Stream.
 
-        !!! fail "In case neither `output_video_framerate` nor `source_video_framerate` valid metadata properties are found, then `RuntimeError` is raised."
+        !!! fail "In case neither `output_framerate` nor `source_video_framerate` valid metadata properties are found, then `RuntimeError` is raised."
 
     ??? info "Use `#!py3 {"-framerate":"null"}` in ffparams to discard `-framerate/-r` FFmpeg parameter entirely from Decoding pipeline."
 
@@ -593,9 +593,9 @@ These parameters are discussed below:
 
         !!! alert "The `output_frames_resolution` metadata property is only available when FFmpeg filters via. `-vf` or `-filter_complex` are manually defined."
 
-        Any improper `-custom_resolution` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-s/-size` FFmpeg parameter value in Decoding pipeline uses `output_frames_resolution` metadata property extracted from Output Stream. Thereby, in case if no valid `output_video_resolution`  metadata property is found, then API finally defaults to `source_video_resolution` metadata property extracted from Input Source Stream.
+        Any improper `-custom_resolution` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-s/-size` FFmpeg parameter value in Decoding pipeline uses `output_frames_resolution` metadata property extracted from Output Stream. Thereby, in case if no valid `output_frames_resolution`  metadata property is found, then API finally defaults to `source_video_resolution` metadata property extracted from Input Source Stream.
 
-        !!! fail "In case neither `output_video_resolution` nor `source_video_resolution` valid metadata properties are found, then `RuntimeError` is raised."
+        !!! fail "In case neither `output_frames_resolution` nor `source_video_resolution` valid metadata properties are found, then `RuntimeError` is raised."
 
     ??? info "Use `#!py3 {"-custom_resolution":"null"}` in ffparams to discard `-size/-s` FFmpeg parameter entirely from Decoding pipeline."
 
@@ -668,8 +668,8 @@ These parameters are discussed below:
         - If `frame_format` parameter is valid and supported: Default pixel-format is `frame_format` parameter value.
         - If `frame_format` parameter is **NOT** valid or supported:
             - If `output_frame_pixfmt` metadata is available: Default pixel-format is `output_frame_pixfmt` metadata value.
-            - If `output_frame_pixfmt` metadata is **NOT** available: Default pixel-format is `rgb24` if supported otherwise `source_frame_pixfmt` metadata value.
-      - [x] If `frame_format == "null"`: Default pixel-format is `source_frame_pixfmt` metadata value
+            - If `output_frame_pixfmt` metadata is **NOT** available: Default pixel-format is `rgb24` if supported otherwise `source_video_pixfmt` metadata value.
+      - [x] If `frame_format == "null"`: Default pixel-format is `source_video_pixfmt` metadata value
 
 
 <!--
