@@ -375,7 +375,7 @@ Sourcer("foo.mp4", custom_ffmpeg="/foo/foo1/ffmpeg").probe_stream()
 
 ## **`verbose`**
 
-This parameter enables verbose _(if `True`)_, essential for debugging. 
+This parameter enables verbose logs _(if `True`)_, essential for debugging. 
 
 **Data-Type:** Boolean
 
@@ -384,6 +384,7 @@ This parameter enables verbose _(if `True`)_, essential for debugging.
 **Usage:**
 
 ```python
+# initialize the sourcer with verbose logs
 Sourcer("foo.mp4", verbose=True).probe_stream()
 ```
 
@@ -394,48 +395,23 @@ Sourcer("foo.mp4", verbose=True).probe_stream()
 
 This dictionary parameter accepts all [Exclusive Parameters](#exclusive-parameters) formatted as its attributes:
 
+???+ note "Additional FFmpeg parameters"
+    
+    In addition to Exclusive Parameters, Sourcer API supports almost any FFmpeg parameter _(supported by installed FFmpeg)_, and thereby can be passed as dictionary attributes in `sourcer_params` parameter.
+
+    !!! danger "Kindly read [**FFmpeg Docs**](https://ffmpeg.org/documentation.html) carefully before passing any additional values to `sourcer_params` parameter. Wrong invalid values may result in undesired errors or no output at all."
+
+    !!! alert "All FFmpeg parameters are case-sensitive. Remember to double check every parameter if any error(s) occurred."
+
 **Data-Type:** Dictionary
 
 **Default Value:** Its default value is `{}`.
 
 ### Exclusive Parameters
 
-> In addition to FFmpeg parameters, Sourcer API also supports few Exclusive Parameters, to allow users to flexibly change its probing properties, and handle some special FFmpeg parameters.
+> Sourcer API supports few Exclusive Parameters to allow users to flexibly change its probing properties and handle some special FFmpeg parameters.
 
 These parameters are discussed below:
-
-
-* **`-vcodec`** _(str)_ : This attribute works similar to `-vcodec` FFmpeg parameter for specifying supported decoders that are compiled with FFmpeg in use. If not specified, it's value is derived from source video metadata. Its usage is as follows: 
-
-    !!! tip "Use `#!sh ffmpeg -decoders` terminal command to lists all FFmpeg supported decoders."
-
-    !!! info "To remove `-vcodec` forcefully from FFmpeg Pipeline, assign its value Nonetype as `#!py3 {"-vcodec":None}` in sourcer_params"
-
-    ```python
-    # define suitable parameter
-    sourcer_params = {"-vcodec": "h264"} # set decoder to `h264`
-    ```
-
-&ensp;
-
-
-* **`-framerate`** _(float/int)_ : This attribute works similar to `-framerate` FFmpeg parameter for generating video-frames at specified framerate. If not specified, it calculated from source video metadata. Its usage is as follows: 
-
-    ```python
-    # define suitable parameter
-    sourcer_params = {"-framerate": 60.0} # set input video source framerate to 60fps
-    ```
-
-&ensp;
-
-* **`-custom_resolution`** _(tuple/list)_ : This attribute sets the custom resolution/size/dimensions of the output frames. Its value can either be a **tuple** => `(width,height)` or a **list** => `[width, height]`. If not specified, it calculated from source video metadata. Its usage is as follows: 
-    
-    ```python
-    # define suitable parameter
-    sourcer_params = {"-output_dimensions": (1280,720)} # to produce a 1280x720 resolution/scale output video
-    ```
-
-&ensp;
 
 * **`-ffprefixes`** _(list)_: This attribute sets the special FFmpeg parameters that generally occurs at the very beginning _(such as `-re`)_ before input (`-i`) source. The FFmpeg parameters defined with this attribute can repeated more than once and maintains its original order in the FFmpeg command. Its value can be of datatype **`list`** only and its usage is as follows: 
 
