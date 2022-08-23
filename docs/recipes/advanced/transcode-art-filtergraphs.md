@@ -121,7 +121,7 @@ decoder = FFdecoder("foo.mp4", frame_format="bgr24", verbose=True, **ffparams).f
 # retrieve framerate from source JSON Metadata and pass it as `-input_framerate`
 # parameter for controlled framerate and define other parameters
 output_params = {
-    "-input_framerate": json.loads(decoder.metadata)["source_video_framerate"],
+    "-input_framerate": json.loads(decoder.metadata)["output_framerate"],
 }
 
 # Define writer with default parameters and suitable
@@ -198,7 +198,7 @@ decoder = FFdecoder(
 # retrieve framerate from source JSON Metadata and pass it as `-input_framerate`
 # parameter for controlled framerate and define other parameters
 output_params = {
-    "-input_framerate": json.loads(decoder.metadata)["source_video_framerate"],
+    "-input_framerate": json.loads(decoder.metadata)["output_framerate"],
 }
 
 # Define writer with default parameters and suitable
@@ -266,7 +266,7 @@ decoder = FFdecoder(
 # retrieve framerate from source JSON Metadata and pass it as `-input_framerate`
 # parameter for controlled framerate and define other parameters
 output_params = {
-    "-input_framerate": json.loads(decoder.metadata)["source_video_framerate"],
+    "-input_framerate": json.loads(decoder.metadata)["output_framerate"],
 }
 
 # Define writer with default parameters and suitable
@@ -334,7 +334,7 @@ decoder = FFdecoder(
 # retrieve framerate from source JSON Metadata and pass it as `-input_framerate`
 # parameter for controlled framerate and define other parameters
 output_params = {
-    "-input_framerate": json.loads(decoder.metadata)["source_video_framerate"],
+    "-input_framerate": json.loads(decoder.metadata)["output_framerate"],
 }
 
 # Define writer with default parameters and suitable

@@ -87,9 +87,11 @@ In this example we will decode different pixel formats video frames from a given
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
-!!! tip "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve source framerate and resolution."
+!!! tip "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve output framerate and resolution."
 
 !!! alert "By default, OpenCV expects `BGR` format frames in its `cv2.write()` method."
+
+!!! note "The `YUV` pixel-format frames are NOT yet supported by OpenCV VideoWriter, try using WriteGear API instead."
 
 === "BGR frames"
 
@@ -106,8 +108,8 @@ In this example we will decode different pixel formats video frames from a given
 
     # prepare OpenCV parameters
     FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
-    FRAMERATE = metadata_dict["source_video_framerate"]
-    FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+    FRAMERATE = metadata_dict["output_framerate"]
+    FRAMESIZE = tuple(metadata_dict["output_frames_resolution"])
 
     # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
     writer = cv2.VideoWriter("output_foo.avi", FOURCC, FRAMERATE, FRAMESIZE)
@@ -159,8 +161,8 @@ In this example we will decode different pixel formats video frames from a given
 
     # prepare OpenCV parameters
     FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
-    FRAMERATE = metadata_dict["source_video_framerate"]
-    FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+    FRAMERATE = metadata_dict["output_framerate"]
+    FRAMESIZE = tuple(metadata_dict["output_frames_resolution"])
 
     # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
     writer = cv2.VideoWriter("output_foo.avi", FOURCC, FRAMERATE, FRAMESIZE)
@@ -204,8 +206,8 @@ In this example we will decode different pixel formats video frames from a given
 
     # prepare OpenCV parameters
     FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
-    FRAMERATE = metadata_dict["source_video_framerate"]
-    FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+    FRAMERATE = metadata_dict["output_framerate"]
+    FRAMESIZE = tuple(metadata_dict["output_frames_resolution"])
 
     # Define writer with parameters and suitable output filename for e.g. `output_foo_gray.avi`
     writer = cv2.VideoWriter("output_foo_gray.avi", FOURCC, FRAMERATE, FRAMESIZE)
@@ -220,50 +222,6 @@ In this example we will decode different pixel formats video frames from a given
         # {do something with the frame here}
 
         # writing GRAYSCALE frame to writer
-        writer.write(frame)
-
-    # terminate the decoder
-    decoder.terminate()
-
-    # safely close writer
-    writer.release()
-    ```
-
-=== "YUV frames"
-
-    !!! info "OpenCV also directly consumes `YUV` format frames in its `cv2.write()` method."
-
-    !!! note "You can also use `yuv422p`(4:2:2 subsampling) or `yuv444p`(4:4:4 subsampling) instead in `frame_format` parameter for more higher dynamic range."
-
-    ```python
-    # import the necessary packages
-    from deffcode import FFdecoder
-    import json, cv2
-
-    # initialize and formulate the decoder for YUV420 output
-    decoder = FFdecoder("foo.mp4", frame_format="yuv420p", verbose=True).formulate()
-
-    # retrieve JSON Metadata and convert it to dict
-    metadata_dict = json.loads(decoder.metadata)
-
-    # prepare OpenCV parameters
-    FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
-    FRAMERATE = metadata_dict["source_video_framerate"]
-    FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
-
-    # Define writer with parameters and suitable output filename for e.g. `output_foo_yuv.avi`
-    writer = cv2.VideoWriter("output_foo_yuv.avi", FOURCC, FRAMERATE, FRAMESIZE)
-
-    # grab the YUV420 frame from the decoder
-    for frame in decoder.generateFrame():
-
-        # check if frame is None
-        if frame is None:
-            break
-
-        # {do something with the frame here}
-
-        # writing YUV420 frame to writer
         writer.write(frame)
 
     # terminate the decoder
@@ -421,9 +379,11 @@ In this example we will decode different pixel formats video frames from a given
 
 === "YUV frames"
 
-    !!! info "WriteGear API also directly consumes `YUV` format frames in its `write()` class method. 
+    !!! info "WriteGear API can easily consumes `YUV` format frames in its `write()` class method only in compression mode."
 
-    !!! note "You can also use `yuv422p`(4:2:2 subsampling) or `yuv444p`(4:4:4 subsampling) instead in `frame_format` parameter for more higher dynamic range."
+    !!! note "You can also use `yuv422p`(4:2:2 subsampling) or `yuv444p`(4:4:4 subsampling) instead for more higher dynamic ranges."
+
+    !!! alert "In WriteGear API, the support for `-input_pixfmt` attribute in `output_params` dictionary parameter was added in `v0.3.0`."
 
     ```python
     # import the necessary packages
@@ -432,17 +392,19 @@ In this example we will decode different pixel formats video frames from a given
     import json
 
     # initialize and formulate the decoder for YUV420 output
-    decoder = FFdecoder("foo.mp4", frame_format="yuv420p", verbose=True).formulate()
+    decoder = FFdecoder("foo.mp4", frame_format="yuv420p").formulate()
 
-    # retrieve framerate from source JSON Metadata and pass it as `-input_framerate` parameter
-    # for controlled output framerate
+    # retrieve framerate from source JSON Metadata and pass it as 
+    # `-input_framerate` parameter for controlled framerate
+    # and add input pixfmt as yuv420p also
     output_params = {
-        "-input_framerate": json.loads(decoder.metadata)["source_video_framerate"]
+        "-input_framerate": json.loads(decoder.metadata)["output_framerate"],
+        "-input_pixfmt": "yuv420p"
     }
 
     # Define writer with default parameters and suitable
     # output filename for e.g. `output_foo_yuv.mp4`
-    writer = WriteGear(output_filename="output_foo_yuv.mp4", **output_params)
+    writer = WriteGear(output_filename="output_foo_yuv.mp4", logging=True, **output_params)
 
     # grab the YUV420 frame from the decoder
     for frame in decoder.generateFrame():

@@ -663,15 +663,6 @@ class FFdecoder:
                     self.__raw_frame_depth,
                 )
             )[:, :, 0]
-        elif self.__raw_frame_pixfmt.startswith("yuv"):
-            # reconstruct exclusive `yuv` frames
-            frame = frame.reshape(
-                (
-                    self.__raw_frame_depth,
-                    self.__raw_frame_resolution[1],
-                    self.__raw_frame_resolution[0],
-                )
-            ).transpose((1, 2, 0))
         else:
             # reconstruct default frames
             frame = frame.reshape(
