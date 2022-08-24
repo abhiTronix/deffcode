@@ -429,9 +429,11 @@ class FFdecoder:
                 if x[0] == rawframe_pixfmt
             ][0]
             raw_bit_per_component = rawframesbpp // self.__raw_frame_depth
-            if raw_bit_per_component in [4, 8]:
+            if 4 <= raw_bit_per_component <= 8:
                 self.__raw_frame_dtype = np.dtype("u1")
-            elif raw_bit_per_component == 16 and rawframe_pixfmt.endswith(("le", "be")):
+            elif 8 < raw_bit_per_component <= 16 and rawframe_pixfmt.endswith(
+                ("le", "be")
+            ):
                 if rawframe_pixfmt.endswith("le"):
                     self.__raw_frame_dtype = np.dtype("<u2")
                 else:
