@@ -80,7 +80,7 @@ def test_source_playback(source, custom_ffmpeg, output):
                 verbose=True,
             )
             # force unknown number of frames(like camera) {special case}
-            instance.metadata = {"approx_video_nframes": 0}
+            instance.metadata = {"approx_video_nframes": 0, "source_has_audio": True}
             # formulate decoder
             decoder = instance.formulate()
         else:
@@ -204,7 +204,7 @@ def test_metadata(custom_params, checks):
     source = return_testvideo_path(fmt="vo")
     try:
         # custom vars
-        ffparams = {"-framerate": None} if not checks else {}
+        ffparams = {"-framerate": None} if not checks else {"-framerate": 25.0}
         # formulate the decoder with suitable source(for e.g. foo.mp4)
         decoder = FFdecoder(
             source, custom_ffmpeg=return_static_ffmpeg(), verbose=True, **ffparams
@@ -244,6 +244,7 @@ def test_metadata(custom_params, checks):
                 "-ss": "00:00:01.45",
                 "-frames:v": 1,
                 "-custom_resolution": [640, 480],
+                "-framerate": 30.0,
                 "-passthrough_audio": "invalid",  # just for test
                 "-vcodec": "unknown",
             },
@@ -254,6 +255,7 @@ def test_metadata(custom_params, checks):
                 "-ss": "00:02.45",
                 "-vframes": 1,
                 "-custom_resolution": "invalid",
+                "-framerate": "invalid",
                 "-ffprefixes": "invalid",
                 "-clones": "invalid",
                 "-framerate": "invalid",
@@ -513,12 +515,14 @@ def test_discard_n_filter_params(frame_format, ffparams, result):
                 return_testvideo_path(),
                 frame_format=frame_format,
                 verbose=True,
+                **ffparams,
             ).formulate()
         else:
             decoder = FFdecoder(
                 return_testvideo_path(),
                 frame_format=frame_format,
                 verbose=True,
+                **ffparams,
             )
             # assign manually pix-format via `metadata` property object {special case}
             decoder.metadata = (

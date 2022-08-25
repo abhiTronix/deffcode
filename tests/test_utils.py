@@ -88,7 +88,7 @@ def test_dict2Args(dictionary):
 
 test_data = [
     (os.path.join(expanduser("~"), "invalid"), True),
-    ("{}/Downloads/{}".format(tempfile.gettempdir(), "undelete.txt"), False),
+    ("{}/Downloads/Test_videos/{}".format(tempfile.gettempdir(), "undelete.txt"), False),
 ]
 
 
