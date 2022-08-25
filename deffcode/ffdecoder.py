@@ -589,7 +589,10 @@ class FFdecoder:
             # TODO Added support for `-re -stream_loop` and `-loop`
             if "-frames:v" in input_params:
                 self.__raw_frame_num = input_params["-frames:v"]
-            elif self.__sourcer_metadata["approx_video_nframes"] > 0:
+            elif (
+                not (self.__sourcer_metadata["approx_video_nframes"] is None)
+                and self.__sourcer_metadata["approx_video_nframes"] > 0
+            ):
                 self.__raw_frame_num = self.__sourcer_metadata["approx_video_nframes"]
             else:
                 self.__raw_frame_num = None
