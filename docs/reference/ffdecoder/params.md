@@ -427,22 +427,33 @@ decoder = FFdecoder("foo.mp4", source_demuxer="dshow").formulate()
 
 ## **`frame_format`** 
 
-This parameter select the pixel format for output video frames _(such as `gray` for grayscale output)_. If not specified, its value defaults to `rgb24` _(24-bit RGB)_.
+This parameter select the pixel format for output video frames _(such as `gray` for grayscale output)_.
 
-!!! warning "Any invalid or unsupported value to `frame_format` parameter will discarded!"
+??? note "Any invalid or unsupported value to `frame_format` parameter will discarded!"
 
-!!! tip "Use `#!sh ffmpeg -pix_fmts` terminal command to lists all FFmpeg supported pixel formats."
+    Any improper `frame_format` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-pix_fmt` FFmpeg parameter value in Decoding pipeline uses `output_frames_pixfmt` metadata property extracted from Output Stream. Thereby, in case if no valid `output_frames_resolution`  metadata property is found, then API finally defaults to **Default pixel-format**[^1] _(calculated variably)_.
+
+    !!! alert "The `output_frame_pixfmt` metadata property is only available when FFmpeg filters via. `-vf` or `-filter_complex` are manually defined."
+
+
+??? info "Use `#!py3 frame_format="null"` to manually discard `-pix_fmt` FFmpeg parameter entirely from Decoding pipeline."
+
+    This feature allows users to manually skip `-pix_fmt` FFmpeg parameter in Decoding pipeline, essentially for using only `format` filter values, or even better, let FFmpeg itself choose the best available output frame pixel-format for the given source.
+
 
 **Data-Type:** String
 
-**Default Value:** Its default value is `rgb24`
+**Default Value:** Its default value is **Default pixel-format**[^1] _(calculated variably)_.
 
 **Usage:**
+
 
 ```python
 # initialize and formulate the decoder for grayscale frames
 decoder = FFdecoder("foo.mp4", frame_format="gray").formulate()
 ```
+
+!!! tip "Use `#!sh ffmpeg -pix_fmts` terminal command to lists all FFmpeg supported pixel formats."
 
 !!! example "Various Pixel formats related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file)"
 
@@ -486,7 +497,7 @@ FFdecoder("foo.mp4", custom_ffmpeg="/foo/foo1/ffmpeg").formulate()
 
 ## **`verbose`**
 
-This parameter enables verbose _(if `True`)_, essential for debugging. 
+This parameter enables verbose logs _(if `True`)_, essential for debugging. 
 
 **Data-Type:** Boolean
 
@@ -495,6 +506,7 @@ This parameter enables verbose _(if `True`)_, essential for debugging.
 **Usage:**
 
 ```python
+# initialize and formulate decoder with verbose logs
 FFdecoder("foo.mp4", verbose=True).formulate()
 ```
 
@@ -534,16 +546,17 @@ decoder = FFdecoder("foo.mp4", verbose=True, **ffparams).formulate()
 
 #### B. Exclusive Parameters
 
-> In addition to FFmpeg parameters, FFdecoder API also supports few Exclusive Parameters, to allow users to flexibly change its internal pipeline, properties, and handle some special FFmpeg parameters _(such as repeated `map`)_ that cannot be assigned via. python dictionary. 
+> In addition to FFmpeg parameters, FFdecoder API also supports few Exclusive Parameters to allow users to flexibly change its internal pipeline, properties, and handle some special FFmpeg parameters _(such as repeated `map`)_ that cannot be assigned via. python dictionary. 
 
 These parameters are discussed below:
-
 
 * **`-vcodec`** _(str)_ : This attribute works similar to `-vcodec` FFmpeg parameter for specifying supported decoders that are compiled with FFmpeg in use. If not specified, it's value is derived from source video metadata. Its usage is as follows: 
 
     !!! tip "Use `#!sh ffmpeg -decoders` terminal command to lists all FFmpeg supported decoders."
 
-    !!! info "To remove `-vcodec` forcefully from FFmpeg Pipeline, assign its value Nonetype as `#!py3 {"-vcodec":None}` in ffparams"
+    ??? info "Use `#!py3 {"-vcodec":None}` in ffparams to discard `-vcodec` FFmpeg parameter entirely from Decoding pipeline."
+
+        This feature allows users to manually skip `-vcodec` FFmpeg parameter in Decoding pipeline, for letting FFmpeg itself choose the best available video decoder for the given source.
 
     ```python
     # define suitable parameter
@@ -553,7 +566,19 @@ These parameters are discussed below:
 &ensp;
 
 
-* **`-framerate`** _(float/int)_ : This attribute works similar to `-framerate` FFmpeg parameter for generating video-frames at specified framerate. If not specified, it calculated from source video metadata. Its usage is as follows: 
+* **`-framerate`** _(float/int)_ : This attribute works similar to `-framerate` FFmpeg parameter for generating video-frames at specified framerate. If not specified, it calculated from video metadata. Its usage is as follows: 
+
+    ??? note "Any invalid or unsupported value to `-framerate` attribute will discarded!"
+
+        !!! alert "The `output_frames_framerate` metadata property is only available when FFmpeg filters via. `-vf` or `-filter_complex` are manually defined."
+
+        Any improper `-framerate` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-framerate/-r` FFmpeg parameter value in Decoding pipeline uses `output_frames_framerate` metadata property extracted from Output Stream. Thereby, in case if no valid `output_framerate`  metadata property is found, then API finally defaults to `source_video_framerate` metadata property extracted from Input Source Stream.
+
+        !!! fail "In case neither `output_framerate` nor `source_video_framerate` valid metadata properties are found, then `RuntimeError` is raised."
+
+    ??? info "Use `#!py3 {"-framerate":"null"}` in ffparams to discard `-framerate/-r` FFmpeg parameter entirely from Decoding pipeline."
+
+        This feature allows users to manually skip `-framerate/-r` FFmpeg parameter in Decoding pipeline, essentially for using only `fps` filter values, or even better, let FFmpeg itself choose the best available output framerate for the given source.
 
     ```python
     # define suitable parameter
@@ -562,7 +587,19 @@ These parameters are discussed below:
 
 &ensp;
 
-* **`-custom_resolution`** _(tuple/list)_ : This attribute sets the custom resolution/size/dimensions of the output frames. Its value can either be a **tuple** => `(width,height)` or a **list** => `[width, height]`. If not specified, it calculated from source video metadata. Its usage is as follows: 
+* **`-custom_resolution`** _(tuple/list)_ : This attribute sets the custom resolution/size of the output frames. Its value can either be a **tuple** (`(width,height)`) or a **list** (`[width, height]`). If not specified, it calculated from video metadata. Its usage is as follows: 
+
+    ??? note "Any invalid or unsupported value to `-custom_resolution` attribute will discarded!"
+
+        !!! alert "The `output_frames_resolution` metadata property is only available when FFmpeg filters via. `-vf` or `-filter_complex` are manually defined."
+
+        Any improper `-custom_resolution` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-s/-size` FFmpeg parameter value in Decoding pipeline uses `output_frames_resolution` metadata property extracted from Output Stream. Thereby, in case if no valid `output_frames_resolution`  metadata property is found, then API finally defaults to `source_video_resolution` metadata property extracted from Input Source Stream.
+
+        !!! fail "In case neither `output_frames_resolution` nor `source_video_resolution` valid metadata properties are found, then `RuntimeError` is raised."
+
+    ??? info "Use `#!py3 {"-custom_resolution":"null"}` in ffparams to discard `-size/-s` FFmpeg parameter entirely from Decoding pipeline."
+
+        This feature allows users to manually skip `-size/-s` FFmpeg parameter in Decoding pipeline, essentially for using only `fps` filter values, or even better, let FFmpeg itself choose the best available output frames resolution for the given source.
     
     ```python
     # define suitable parameter
@@ -603,7 +640,7 @@ These parameters are discussed below:
 
 &ensp;
 
-* **`-custom_sourcer_params`** _(dict)_ :  This attribute assigns parameter meant for Sourcer API's [`sourcer_params`](../../sourcer/params/#sourcer_params) dictionary parameter, directly through FFdecoder API. Its usage is as follows: 
+* **`-custom_sourcer_params`** _(dict)_ :  This attribute assigns all [**Exclusive Parameter**](../../sourcer/params/#exclusive-parameters) meant for Sourcer API's `sourcer_params` dictionary parameter directly through FFdecoder API. Its usage is as follows: 
     
     ```python
     # define suitable parameter meant for `sourcer_params`
@@ -612,9 +649,28 @@ These parameters are discussed below:
 
 &ensp;
 
+* **`-default_stream_indexes`** _(list/tuple)_ : This attribute assign value directly to `default_stream_indexes` parameter in Sourcer API's [`probe_stream()`](../../../reference/sourcer/#deffcode.sourcer.Sourcer.probe_stream) method for selecting specific video and audio stream index in case of multiple ones. Value can be of format: `(int,int)` or `[int,int]` as follows:
+    
+    ```python
+    # define suitable parameter meant for `probe_stream()` method
+    ffparams = {"-default_stream_indexes": (0,1)} # ("0th video stream", "1st audio stream")
+    ```
+
+&ensp;
+
 * **`-passthrough_audio`** _(bool/list)_ : _(Yet to be supported)_
 
 &nbsp; 
+
+[^1]: **Default pixel-format** is calculated variably in FFdecoder API:
+      
+      - [x] If `frame_format != "null"`: 
+        - If `frame_format` parameter is valid and supported: Default pixel-format is `frame_format` parameter value.
+        - If `frame_format` parameter is **NOT** valid or supported:
+            - If `output_frame_pixfmt` metadata is available: Default pixel-format is `output_frame_pixfmt` metadata value.
+            - If `output_frame_pixfmt` metadata is **NOT** available: Default pixel-format is `rgb24` if supported otherwise `source_video_pixfmt` metadata value.
+      - [x] If `frame_format == "null"`: Default pixel-format is `source_video_pixfmt` metadata value
+
 
 <!--
 External URLs

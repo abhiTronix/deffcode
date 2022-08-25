@@ -313,7 +313,7 @@ def test_seek_n_save(ffparams, pixfmts):
         filename and remove_file_safe(filename)
 
 
-test_data_class = [
+test_data = [
     (return_testvideo_path(), {"-c:v": "hevc"}, False),
     (
         return_generated_frames_path(return_static_ffmpeg()),
@@ -340,7 +340,7 @@ test_data_class = [
 ]
 
 
-@pytest.mark.parametrize("source, ffparams, result", test_data_class)
+@pytest.mark.parametrize("source, ffparams, result", test_data)
 def test_FFdecoder_params(source, ffparams, result):
     """
     Testing FFdecoder API with different parameters and save output
@@ -391,7 +391,7 @@ def test_FFdecoder_params(source, ffparams, result):
             remove_file_safe(f_name)
 
 
-test_data_class = [
+test_data = [
     (
         "/dev/video0",
         "v4l2",
@@ -413,7 +413,7 @@ test_data_class = [
 ]
 
 
-@pytest.mark.parametrize("source, source_demuxer, result", test_data_class)
+@pytest.mark.parametrize("source, source_demuxer, result", test_data)
 def test_camera_capture(source, source_demuxer, result):
     """
     Tests FFdecoder's realtime Webcam and Virtual playback capabilities
@@ -428,8 +428,108 @@ def test_camera_capture(source, source_demuxer, result):
             frame_format="bgr24",
             verbose=True,
         ).formulate()
-        # capture 10 camera frames
-        for i in range(10):
+        # capture 5 camera frames
+        for i in range(5):
+            # grab the bgr24 frame from the decoder
+            frame_recv = next(decoder.generateFrame(), None)
+            # check if frame is None
+            if frame_recv is None:
+                raise AssertionError("Test Failed!")
+    except Exception as e:
+        if result:
+            # catch errors
+            pytest.fail(str(e))
+        else:
+            pytest.xfail(str(e))
+    finally:
+        # terminate
+        not (decoder is None) and decoder.terminate()
+
+
+test_data = [
+    (
+        "null",  # discard frame_format
+        {
+            "-custom_resolution": "null",  # discard `-custom_resolution`
+            "-framerate": "null",  # discard `-framerate`
+            "-vf": "format=bgr24,scale=320:240,fps=60",  # format=bgr24, scale=320x240, framerate=60fps
+        },
+        True,
+    ),
+    (
+        "bgr24",  # this pixel-format must override filter `format=rgb24`
+        {
+            "-vf": "format=rgb24,scale=320:240,fps=60",  # format=rgb24, scale=320x240, framerate=60fps
+        },
+        True,
+    ),
+    (
+        "invalid",  # invalid frame_format
+        {
+            "-custom_resolution": "invalid",  # invalid `-custom_resolution`
+            "-framerate": "invalid",  # invalid `-framerate`
+            "-vf": "format=bgr24,scale=320:240,fps=60",  # format=bgr24, scale=320x240, framerate=60fps
+        },
+        True,
+    ),
+    (
+        "invalid2",  # invalid frame_format
+        {
+            "-custom_resolution": "invalid",  # invalid `-custom_resolution`
+            "-framerate": "null",  # discard `-framerate`
+        },
+        False,
+    ),
+    (
+        "invalid3",  # invalid frame_format
+        {
+            "-custom_resolution": "null",  # discard `-custom_resolution`
+            "-framerate": "invalid",  # invalid `-framerate`
+        },
+        False,
+    ),
+    (
+        "null",  # discard frame_format
+        {
+            "-custom_resolution": "null",  # discard `-custom_resolution`
+            "-framerate": "null",  # discard `-framerate`
+        },
+        True,
+    ),
+]
+
+
+@pytest.mark.parametrize("frame_format, ffparams, result", test_data)
+def test_discard_n_filter_params(frame_format, ffparams, result):
+    """
+    Tests FFdecoder's discarding FFmpeg parameters and using FFmpeg Filter
+    capabilities
+    """
+    decoder = None
+    try:
+        # initialize and formulate the decode with suitable source
+        if not frame_format in ["invalid2", "invalid3"]:
+            decoder = FFdecoder(
+                return_testvideo_path(),
+                frame_format=frame_format,
+                verbose=True,
+            ).formulate()
+        else:
+            decoder = FFdecoder(
+                return_testvideo_path(),
+                frame_format=frame_format,
+                verbose=True,
+            )
+            # assign manually pix-format via `metadata` property object {special case}
+            decoder.metadata = (
+                {"source_video_resolution": [0], "output_frames_resolution": [0]}
+                if frame_format == "invalid2"
+                else {"source_video_framerate": 0.0, "output_framerate": 0.0}
+            )
+            # formulate decoder
+            decoder.formulate()
+        # capture 2 camera frames
+        for i in range(2):
             # grab the bgr24 frame from the decoder
             frame_recv = next(decoder.generateFrame(), None)
             # check if frame is None

@@ -28,7 +28,7 @@ import platform
 import numpy as np
 
 # import utils packages
-from .utils import logger_handler, validate_device_index
+from .utils import logger_handler, validate_device_index, dict2Args
 from .ffhelper import (
     check_sp_output,
     get_supported_demuxers,
@@ -101,7 +101,7 @@ class Sourcer:
         # sanitize sourcer_params
         self.__sourcer_params = {
             str(k).strip(): str(v).strip()
-            if not isinstance(v, (dict, list, int, float))
+            if not isinstance(v, (dict, list, int, float, tuple))
             else v
             for k, v in sourcer_params.items()
         }
@@ -189,7 +189,7 @@ class Sourcer:
         # handles source stream
         self.__source = source
 
-        # create shallow copy for further usage #TODO
+        # creates shallow copy for further usage #TODO
         self.__source_org = copy.copy(self.__source)
         self.__source_demuxer_org = copy.copy(self.__source_demuxer)
 
@@ -198,22 +198,28 @@ class Sourcer:
         self.__extracted_devices_list = []
 
         # various source stream params
-        self.__default_video_resolution = ""  # handle stream resolution
-        self.__default_video_framerate = ""  # handle stream framerate
-        self.__default_video_bitrate = ""  # handle stream's video bitrate
-        self.__default_video_pixfmt = ""  # handle stream's video pixfmt
-        self.__default_video_decoder = ""  # handle stream's video decoder
-        self.__default_source_duration = ""  # handle stream's video duration
-        self.__approx_video_nframes = ""  # handle approx stream frame number
-        self.__default_audio_bitrate = ""  # handle stream's audio bitrate
-        self.__default_audio_samplerate = ""  # handle stream's audio samplerate
+        self.__default_video_resolution = ""  # handles stream resolution
+        self.__default_video_framerate = ""  # handles stream framerate
+        self.__default_video_bitrate = ""  # handles stream's video bitrate
+        self.__default_video_pixfmt = ""  # handles stream's video pixfmt
+        self.__default_video_decoder = ""  # handles stream's video decoder
+        self.__default_source_duration = ""  # handles stream's video duration
+        self.__approx_video_nframes = ""  # handles approx stream frame number
+        self.__default_audio_bitrate = ""  # handles stream's audio bitrate
+        self.__default_audio_samplerate = ""  # handles stream's audio samplerate
 
         # handle various stream flags
-        self.__contains_video = False  # contain video
-        self.__contains_audio = False  # contain audio
-        self.__contains_images = False  # contain image-sequence
+        self.__contains_video = False  # contains video
+        self.__contains_audio = False  # contains audio
+        self.__contains_images = False  # contains image-sequence
 
-        # check whether metadata probed or not
+        # handles output parameters through filters
+        self.__metadata_output = None  # handles output stream metadata
+        self.__output_frames_resolution = ""  # handles output stream resolution
+        self.__output_framerate = ""  # handles output stream framerate
+        self.__output_frames_pixfmt = ""  # handles output frame pixel format
+
+        # check whether metadata probed or not?
         self.__metadata_probed = False
 
     def probe_stream(self, default_stream_indexes=(0, 0)):
@@ -245,10 +251,26 @@ class Sourcer:
         if video_rfparams:
             self.__default_video_resolution = video_rfparams["resolution"]
             self.__default_video_framerate = video_rfparams["framerate"]
-        # parse pixel format
+
+        # parse output parameters through filters (if available)
+        if not (self.__metadata_output is None):
+            # parse output resolution and framerate
+            out_video_rfparams = self.__extract_resolution_framerate(
+                default_stream=default_stream_indexes[0], extract_output=True
+            )
+            if out_video_rfparams:
+                self.__output_frames_resolution = out_video_rfparams["resolution"]
+                self.__output_framerate = out_video_rfparams["framerate"]
+            # parse output pixel-format
+            self.__output_frames_pixfmt = self.__extract_video_pixfmt(
+                default_stream=default_stream_indexes[0], extract_output=True
+            )
+
+        # parse pixel-format
         self.__default_video_pixfmt = self.__extract_video_pixfmt(
             default_stream=default_stream_indexes[0]
         )
+
         # parse video decoder
         self.__default_video_decoder = self.__extract_video_decoder(
             default_stream=default_stream_indexes[0]
@@ -297,14 +319,15 @@ class Sourcer:
         # return reference to the instance object.
         return self
 
-    def retrieve_metadata(self, pretty_json=False):
+    def retrieve_metadata(self, pretty_json=False, force_retrieve_missing=False):
         """
         This method returns Parsed/Probed Metadata of the given source.
 
         Parameters:
             pretty_json (bool): whether to return metadata as JSON string(if `True`) or Dictionary(if `False`) type?
+            force_retrieve_output (bool): whether to also return metadata missing in current Pipeline. If `True` this method returns `(metadata, metadata_missing)` tuple instead of `metadata`.
 
-        **Returns:** metadata formatted as JSON string or python dictionary.
+        **Returns:** `metadata` or `(metadata, metadata_missing)` if `force_retrieve_output=True`, formatted as JSON string or python dictionary.
         """
         # check if metadata has been probed or not
         assert (
@@ -317,18 +340,23 @@ class Sourcer:
             "ffmpeg_binary_path": self.__ffmpeg,
             "source": self.__source,
         }
+        metadata_missing = {}
         # Only either `source_demuxer` or `source_extension` attribute can be
         # present in metadata.
-        metadata.update(
-            {"source_extension": os.path.splitext(self.__source)[-1]}
-            if self.__source_demuxer is None
-            else {"source_demuxer": self.__source_demuxer}
-        )
+        if self.__source_demuxer is None:
+            metadata.update({"source_extension": os.path.splitext(self.__source)[-1]})
+            # update missing
+            force_retrieve_missing and metadata_missing.update({"source_demuxer": ""})
+        else:
+            metadata.update({"source_demuxer": self.__source_demuxer})
+            # update missing
+            force_retrieve_missing and metadata_missing.update({"source_extension": ""})
+        # add source video metadata properties
         metadata.update(
             {
                 "source_video_resolution": self.__default_video_resolution,
-                "source_video_framerate": self.__default_video_framerate,
                 "source_video_pixfmt": self.__default_video_pixfmt,
+                "source_video_framerate": self.__default_video_framerate,
                 "source_video_decoder": self.__default_video_decoder,
                 "source_duration_sec": self.__default_source_duration,
                 "approx_video_nframes": (
@@ -344,12 +372,38 @@ class Sourcer:
                 "source_has_image_sequence": self.__contains_images,
             }
         )
+        # add output metadata properties (if available)
+        if not (self.__metadata_output is None):
+            metadata.update(
+                {
+                    "output_frames_resolution": self.__output_frames_resolution,
+                    "output_frames_pixfmt": self.__output_frames_pixfmt,
+                    "output_framerate": self.__output_framerate,
+                }
+            )
+        else:
+            # since output stream metadata properties are only available when additional
+            # FFmpeg parameters(such as filters) are defined manually, thereby missing
+            # output stream properties are handled by assigning them counterpart source
+            # stream metadata property values
+            force_retrieve_missing and metadata_missing.update(
+                {
+                    "output_frames_resolution": self.__default_video_resolution,
+                    "output_frames_pixfmt": self.__default_video_pixfmt,
+                    "output_framerate": self.__default_video_framerate,
+                }
+            )
         # log it
         self.__verbose_logs and logger.debug(
             "Metadata Extraction completed successfully!"
         )
-        # return metadata as either JSON string or Python dictionary
-        return json.dumps(metadata, indent=2) if pretty_json else metadata
+        # parse as JSON string(`json.dumps`), if defined
+        metadata = json.dumps(metadata, indent=2) if pretty_json else metadata
+        metadata_missing = (
+            json.dumps(metadata_missing, indent=2) if pretty_json else metadata_missing
+        )
+        # return `metadata` or `(metadata, metadata_missing)`
+        return metadata if not force_retrieve_missing else (metadata, metadata_missing)
 
     def __validate_source(self, source, source_demuxer=None, forced_validate=False):
         """
@@ -462,17 +516,41 @@ class Sourcer:
             logger.error("`source` value is unusable or unsupported!")
             # discard the value otherwise
             raise ValueError("Input source is invalid. Aborting!")
-        # extract metadata
-        metadata = check_sp_output(
-            [self.__ffmpeg]
-            + (["-hide_banner"] if not self.__verbose_logs else [])
-            + self.__ffmpeg_prefixes
-            + (["-f", source_demuxer] if source_demuxer else [])
-            + ["-i", source],
-            force_retrieve_stderr=True,
+        # format command
+        if self.__sourcer_params:
+            # handle additional params separately
+            meta_cmd = (
+                [self.__ffmpeg]
+                + (["-hide_banner"] if not self.__verbose_logs else [])
+                + ["-t", "0.0001"]
+                + self.__ffmpeg_prefixes
+                + (["-f", source_demuxer] if source_demuxer else [])
+                + ["-i", source]
+                + dict2Args(self.__sourcer_params)
+                + ["-f", "null", "-"]
+            )
+        else:
+            meta_cmd = (
+                [self.__ffmpeg]
+                + (["-hide_banner"] if not self.__verbose_logs else [])
+                + self.__ffmpeg_prefixes
+                + (["-f", source_demuxer] if source_demuxer else [])
+                + ["-i", source]
+            )
+        # extract metadata, decode, and filter
+        metadata = (
+            check_sp_output(
+                meta_cmd,
+                force_retrieve_stderr=True,
+            )
+            .decode("utf-8")
+            .strip()
         )
-        # filter and return
-        return metadata.decode("utf-8").strip()
+        # separate input and output metadata (if available)
+        if "Output #" in metadata:
+            (metadata, self.__metadata_output) = metadata.split("Output #")
+        # return metadata based on params
+        return metadata
 
     def __extract_video_bitrate(self, default_stream=0):
         """
@@ -536,7 +614,7 @@ class Sourcer:
                 return filtered_pixfmt[0].split(" ")[-1]
         return ""
 
-    def __extract_video_pixfmt(self, default_stream=0):
+    def __extract_video_pixfmt(self, default_stream=0, extract_output=False):
         """
         This Internal method parses default video-stream pixel-format from metadata.
 
@@ -546,11 +624,19 @@ class Sourcer:
         **Returns:** Default Video pixel-format as string value.
         """
         identifiers = ["Video:", "Stream #"]
-        meta_text = [
-            line.strip()
-            for line in self.__ffsp_output.split("\n")
-            if all(x in line for x in identifiers)
-        ]
+        meta_text = (
+            [
+                line.strip()
+                for line in self.__ffsp_output.split("\n")
+                if all(x in line for x in identifiers)
+            ]
+            if not extract_output
+            else [
+                line.strip()
+                for line in self.__metadata_output.split("\n")
+                if all(x in line for x in identifiers)
+            ]
+        )
         if meta_text:
             selected_stream = meta_text[
                 default_stream
@@ -610,21 +696,31 @@ class Sourcer:
             )
         return result if result and (len(result) == 2) else {}
 
-    def __extract_resolution_framerate(self, default_stream=0):
+    def __extract_resolution_framerate(self, default_stream=0, extract_output=False):
         """
         This Internal method parses default video-stream resolution and framerate from metadata.
 
         Parameters:
             default_stream (int): selects specific audio-stream in case of multiple ones.
+            extract_output (bool): Whether to extract from output(if true) or input(if false) stream?
 
         **Returns:** Default Video resolution and framerate as dictionary value.
         """
         identifiers = ["Video:", "Stream #"]
-        meta_text = [
-            line.strip()
-            for line in self.__ffsp_output.split("\n")
-            if all(x in line for x in identifiers)
-        ]
+        # use output metadata if available
+        meta_text = (
+            [
+                line.strip()
+                for line in self.__ffsp_output.split("\n")
+                if all(x in line for x in identifiers)
+            ]
+            if not extract_output
+            else [
+                line.strip()
+                for line in self.__metadata_output.split("\n")
+                if all(x in line for x in identifiers)
+            ]
+        )
         result = {}
         if meta_text:
             selected_stream = meta_text[

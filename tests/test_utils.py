@@ -27,7 +27,7 @@ from os.path import expanduser
 from deffcode.utils import dict2Args, logger_handler, delete_file_safe
 
 # define test logger
-logger = logging.getLogger("Test_utils")
+logger = logging.getLogger("Test_Utilities")
 logger.propagate = False
 logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)

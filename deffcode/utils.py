@@ -78,7 +78,7 @@ def logger_handler():
 
 
 # define logger
-logger = logging.getLogger("Utilies")
+logger = logging.getLogger("Utilities")
 logger.propagate = False
 logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)

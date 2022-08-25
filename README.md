@@ -359,7 +359,7 @@ Internal URLs
 [release]:https://github.com/abhiTronix/deffcode/releases/latest
 [recipes]:https://abhitronix.github.io/deffcode/latest/recipes/basic/
 [license]:https://github.com/abhiTronix/deffcode/blob/master/LICENSE
-[help]:https://abhitronix.github.io/deffcode/latest/https://abhitronix.github.io/deffcode/latest/help/get_help
+[help]:https://abhitronix.github.io/deffcode/latest/help/get_help
 [installation-notes]:https://abhitronix.github.io/deffcode/latest/installation/#installation-notes
 [ffdecoder-api]:https://abhitronix.github.io/deffcode/latest/reference/ffdecoder/#ffdecoder-api
 [sourcer-api]:https://abhitronix.github.io/deffcode/latest/reference/sourcer/#sourcer-api

@@ -85,7 +85,7 @@ In this example we will take the first 5 seconds of a video clip _(using [`trim`
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
-!!! tip "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve source framerate and resolution."
+!!! tip "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve output framerate and resolution."
 
 !!! alert "By default, OpenCV expects `BGR` format frames in its `cv2.write()` method."
 
@@ -110,8 +110,8 @@ metadata_dict = json.loads(decoder.metadata)
 
 # prepare OpenCV parameters
 FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
-FRAMERATE = metadata_dict["source_video_framerate"]
-FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+FRAMERATE = metadata_dict["output_framerate"]
+FRAMESIZE = tuple(metadata_dict["output_frames_resolution"])
 
 # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
 writer = cv2.VideoWriter("output_foo.avi", FOURCC, FRAMERATE, FRAMESIZE)
@@ -149,7 +149,7 @@ In this example we will crop real-time video frames by an area with size 2/3 of 
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
-!!! note "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve source framerate and resolution."
+!!! note "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve output framerate and resolution."
 
 !!! tip "More complex examples using `crop` filter can be found [here ➶](https://ffmpeg.org/ffmpeg-filters.html#toc-Examples-57) and can be applied similarly."
 
@@ -174,8 +174,8 @@ metadata_dict = json.loads(decoder.metadata)
 
 # prepare OpenCV parameters
 FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
-FRAMERATE = metadata_dict["source_video_framerate"]
-FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+FRAMERATE = metadata_dict["output_framerate"]
+FRAMESIZE = tuple(metadata_dict["output_frames_resolution"])
 
 # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
 writer = cv2.VideoWriter("output_foo.avi", FOURCC, FRAMERATE, FRAMESIZE)
@@ -215,7 +215,7 @@ In this example we will rotate real-time video frames at an arbitrary angle by a
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
-!!! note "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve source framerate and resolution."
+!!! note "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve output framerate and resolution."
 
 ```python
 # import the necessary packages
@@ -238,8 +238,8 @@ metadata_dict = json.loads(decoder.metadata)
 
 # prepare OpenCV parameters
 FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
-FRAMERATE = metadata_dict["source_video_framerate"]
-FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+FRAMERATE = metadata_dict["output_framerate"]
+FRAMESIZE = tuple(metadata_dict["output_frames_resolution"])
 
 # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
 writer = cv2.VideoWriter("output_foo.avi", FOURCC, FRAMERATE, FRAMESIZE)
@@ -278,7 +278,7 @@ In this example we will rotate real-time video frames by 90 degrees counterclock
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
-!!! note "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve source framerate and resolution."
+!!! note "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve output framerate and resolution."
 
 ```python
 # import the necessary packages
@@ -301,8 +301,8 @@ metadata_dict = json.loads(decoder.metadata)
 
 # prepare OpenCV parameters
 FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
-FRAMERATE = metadata_dict["source_video_framerate"]
-FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+FRAMERATE = metadata_dict["output_framerate"]
+FRAMESIZE = tuple(metadata_dict["output_frames_resolution"])
 
 # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
 writer = cv2.VideoWriter("output_foo.avi", FOURCC, FRAMERATE, FRAMESIZE)
@@ -339,7 +339,7 @@ In this example we will horizontally flip and scale real-time video frames to ha
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
-!!! note "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve source framerate and resolution."
+!!! note "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve output framerate and resolution."
 
 !!! tip "More complex examples using `scale` filter can be found [here ➶](https://ffmpeg.org/ffmpeg-filters.html#toc-Examples-107) and can be applied similarly."
 
@@ -364,8 +364,8 @@ metadata_dict = json.loads(decoder.metadata)
 
 # prepare OpenCV parameters
 FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
-FRAMERATE = metadata_dict["source_video_framerate"]
-FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+FRAMERATE = metadata_dict["output_framerate"]
+FRAMESIZE = tuple(metadata_dict["output_frames_resolution"])
 
 # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
 writer = cv2.VideoWriter("output_foo.avi", FOURCC, FRAMERATE, FRAMESIZE)
