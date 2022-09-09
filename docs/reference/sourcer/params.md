@@ -98,8 +98,32 @@ Its valid input can be one of the following:
     sourcer = Sourcer('rtsp://xx:yy@192.168.1.ee:fd/av0_0', verbose=True, **sourcer_params).probe_stream()
     ```
 
+- [x] **Camera Device Index:** Valid "device index" or "camera index" of the connected Camera Device. For example, for using `"0"` index device as source on :fontawesome-brands-windows: Windows, we can do as follows in Sourcer API: 
 
-- [x] **Video Capture Devices (Webcams):** Valid video probe device's name _(e.g. `"USB2.0 Camera"`)_ or its path _(e.g. `"/dev/video0"` on linux)_ or its index _(e.g. `"0"`)_ as input  w.r.t [`source_demuxer`](#source_demuxer) parameter value in use. For example, for probing `"USB2.0 Camera"` named device with `dshow` source demuxer on :fontawesome-brands-windows: Windows, we can do as follows in Sourcer API: 
+    ??? danger "Requirement for using Camera Device as source in Sourcer API"
+
+        - [x] **MUST have appropriate FFmpeg binaries, Drivers, and Softwares installed:**
+            
+            Internally, DeFFcode APIs achieves Index based Camera Device Capturing by employing some specific FFmpeg demuxers on different platforms(OSes). These platform specific demuxers are as follows:
+
+            | Platform(OS) | Demuxer |
+            |:------------:|:-------|
+            | :fontawesome-brands-windows: Windows OS|[`dshow`](https://trac.ffmpeg.org/wiki/DirectShow) _(or DirectShow)_ |
+            | :material-linux: Linux OS | [`video4linux2`](https://trac.ffmpeg.org/wiki/Capture/Webcam#Linux) _(or its alias `v4l2`)_ |
+            | :material-apple: Mac OS | [`avfoundation`](https://ffmpeg.org/ffmpeg-devices.html#avfoundation) |
+
+            **:warning: Important:** Kindly make sure your FFmpeg binaries support these platform specific demuxers as well as system have the appropriate video drivers and related softwares installed.
+
+        - [x] The [`source`](#source) parameter value **MUST be any Camera Device index** that can be of either **integer** _(e.g. `-1`,`0`,`1`, etc.)_ or **string of integer** _(e.g. `"-1"`,`"0"`,`"1"`, etc.)_ type.
+
+        - [x] The [`source_demuxer`](#source_demuxer) parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`**. 
+
+    ```python
+    # initialize the sourcer with "0" index source and probe it
+    sourcer = Sourcer("0", verbose=True).probe_stream()
+    ```
+
+- [x] **Video Capture Devices:** Valid video probe device's name _(e.g. `"USB2.0 Camera"`)_ or its path _(e.g. `"/dev/video0"` on linux)_ or its index _(e.g. `"0"`)_ as input  w.r.t [`source_demuxer`](#source_demuxer) parameter value in use. For example, for probing `"USB2.0 Camera"` named device with `dshow` source demuxer on :fontawesome-brands-windows: Windows, we can do as follows in Sourcer API: 
 
     ??? tip "Identifying and Specifying Device name/path/index and suitable Demuxer on different OSes"
 
@@ -322,6 +346,21 @@ This parameter specifies the demuxer(`-f`) for the input source _(such as `dshow
 !!! warning "Any invalid or unsupported value to `source_demuxer` parameter value will raise `Assertion` error!"
 
 !!! tip "Use `#!sh ffmpeg -demuxers` terminal command to lists all FFmpeg supported demuxers."
+
+??? info "Specifying `source_demuxer` for using Camera Device Index as source in Sourcer API"
+    
+    For using Camera Device Index as source in Sourcer API, the `source_demuxer` parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`:**
+    
+    === "`source_demuxer=None` _(Default and Recommended)_"
+        ```python
+        # initialize the sourcer with "0" index source and probe it
+        sourcer = Sourcer("0").probe_stream()
+        ```
+    === "`source_demuxer="auto"`"
+        ```python
+        # initialize the sourcer with "0" index source and probe it
+        sourcer = Sourcer("0", source_demuxer="auto).probe_stream()
+        ```
 
 **Data-Type:** String
 

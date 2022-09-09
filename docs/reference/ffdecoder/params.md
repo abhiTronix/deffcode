@@ -104,7 +104,50 @@ Its valid input can be one of the following:
 
     !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-network-streams/#decoding-network-streams)"
 
-- [x] **Video Capture Devices (Webcams):** Valid video capture device's name _(e.g. `"USB2.0 Camera"`)_ or its path _(e.g. `"/dev/video0"` on linux)_ or its index _(e.g. `"0"`)_ as input  w.r.t [`source_demuxer`](#source_demuxer) parameter value in use. For example, for capturing `"USB2.0 Camera"` named device with `dshow` source demuxer on :fontawesome-brands-windows: Windows, we can do as follows in FFdecoder API: 
+- [x] **Camera Device Index:** Valid "device index" or "camera index" of the connected Camera Device. One can easily Capture desired Camera Device in FFdecoder API by specifying its matching index value _(use Sourcer API's [`enumerate_devices`](../../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) to list them)_ either as **integer** or **string of integer** type to its `source` parameter. For example, for capturing `"0"` index device on :fontawesome-brands-windows: Windows, we can do as follows in FFdecoder API: 
+
+    ??? danger "Requirement for Index based Camera Device Capturing in FFdecoder API"
+
+        - [x] **MUST have appropriate FFmpeg binaries, Drivers, and Softwares installed:**
+            
+            Internally, DeFFcode APIs achieves Index based Camera Device Capturing by employing some specific FFmpeg demuxers on different platforms(OSes). These platform specific demuxers are as follows:
+
+            | Platform(OS) | Demuxer |
+            |:------------:|:-------|
+            | :fontawesome-brands-windows: Windows OS|[`dshow`](https://trac.ffmpeg.org/wiki/DirectShow) _(or DirectShow)_ |
+            | :material-linux: Linux OS | [`video4linux2`](https://trac.ffmpeg.org/wiki/Capture/Webcam#Linux) _(or its alias `v4l2`)_ |
+            | :material-apple: Mac OS | [`avfoundation`](https://ffmpeg.org/ffmpeg-devices.html#avfoundation) |
+
+            **:warning: Important:** Kindly make sure your FFmpeg binaries support these platform specific demuxers as well as system have the appropriate video drivers and related softwares installed.
+        - [x] The [`source`](#source) parameter value **MUST be exactly the probed Camera Device index** _(use Sourcer API's [`enumerate_devices`](../../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) to list them)_.
+        - [x] The [`source_demuxer`](#source_demuxer) parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`**. 
+
+    ??? tip "Important Facts related to Camera Device Indexing"
+        - [x] **Camera Device indexes are 0-indexed**. So the first device is at `0`, second is at `1`, so on. So if the there are `n` devices, the last device is at `n-1`.
+        - [x] **Camera Device indexes can be of either integer** _(e.g. `0`,`1`, etc.)_ or **string of integer** _(e.g. `"0"`,`"1"`, etc.)_ **type**.
+        - [x] **Camera Device indexes can be negative** _(e.g. `-1`,`-2`, etc.)_, this means you can also start indexing from the end.
+            * For example, If there are three devices: 
+                ```python
+                {0: 'Integrated Camera', 1: 'USB2.0 Camera', 2: 'DroidCam Source'}
+                ```
+            * Then, You can specify Positive Indexes and its Equivalent Negative Indexes as follows:
+
+                | Positive Indexes | Equivalent Negative Indexes |
+                |:------------:|:-------:|
+                | `#!python FFdecoder("0").formulate()`| `#!python FFdecoder("-3").formulate()` |
+                | `#!python FFdecoder("1").formulate()`| `#!python FFdecoder("-2").formulate()` |
+                | `#!python FFdecoder("2").formulate()`| `#!python FFdecoder("-1").formulate()` |
+
+        !!! warning "Out of Index Camera Device index values will raise `ValueError` in FFdecoder API"
+
+    ```python
+    # initialize and formulate the decoder with "0" index source for BGR24 output
+    decoder = FFdecoder("0", frame_format="bgr24", verbose=True).formulate()
+    ```
+
+    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-camera-devices)"
+
+- [x] **Video Capture Device Name/Path:** Valid video capture device's name _(e.g. `"USB2.0 Camera"`)_ or its path _(e.g. `"/dev/video0"` on linux)_ or its index _(e.g. `"0"`)_ as input  w.r.t [`source_demuxer`](#source_demuxer) parameter value in use. For example, for capturing `"USB2.0 Camera"` named device with `dshow` source demuxer on :fontawesome-brands-windows: Windows, we can do as follows in FFdecoder API: 
 
     ??? tip "Identifying and Specifying Device name/path/index and suitable Demuxer on different OSes"
 
@@ -404,11 +447,29 @@ Its valid input can be one of the following:
 
 ## **`source_demuxer`** 
 
-This parameter specifies the demuxer(`-f`) for the input source _(such as `dshow`, `v4l2`, `gdigrab` etc.)_ to support Live Feed Devices, as well as `lavfi` _(Libavfilter input virtual device)_ that reads data from the open output pads of a libavfilter filtergraph. 
+This parameter specifies the demuxer(`-f`) for the input source _(such as `dshow`, `v4l2`, `gdigrab` etc.)_ to support Live Feed Devices, `lavfi` _(Libavfilter input virtual device)_ that reads data from the open output pads of a libavfilter filtergraph, and  
 
 !!! warning "Any invalid or unsupported value to `source_demuxer` parameter value will raise `Assertion` error!"
 
 !!! tip "Use `#!sh ffmpeg -demuxers` terminal command to lists all FFmpeg supported demuxers."
+
+??? info "Specifying `source_demuxer` for Index based Camera Device Capturing in FFdecoder API"
+    
+    For enabling Index based Camera Device Capturing in FFdecoder API, the `source_demuxer` parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`:**
+    
+    === "`source_demuxer=None` _(Default and Recommended)_"
+        ```python
+        # initialize and formulate the decoder with "0" index source for BGR24 output
+        decoder = FFdecoder("0", frame_format="bgr24").formulate()
+        ```
+    === "`source_demuxer="auto"`"
+        ```python
+        # initialize and formulate the decoder with "0" index source for BGR24 output
+        decoder = FFdecoder("0", source_demuxer="auto, frame_format="bgr24").formulate()
+        ```
+
+    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-camera-devices)"
+
 
 **Data-Type:** String
 

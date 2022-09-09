@@ -45,13 +45,15 @@ The following challenging recipes will take your skills to the next level and wi
 &thinsp;
 
 ## Advanced :material-movie-play: Decoding Recipes
-
 - [x] **[:material-file-hidden: Decoding Live Virtual Sources](../advanced/decode-live-virtual-sources/#decoding-live-virtual-sources)**
     - [Generate and Decode frames from Sierpinski pattern](../advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-sierpinski-pattern)
     - [Generate and Decode frames from Test Source pattern](../advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-test-source-pattern)
     - [Generate and Decode frames from Gradients with custom Text effect](../advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-gradients-with-custom-text-effect)
     - [Generate and Decode frames from Mandelbrot test pattern with vectorscope & waveforms](../advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-mandelbrot-test-pattern-with-vectorscope-waveforms)
     - [Generate and Decode frames from Game of Life Visualization](../advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-game-of-life-visualization)
+- [x] **[:material-camera-iris: Decoding Live Feed Devices](../advanced/decode-live-feed-devices)**
+    - [Capturing and Previewing frames from a Webcam using Custom Demuxer](../advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam-using-custom-demuxer)
+    - [Capturing and Previewing frames from your Desktop](../advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-your-desktop) _(Screen Recording)_
 - [x] **[:octicons-cpu-16: Hardware-Accelerated Video Decoding](../advanced/decode-hw-acceleration/#hardware-accelerated-video-decoding)**
     - [GPU-accelerated Hardware-based Video Decoding](../advanced/decode-hw-acceleration/#gpu-accelerated-hardware-based-video-decoding)
 

@@ -18,9 +18,9 @@ limitations under the License.
 ======================================================================
 -->
 
-# :material-webcam: Decoding Live Feed Devices
+# :material-camera-iris: Decoding Live Feed Devices
 
-> DeFFcode's FFdecoder API provide effortless support for Live Feed Devices using two parameters: [`source`](../../reference/sourcer/params/#source) parameter which accepts device name or its path, and [`source_demuxer`](../../reference/sourcer/params/#source_demuxer) parameter to specify demuxer for the given input device. 
+> DeFFcode's FFdecoder API provide effortless support for any Live Feed Devices using two parameters: [`source`](../../reference/sourcer/params/#source) parameter which accepts device name or its path, and [`source_demuxer`](../../reference/sourcer/params/#source_demuxer) parameter to specify demuxer for the given input device. 
 
 We'll discuss the Live Feed Devices support using both these parameters briefly in the following recipes:
 
@@ -60,7 +60,7 @@ We'll discuss the Live Feed Devices support using both these parameters briefly 
 
 &thinsp;
 
-## Capturing and Previewing frames from a Webcam
+## Capturing and Previewing frames from a Webcam using Custom Demuxer
 
 ???+ alert "Example Assumptions"
 

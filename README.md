@@ -54,7 +54,7 @@ DeFFcode - A cross-platform **High-performance Video Frames Decoder** that flexi
 
 **<ins>Highly Flexible</ins> -** _DeFFcode APIs gains an edge over other FFmpeg Wrappers by providing **complete control over the underline pipeline** including **access to almost any FFmpeg specification thinkable** such as specifying framerate, resolution, hardware decoder(s), filtergraph(s), and pixel-format(s) that are readily **supported by all well known Computer Vision libraries**._
 
-**<ins>Highly Convenient</ins> -** _FFmpeg has a steep learning curve especially for users unfamiliar with a command line interface. DeFFcode helps users by maintaining the **same standard [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) (Python API for OpenCV) coding syntax for its APIs**, thereby making it even **easier to learn, create, and develop FFmpeg based apps** in Python._
+**<ins>Highly Convenient</ins> -** _FFmpeg has a steep learning curve especially for users unfamiliar with a command line interface. DeFFcode helps users by providing similar to OpenCV, [**Index based Camera Device Capturing**][decoding-camera-devices-using-indexes] and the **same standard [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) (Python API for OpenCV) coding syntax for its APIs**, thereby making it even **easier to learn, create, and develop FFmpeg based apps** in Python._
 
 &nbsp;
 
@@ -66,6 +66,7 @@ Here are some key features that stand out:
 - Flexible API with access to almost any FFmpeg specification thinkable.
 - Supports a wide-range of media streams/devices/protocols as input source.
 - Curated list of well-documented recipes ranging from [**Basic**][basic-recipes] to [**Advanced**][advanced-recipes] skill levels.
+- Hands down the easiest [**Index based Camera Device Capturing**][decoding-camera-devices-using-indexes], similar to OpenCV.
 - Easy to code **Real-time [Simple][transcoding-live-simple-filtergraphs] & [Complex][transcoding-live-complex-filtergraphs] Filtergraphs**. _(Yes, You read it correctly "Real-time"!)_
 - Lightning fast dedicated **GPU-Accelerated Video [Decoding][hardware-accelerated-video-decoding] & [Transcoding][hardware-accelerated-video-transcoding]**.
 - Enables precise FFmpeg [**Key-frame Seeking**][extracting-key-frames-as-png-image] with pinpoint accuracy.
@@ -121,8 +122,8 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [Accessing RGB frames from a video file][accessing-rgb-frames-from-a-video-file]
 - [Capturing and Previewing BGR frames from a video file][capturing-and-previewing-bgr-frames-from-a-video-file] _(OpenCV Support)_
 - [Playing with any other FFmpeg pixel formats][capturing-and-previewing-bgr-frames-from-a-video-file]
-- [Capturing and Previewing frames from a Webcam][capturing-and-previewing-frames-from-a-webcam]
-- [Capturing and Previewing frames from your Desktop][capturing-and-previewing-frames-from-your-desktop] _(Screen Recording)_
+- [Enumerating all Camera Devices with Indexes][enumerating-all-camera-devices-with-indexes]
+- [Capturing and Previewing frames from a Camera using Indexes][capturing-and-previewing-frames-from-a-camera-using-indexes]
 - [Capturing and Previewing frames from a HTTPs Stream][capturing-and-previewing-frames-from-a-https-stream]
 - [Capturing and Previewing frames from a RTSP/RTP Stream][capturing-and-previewing-frames-from-a-rtsprtp-stream]
 - [Capturing and Previewing frames from Sequence of images][capturing-and-previewing-frames-from-sequence-of-images]
@@ -174,6 +175,8 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [Generate and Decode frames from Gradients with custom Text effect][generate-and-decode-frames-from-gradients-with-custom-text-effect]
 - [Generate and Decode frames from Mandelbrot test pattern with vectorscope & waveforms][generate-and-decode-frames-from-mandelbrot-test-pattern-with-vectorscope-waveforms]
 - [Generate and Decode frames from Game of Life Visualization][generate-and-decode-frames-from-game-of-life-visualization]
+- [Capturing and Previewing frames from a Webcam using Custom Demuxer][capturing-and-previewing-frames-from-a-webcam-using-custom-demuxer]
+- [Capturing and Previewing frames from your Desktop][capturing-and-previewing-frames-from-your-desktop] _(Screen Recording)_
 - [GPU-accelerated Hardware-based Video Decoding][gpu-accelerated-hardware-based-video-decoding]
 
 </details>
@@ -370,7 +373,7 @@ Basic Recipes
 -->
 [basic-recipes]:https://abhitronix.github.io/deffcode/latest/recipes/basic/
 [decoding-video-files]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#decoding-video-files
-[decoding-live-feed-devices]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-live-feed-devices/#decoding-live-feed-devices
+[decoding-camera-devices-using-indexes]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-camera-devices/#decoding-camera-devices-using-indexes
 [decoding-network-streams]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-network-streams/#decoding-network-streams
 [decoding-image-sequences]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-image-sequences/#decoding-image-sequences
 [transcode-live-frames]:https://abhitronix.github.io/deffcode/latest/recipes/basic/transcode-live-frames/
@@ -381,8 +384,8 @@ Basic Recipes
 [accessing-rgb-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#accessing-rgb-frames-from-a-video-file
 [capturing-and-previewing-bgr-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file
 [capturing-and-previewing-bgr-frames-from-a-video-file]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file
-[capturing-and-previewing-frames-from-a-webcam]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam
-[capturing-and-previewing-frames-from-your-desktop]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-live-feed-devices/#capturing-and-previewing-frames-from-your-desktop
+[enumerating-all-camera-devices-with-indexes]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-camera-devices/#enumerating-all-camera-devices-with-indexes
+[capturing-and-previewing-frames-from-a-camera-using-indexes]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-camera-devices/#capturing-and-previewing-frames-from-a-camera-using-indexes
 [capturing-and-previewing-frames-from-a-https-stream]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-network-streams/#capturing-and-previewing-frames-from-a-https-stream
 [capturing-and-previewing-frames-from-a-rtsprtp-stream]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-network-streams/#capturing-and-previewing-frames-from-a-rtsprtp-stream
 [capturing-and-previewing-frames-from-sequence-of-images]:https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-image-sequences/#capturing-and-previewing-frames-from-sequence-of-images
@@ -404,6 +407,7 @@ Advanced Recipes
 -->
 [advanced-recipes]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/
 [decoding-live-virtual-sources]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-virtual-sources/#decoding-live-virtual-sources
+[decoding-live-feed-devices]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-feed-devices/#decoding-live-feed-devices
 [hardware-accelerated-video-decoding]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-hw-acceleration/#hardware-accelerated-video-decoding
 [transcoding-live-complex-filtergraphs]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-live-frames-complexgraphs/#transcoding-live-complex-filtergraphs
 [transcoding-video-art-with-filtergraphs]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-art-filtergraphs/#transcoding-video-art-with-filtergraphs
@@ -423,6 +427,8 @@ Advanced Recipes
 [transcoding-video-art-with-yuv-bitplane-visualization]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-art-filtergraphs/#transcoding-video-art-with-yuv-bitplane-visualization
 [transcoding-video-art-with-ghosting-effect]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-art-filtergraphs/#transcoding-video-art-with-ghosting-effect
 [transcoding-video-art-with-pixelation-effect]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-art-filtergraphs/#transcoding-video-art-with-pixelation-effect
+[capturing-and-previewing-frames-from-a-webcam-using-custom-demuxer]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam-using-custom-demuxer
+[capturing-and-previewing-frames-from-your-desktop]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-your-desktop
 [gpu-accelerated-hardware-based-video-transcoding-with-writegear-api]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#gpu-accelerated-hardware-based-video-transcoding-with-writegear-api
 [added-new-attributes-to-metadata-in-ffdecoder-api]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#added-new-attributes-to-metadata-in-ffdecoder-api
 [overriding-source-video-metadata-in-ffdecoder-api]:https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#overriding-source-video-metadata-in-ffdecoder-api

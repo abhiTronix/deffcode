@@ -31,7 +31,7 @@ limitations under the License.
 
 **==Highly Flexible== -** DeFFcode APIs gains an edge over other Wrappers by providing **complete control over the underline pipeline** including **access to almost any FFmpeg specification thinkable** such as specifying framerate, resolution, hardware decoder(s), filtergraph(s), and pixel-format(s) that are readily **supported by all well known Computer Vision libraries**.
 
-**==Highly Convenient== -**  FFmpeg has a steep learning curve especially for users unfamiliar with a command line interface. DeFFcode helps users by keeping the **same [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) _(Python API for OpenCV)_ coding syntax for its APIs**, thereby making it even **easier to learn, create, and develop FFmpeg based apps** in Python.
+**==Highly Convenient== -**  FFmpeg has a steep learning curve especially for users unfamiliar with a command line interface. DeFFcode helps users by providing similar to OpenCV, [**Index based Camera Device Capturing**](recipes/basic/decode-camera-devices) and the **same [OpenCV-Python](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) _(Python API for OpenCV)_ coding syntax for its APIs**, thereby making it even **easier to learn, create, and develop FFmpeg based apps** in Python.
 
 &thinsp;
 
@@ -43,6 +43,7 @@ Here are some key features that stand out:
 - [x] Flexible API with access to almost any FFmpeg specification thinkable.
 - [x] Supports a wide-range of media streams/devices/protocols as input source. 
 - [x] Curated list of well-documented recipes ranging from [**Basic**](recipes/basic/) to [**Advanced**](recipes/advanced/) skill levels.
+- [x] Hands down the easiest [**Index based Camera Device Capturing**](recipes/basic/decode-camera-devices), similar to OpenCV.
 - [x] Memory efficient **Live [Simple](recipes/basic/transcode-live-frames-simplegraphs/#transcoding-live-simple-filtergraphs) & [Complex](recipes/advanced/transcode-live-frames-complexgraphs/#transcoding-live-complex-filtergraphs) Filtergraphs**. _(Yes, You read it correctly "Live"!)_
 - [x] Lightning fast dedicated **:fontawesome-solid-microchip: GPU-Accelerated Video [Decoding](recipes/advanced/decode-hw-acceleration/#hardware-accelerated-video-decoding) & [Transcoding](recipes/advanced/transcode-hw-acceleration/#hardware-accelerated-video-transcoding)**.
 - [x] Enables precise FFmpeg [**Frame Seeking**](recipes/basic/save-keyframe-image/#extracting-key-frames-as-png-image) with pinpoint accuracy.

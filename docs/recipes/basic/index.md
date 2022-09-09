@@ -55,9 +55,9 @@ The following recipes should be reasonably accessible to beginners of any skill 
     - [Accessing RGB frames from a video file](../basic/decode-video-files/#accessing-rgb-frames-from-a-video-file)
     - [Capturing and Previewing BGR frames from a video file](../basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file) _(OpenCV Support)_
     - [Playing with any other FFmpeg pixel formats](../basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file)
-- [x] **[:material-webcam: Decoding Live Feed Devices](../basic/decode-live-feed-devices/#decoding-live-feed-devices)**
-    - [Capturing and Previewing frames from a Webcam](../basic/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam)
-    - [Capturing and Previewing frames from your Desktop](../basic/decode-live-feed-devices/#capturing-and-previewing-frames-from-your-desktop) _(Screen Recording)_
+- [x] **[:material-webcam: Decoding Camera Devices using Indexes](../basic/decode-camera-devices)**
+    - [Enumerating all Camera Devices with Indexes](../basic/decode-camera-devices/#enumerating-all-camera-devices-with-indexes)
+    - [Capturing and Previewing frames from a Camera using Indexes](../basic/decode-camera-devices/#capturing-and-previewing-frames-from-a-camera-using-indexes)
 - [x] **[:fontawesome-solid-cloud-arrow-down: Decoding Network Streams](../basic/decode-network-streams/#decoding-network-streams)**
     - [Capturing and Previewing frames from a HTTPs Stream](../basic/decode-network-streams/#capturing-and-previewing-frames-from-a-https-stream)
     - [Capturing and Previewing frames from a RTSP/RTP Stream](../basic/decode-network-streams/#capturing-and-previewing-frames-from-a-rtsprtp-stream)
