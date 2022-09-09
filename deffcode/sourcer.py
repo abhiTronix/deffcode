@@ -405,6 +405,27 @@ class Sourcer:
         # return `metadata` or `(metadata, metadata_missing)`
         return metadata if not force_retrieve_missing else (metadata, metadata_missing)
 
+    @property
+    def enumerate_devices(self):
+        """
+        A property object that enumerate all probed Camera Devices connected to your system names
+        along with their respective "device indexes" or "camera indexes" as python dictionary.
+
+        **Returns:** Probed Camera Devices as python dictionary.
+        """
+        # check if metadata has been probed or not
+        assert (
+            self.__metadata_probed
+        ), "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
+
+        # log if specified
+        self.__verbose_logs and logger.debug("Enumerating all probed Camera Devices.")
+
+        # return probed Camera Devices as python dictionary.
+        return {
+            dev_idx: dev for dev_idx, dev in enumerate(self.__extracted_devices_list)
+        }
+
     def __validate_source(self, source, source_demuxer=None, forced_validate=False):
         """
         This Internal method validates source and extracts its metadata.
