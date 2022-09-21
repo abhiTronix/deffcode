@@ -22,7 +22,7 @@ limitations under the License.
 
 !!! abstract "FFmpeg offer access to dedicated GPU hardware with varying support on different platforms for performing a range of video-related tasks to be completed faster or using less of other resources (particularly CPU)."
 
-> By default, DeFFcode's FFdecoder API uses the Input Source's video-decoder _(extracted using Sourcer API)_ itself for decoding its input. However, you could easily change the video-decoder to your desired specific **supported Video-Decoder** using the `-vcodec` FFmpeg option by way of its [`ffparams`](../../reference/ffdecoder/params/#ffparams) dictionary parameter. This means easy access to GPU Accelerated Hardware Decoder to get better playback and accelerated video decoding on GPUs that will generate equivalent output to software decoders, but may use less power and CPU to do so.
+> By default, DeFFcode's FFdecoder API uses the Input Source's video-decoder _(extracted using Sourcer API)_ itself for decoding its input. However, you could easily change the video-decoder to your desired specific **supported Video-Decoder** using FFmpeg options by way of its [`ffparams`](../../reference/ffdecoder/params/#ffparams) dictionary parameter. This means easy access to GPU Accelerated Hardware Decoder to get better playback and accelerated video decoding on GPUs that will generate equivalent output to software decoders, but may use less power and CPU to do so.
 
 !!! tip "Use `#!sh ffmpeg -decoders` terminal command to lists all FFmpeg supported decoders."
 
@@ -33,27 +33,6 @@ We'll discuss its Hardware-Accelerated Video Decoding capabilities briefly in th
 !!! warning "DeFFcode APIs requires FFmpeg executable"
 
     ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../../installation/ffmpeg_install/) for its installation.
-
-???+ info "Additional Python Dependencies for following recipes"
-
-    Following recipes requires additional python dependencies which can be installed easily as below:
-
-    - [x] **OpenCV:** OpenCV is required for previewing video frames. You can easily install it directly via [`pip`](https://pypi.org/project/opencv-python/):
-
-        ??? tip "OpenCV installation from source"
-
-            You can also follow online tutorials for building & installing OpenCV on [Windows](https://www.learnopencv.com/install-opencv3-on-windows/), [Linux](https://www.pyimagesearch.com/2018/05/28/ubuntu-18-04-how-to-install-opencv/), [MacOS](https://www.pyimagesearch.com/2018/08/17/install-opencv-4-on-macos/) and [Raspberry Pi](https://www.pyimagesearch.com/2018/09/26/install-opencv-4-on-your-raspberry-pi/) machines manually from its source. 
-
-            :warning: Make sure not to install both *pip* and *source* version together. Otherwise installation will fail to work!
-
-        ??? info "Other OpenCV binaries"
-
-            OpenCV mainainers also provide additional binaries via pip that contains both main modules and contrib/extra modules [`opencv-contrib-python`](https://pypi.org/project/opencv-contrib-python/), and for server (headless) environments like [`opencv-python-headless`](https://pypi.org/project/opencv-python-headless/) and [`opencv-contrib-python-headless`](https://pypi.org/project/opencv-contrib-python-headless/). You can also install ==any one of them== in similar manner. More information can be found [here](https://github.com/opencv/opencv-python#installation-and-usage).
-
-
-        ```sh
-        pip install opencv-python       
-        ```
 
 
 !!! note "Always use FFdecoder API's [`terminate()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.terminate) method at the end to avoid undesired behavior."
@@ -77,11 +56,55 @@ We'll discuss its Hardware-Accelerated Video Decoding capabilities briefly in th
     These assumptions **MAY/MAY NOT** suit your current setup. Kindly use suitable parameters based your system platform and hardware settings only.
 
 
-In this example, we will be using Nvidia's **H.264 CUVID Video-decoder(`h264_cuvid`)** in FFdecoder API to achieve fully-accelerated hardware video decoding of **BGR24** frames from a given Video file _(say `foo.mp4`)_ on :fontawesome-brands-windows: Windows Machine, and preview them using OpenCV Library's `cv2.imshow()` method.
+In this example, we will be using Nvidia's Hardware Accerlated **CUDA Video-decoder(`cuda`)** in FFdecoder API to automatically detect NV-accelerated video codec and achieve GPU-accelerated hardware video decoding of **YUV420p** frames from a given Video file _(say `foo.mp4`)_ on :fontawesome-brands-windows: Windows Machine.
 
 !!! info "More information on Nvidia's CUVID can be found [here ➶](https://developer.nvidia.com/blog/nvidia-ffmpeg-transcoding-guide/)"
 
-???+ warning "Remember to check H.264 CUVID Video-decoder support in FFmpeg"
+!!! warning "YUV video-frames decoded with DeFFcode APIs are not yet supported by OpenCV methods."
+    Currently, there's no way to use DeFFcode APIs decoded YUV video-frames in OpenCV methods, and also you cannot change pixel format to any other due to NV-accelerated video codec supporting only few pixel-formats.
+
+!!! note "To learn about exclusive `-ffprefixes` parameter. See [Exclusive Parameters ➶](../../reference/ffdecoder/params/#b-exclusive-parameters)"
+
+```python
+# import the necessary packages
+from deffcode import FFdecoder
+import json
+
+# define suitable FFmpeg parameter
+ffparams = {
+    "-vcodec": None,  # skip any decoder and let FFmpeg chose
+    "-ffprefixes": [
+        "-vsync",
+        "0",
+        "-hwaccel", # chooses appropriate HW accelerator
+        "cuda",
+        "-hwaccel_output_format", # keeps the decoded frames in GPU memory
+        "cuda",
+    ],
+    "-custom_resolution": "null",  # discard `-custom_resolution`
+    "-framerate": "null",  # discard `-framerate`
+    "-vf": "scale_npp=format=yuv420p,hwdownload,format=yuv420p,fps=30.0",  # define your filters
+}
+
+# initialize and formulate the decoder with params and custom filters
+decoder = FFdecoder(
+    "foo.mp4", frame_format="null", verbose=True, **ffparams  # discard frame_format
+).formulate()
+
+# grab the YUV420 frame from the decoder
+for frame in decoder.generateFrame():
+
+    # check if frame is None
+    if frame is None:
+        break
+
+    # {do something with the frame here}
+
+# terminate the decoder
+decoder.terminate()
+```
+<!--#TODO
+???+ danger "Remember to check H.264 CUVID Video-decoder support in FFmpeg"
 
     To use `h264_cuvid` decoder, remember to check if your FFmpeg compiled with H.264 CUVID decoder support. You can easily do this by executing following one-liner command in your terminal, and observing if output contains something similar as follows:
 
@@ -94,33 +117,8 @@ In this example, we will be using Nvidia's **H.264 CUVID Video-decoder(`h264_cuv
     ```
 
     !!! tip "You can also use optimized HEVC CUVID Video-decoder(`hevc_cuvid`) in the similar way, if supported."
-
-
-!!! note "To learn about exclusive `-ffprefixes` parameter. See [Exclusive Parameters ➶](../../reference/ffdecoder/params/#b-exclusive-parameters)"
-
-```python
-# import the necessary packages
-from deffcode import FFdecoder
-import cv2
-
-# define suitable FFmpeg parameter
-ffparams = {
-    "-vcodec": "h264_cuvid", # CUVID H.264 Video-decoder
-    "-ffprefixes": ["-vsync", "0"],
-}
-
-# initialize and formulate the decoder with suitable source and params
-decoder = FFdecoder(
-    "foo.mp4", frame_format="bgr24", verbose=True, **ffparams
-).formulate()
-
-# grab the RGB24(default) frame from the decoder
-for frame in decoder.generateFrame():
-
-    # check if frame is None
-    if frame is None:
-        break
-
+-->
+<!--#TODO
     # Show output window
     cv2.imshow("Output", frame)
 
@@ -128,11 +126,7 @@ for frame in decoder.generateFrame():
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         break
+-->
 
-# close output window
-cv2.destroyAllWindows()
-# terminate the decoder
-decoder.terminate()
-```
 
 &nbsp;
