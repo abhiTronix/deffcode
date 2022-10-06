@@ -60,6 +60,7 @@ limitations under the License.
                 * Added new `extract_output` boolean parameter to `extract_video_pixfmt` and `extract_resolution_framerate` internal methods for extracting output `pixel-format`, `framerate` and `resolution` using Output Stream metadata instead of Sourcer Metadata, whenever available.
             * Added `tuple` datatype to `sourcer_params` exception.
             * Added `dict2Args` import. 
+        * Added `enumerate_devices` property object to enumerate all probed Camera Devices connected to a system names along with their respective "device indexes" or "camera indexes" as python dictionary.
         * Added new `force_retrieve_missing` parameter to `retrieve_metadata()` method for returning metadata missing in current Pipeline as `(metadata, metadata_missing)` tuple value instead of just `metadata`, when `force_retrieve_missing=True`.
         * Added various output stream metadata properties that are only available when additional FFmpeg parameters(such as filters) are defined manually, by assigning them counterpart source stream metadata property values
     - [x] **FFhelper:**
@@ -84,6 +85,11 @@ limitations under the License.
     - [x] **Docs:**
         * Added `new validate_device_index()` method and its parameters description.
         * Added `new extract_device_n_demuxer()` method and its parameters description.
+        * Added Decoding Camera Devices using Indexes support docs.
+            * Added `decode-camera-devices.md` doc for Decoding Camera Devices using Indexes.
+                * Added `Enumerating all Camera Devices with Indexes` example doc with code.
+                * Added `Capturing and Previewing frames from a Camera using Indexes` example doc with code.
+            * Added Camera Device Index support docs to FFdecoder and Sourcer API params.
     - [x] **CI:**
         * Added check exception for `mandelbrot` virtual source in Sourcer API's `test_probe_stream_n_retrieve_metadata` unittest.
         * Added new `test_discard_n_filter_params` unittest for test recently added supported for both discarded parameters and filter values.
@@ -133,13 +139,22 @@ limitations under the License.
         * Added docs for recently added additional FFmpeg parameter in Sourcer API's `sourcer_params` parameter.
             * Removed unsupported `-custom_resolution` sourcer_params attributes from `sourcer_params` parameter docs.
             * Removed redundant `-vcodec` and `-framerate` attributes from `sourcer_params` parameter docs.
+        * Updated both basic and advanced project Index hyperlinks.
+          * Moved `decoding-live-feed-devices.md` doc from basic to advanced directory.
+          * Updated page navigation in `mkdocs.yml`.
+        * Update announcement bar to feature Index based Camera Device Capture support.
+        * Updated Project description and Key features of DeFFcode.
+        * Updated README.md with latest information.
+        * Updated `source` and `source_demuxer` param doc.
+        * Updated Hardware-Acceleration docs.
+            * Updated Hardware-Accelerated Video Decoding and Transcoding docs to inform users about DeFFcode generated YUV frames not yet supported by OpenCV and its APIs.
         * Updated recipes docs to reflect recent changes in APIs. 
         * Updated parameter docs to reflect recent name changes.
         * Updated parameters/attributes introductory descriptions.
         * Updated various parametrize data to attain maximum coverage. 
         * Updated Zenodo badge and the BibTeX entry.
         * Updated method description texts and logging messages.
-        * Update icons and admonition messages.
+        * Update title headings, icons and admonition messages.
         * Updated code comments.
         * Updated `changelog.md`.
 
