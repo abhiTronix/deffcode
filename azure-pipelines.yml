@@ -69,7 +69,7 @@ steps:
   displayName: 'Install pip dependencies'
 
 - script: |
-    timeout 1500 pytest --verbose --cov=deffcode --cov-report=xml --cov-report=html --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "##vso[task.setvariable variable=exit_code]$code"; fi
+    timeout 1500 pytest -sv --cov=deffcode --cov-report=xml --cov-report=html --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "##vso[task.setvariable variable=exit_code]$code"; fi
   displayName: 'pytest'
   
 - bash: |

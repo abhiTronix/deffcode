@@ -20,12 +20,217 @@ limitations under the License.
 
 # Release Notes
 
+## v0.2.4 (In progress) :material-new-box:
 
-## v0.2.3 (2022-08-11) :material-new-box:
+??? new "New Features"
+    - [x] **FFdecoder API:**
+        * Implemented new comprehensive support for both discarding key default FFmpeg parameters from Decoding pipeline simply by assigning them `null` string values, and concurrently using values extracted from Output Stream metadata properties _(available only when FFmpeg filters are defined)_ for formulating pipelines.
+            * Added `null` string value support to `-framerate` and `-custom_resolution` attributes, as well as `frame_format` parameter for easily discarding them.
+            * Re-Implemented calculation of rawframe pixel-format.
+                * Reconfigured default rawframe pixel-format, Now rawframe pixel-format will always default to `source_video_pixfmt` with `frame_format="null"`.
+                * Now with `frame_format` parameter value either "null" or invalid or undefined, rawframe pixel-format value is taken from `output_frames_pixfmt` metadata property extracted from Output Stream (available only when filters are defined). If valid `output_video_resolution`  metadata property is found then it defaults to default pixel-format(calculated variably).
+                * With `frame_format="null"`, `-pix_fmt` FFmpeg parameter will not be added to Decoding pipeline.
+            * Re-Implemented calculation of rawframe resolution value.
+                * Now with `-custom_resolution` dictionary attribute value either "null" or invalid or undefined, rawframe resolution value is first taken from `output_video_resolution` metadata property extracted from Output Stream (available only when filters are defined), next from `source_video_resolution` metadata  property(extracted from Input Source Stream). If neither `output_video_resolution` nor `source_video_resolution` valid metadata properties are found then `RuntimeError` is raised.
+                * With `-custom_resolution` dictionary attribute value "null", `-s/-size` FFmpeg parameter will not be added to Decoding pipeline.
+            * Re-Implemented calculation of output framerate value.
+                * Now with `-framerate` dictionary attribute either null or invalid or undefined, output framerate value is first taken from `output_video_framerate` metadata property extracted from Output Stream (available only when filters are defined), next from `source_video_framerate` metadata  property(extracted from Input Source Stream). If neither `output_video_resolution` nor `source_video_framerate` valid metadata properties are found then `RuntimeError` is raised.
+                * With `-framerate` dictionary attribute value "null", `-r/-framerate` FFmpeg parameter will not be added to Decoding pipeline.
+        * Implemented passing of simple `-vf` filters, complex `-filter_complex` filters, and pre-headers(via `-ffprefixes`) directly to Sourcer API's `sourcer_params` parameter for probing Output Stream metadata and filter values.
+    - [x] **Sourcer API:**
+        * Implemented new comprehensive approach to handle `source_demuxer` parameter w.r.t  different `source` parameter values.
+            * The `source_demuxer` parameter now accepts "auto" as its value for enabling Index based Camera Device Capture feature in Sourcer API.
+            * Sourcer API auto-enforces `source_demuxer="auto"` by default, whenever a valid device index (uses `validate_device_index` method for validation) is provided as its `source` parameter value.
+                * ⚠️ Sourcer API will throw `Assertion` error if `source_demuxer="auto"` is provided explicitly without a valid device index at its `source` parameter.
+            * Source API now accepts all +ve and -ve device indexes (e.g. `-1,0,1,2` etc.) to its `source` parameter, both as in integer and string of integer types as source in Index based Camera Device Capture feature.
+                * Sourcer API imports and utilizes `extract_device_n_demuxer()` method for discovering and extracting all Video-Capture device(s) name/path/index present on system. 
+                    * ⚠️ Sourcer API will throw `RuntimeError` on failure to identify any device.
+                * Sourcer API auto verifies that the specified source device index is in range of the devices discovered. 
+                    * ⚠️ Sourcer API will raise `ValueError` if value goes out of valid range.
+                * Sourcer API also automatically handle -ve indexes if specified within the valid range.
+                * Implemented patch to auto-add `video=` suffix to selected device name before using it as video source on Windows OSes.
+                * Added patch for handling dictionary of devices paths(with devices names as values) and log messages on Linux Oses.
+                * Added `copy` import for shallow copying various class parameters.
+            * Implemented new Support for additional FFmpeg parameters and Output metadata.
+                * Added three new metadata properties: `output_video_resolution`, `output_video_framerate`, `output_frames_pixfmt` for handling extracted Output Stream values, whenever additional FFmpeg parameters(such as FFmpeg filters) are defined.
+                * Added support for auto-handling additional FFmpeg parameters defined by `sourcer_params` dictionary parameters.
+                * Implement new separate pipeline for parsing Output Stream metadata by decoding video source using `null` muxer for few microseconds whenever additional FFmpeg parameters(such as `-vf` filters) are defined by the user.
+                * Included new `metadata_output` internal parameter for holding Output Stream metadata splitted from original Sourcer Metadata extracted from new pipeline.
+                * Included new `output_video_resolution`, `output_video_framerate`, `output_frames_pixfmt` internal parameters for metadata properties, whenever Output Stream Metadata available.
+                * Added new `extract_output` boolean parameter to `extract_video_pixfmt` and `extract_resolution_framerate` internal methods for extracting output `pixel-format`, `framerate` and `resolution` using Output Stream metadata instead of Sourcer Metadata, whenever available.
+            * Added `tuple` datatype to `sourcer_params` exception.
+            * Added `dict2Args` import. 
+        * Added `enumerate_devices` property object to enumerate all probed Camera Devices connected to a system names along with their respective "device indexes" or "camera indexes" as python dictionary.
+        * Added new `force_retrieve_missing` parameter to `retrieve_metadata()` method for returning metadata missing in current Pipeline as `(metadata, metadata_missing)` tuple value instead of just `metadata`, when `force_retrieve_missing=True`.
+        * Added various output stream metadata properties that are only available when additional FFmpeg parameters(such as filters) are defined manually, by assigning them counterpart source stream metadata property values
+    - [x] **FFhelper:**
+        * Implemented new `extract_device_n_demuxer()` method for discovering and extracting all Video-Capture device(s) name/path/index present on system and supported by valid OS specific FFmpeg demuxer.
+            * Added support for three OS specific FFmpeg demuxers: namely `dshow` for Windows, `v4l2` for Linux, and `avfoundation` for Darwin/Mac OSes.
+            * Implemented separate code for parsing outputs of python `subprocess` module outputs provided with different commands for discovering all Video-Capture devices present on system.
+                * Processed `dshow` _(on Windows)_ and `avfoundation` _(on Darwin)_ demuxers in FFmpeg commands with `-list_devices true` parameters using `subprocess` module and applied various brute-force pattern matching on its output for discovering and extracting all devices names/indexes.
+                * Used `v4l2-ctl` submodule command on Linux machines for listing all Video-Capture devices using `subprocess` module and applied various brute-force pattern matching on its output for discovering and extracting all devices names and true system `/dev/video` paths.
+                    * Added patch for a single device with multiple `/dev/video` paths _(each for metadata, video, controls)_, where it iterates on each path to find the exact path that contains valid video stream. 
+                    * Added elaborated checks for catching all possible system errors that can occur while running `v4l2-ctl` submodule command.
+                    * The method will return discovered devices as list of dictionaries with device paths(`/dev/video`) as keys and respective device name as the values, instead of default list of device names.
+                    * Added patch for handling Linux specific log messages.
+            * Added various logging messages to notify users about all discover devices names/paths w.r.t indexes.
+            * ⚠️ The `extract_device_n_demuxer` method will raise `RuntimeError` if it fails to identify any device.
+            * Added various checks to assert invalid input parameters and unsupported OSes.
+            * Added `machine_OS` parameter to specify OS running on the system, must be value of `platform.system()` module. If invalid the method will raise ValueError.
+    - [x] **Utilities:** 
+        * Added new `new validate_device_index()` method to verify if given device index is valid or not?
+            * Only Integers or String of integers are valid indexes. 
+            * Returns a boolean value, confirming whether valid(If `true`), or not(If `False`).
+        * Added checks to support all +ve and -ve integers, both as integer and string types.
+    - [x] **Docs:**
+        * Added `new validate_device_index()` method and its parameters description.
+        * Added `new extract_device_n_demuxer()` method and its parameters description.
+        * Added Decoding Camera Devices using Indexes support docs.
+            * Added `decode-camera-devices.md` doc for Decoding Camera Devices using Indexes.
+                * Added `Enumerating all Camera Devices with Indexes` example doc with code.
+                * Added `Capturing and Previewing frames from a Camera using Indexes` example doc with code.
+            * Added Camera Device Index support docs to FFdecoder and Sourcer API params.
+    - [x] **CI:**
+        * Added check exception for `mandelbrot` virtual source in Sourcer API's `test_probe_stream_n_retrieve_metadata` unittest.
+        * Added new `test_discard_n_filter_params` unittest for test recently added supported for both discarded parameters and filter values.
+
+??? success "Updates/Improvements" 
+    - [x] FFdecoder API:
+        * Extended range of supported output frame pixel-formats. 
+            * Added new pixel-formats to supported group by extending raw bits-per-component range.
+        * Simplified raw frame dtype calculation based on selected pixel-format.
+            * `output_frames_pixfmt` metadata property(if available) will be overridden to `rgb24`.
+        * Replaced `continue` with `break` in `generateFrame()` method.
+        * Improved handling of `frame_format` parameter.
+    - [x] Sourcer API:
+        * Simplified JSON formatting and returning values logic.
+        * Updated logging messages text and position.
+        * Removed redundant variable definitions.
+        * Changed related internal variable names w.r.t metadata property names.
+        * Replaced `os_windows` internal parameter with `machine_OS`, and changed its input from `os.name` to more flexible `platform.system()`. 
+        * Removed `source_extension` internal parameter and assigned values directly.
+    - [x] FFhelper:
+        * Implemented more robust pattern matching for Linux machines.
+        * Updated logs in `check_sp_output()` method for improving error output message.
+        * Implemented "Cannot open device" v4l2-ctl command Error logs. 
+    - [x] Maintenance: 
+        * Bumped version to `0.2.4`.
+        * Updated code comments.
+    - [x] CI:
+        * Updated FFdecoder API's `test_camera_capture` unittest to test new Index based Camera Device Capturing on different platforms.
+            * Added various parametrize `source` and `source_demuxer` parameter data to attain maximum coverage.
+            * Added `result` field to `fail` and `xfail` unittest according to parametrize data provided on different platforms.
+            * Removed `pytest.mark.skipif` to support all platforms.
+        * Added and updated various parametrize test data to attain maximum coverage.
+        * Limited range of extracted frames, for finishing tests faster.
+        * Updated unittests to reflect recent name changes.
+        * Disabled capturing of stdout/stderr with `-s` flag in pytest. 
+    - [x] Setup:
+        * Updated description metadata. 
+    - [x] Bash Script: 
+        * Created undeleteable `undelete.txt` file for testing on Linux envs.
+        * Updated `undelete.txt` file path.
+        * Made FFmpeg output less verbose.
+    - [x] Docs:
+        * Updated FFdecoder  API params docs w.r.t recent changes and supported for both discarded parameters and filter values.
+            * Added new admonitions to explain handling of "null" and (special-case), undefined, or invalid type values in various parameters/attributes.
+            * Added new footer reference explaining the handling of Default pixel-format for `frame_format` parameter.
+            * Added missing docs for `-default_stream_indexes` ffparams attribute.
+        * Added docs for recently added additional FFmpeg parameter in Sourcer API's `sourcer_params` parameter.
+            * Removed unsupported `-custom_resolution` sourcer_params attributes from `sourcer_params` parameter docs.
+            * Removed redundant `-vcodec` and `-framerate` attributes from `sourcer_params` parameter docs.
+        * Updated both basic and advanced project Index hyperlinks.
+          * Moved `decoding-live-feed-devices.md` doc from basic to advanced directory.
+          * Updated page navigation in `mkdocs.yml`.
+        * Update announcement bar to feature Index based Camera Device Capture support.
+        * Updated Project description and Key features of DeFFcode.
+        * Updated README.md with latest information.
+        * Updated `source` and `source_demuxer` param doc.
+        * Updated Hardware-Acceleration docs.
+            * Updated Hardware-Accelerated Video Decoding and Transcoding docs to inform users about DeFFcode generated YUV frames not yet supported by OpenCV and its APIs.
+        * Updated recipes docs to reflect recent changes in APIs. 
+        * Updated parameter docs to reflect recent name changes.
+        * Updated parameters/attributes introductory descriptions.
+        * Updated various parametrize data to attain maximum coverage. 
+        * Updated Zenodo badge and the BibTeX entry.
+        * Updated method description texts and logging messages.
+        * Update title headings, icons and admonition messages.
+        * Updated code comments.
+        * Updated `changelog.md`.
+
+
+??? danger "Breaking Updates/Changes"
+    * **API:**
+        - [x] :skull_crossbones: Implemented new Index based Camera Device Capture feature (Similar to OpenCV), where the user just have to assign device index as integer _(`-n` to `n-1`)_ in source parameter of DeFFcode APIs to directly access the given input device in few seconds.
+    * **FFdecoder API**
+        - [x] :skull_crossbones: Unsupported dtype pixel-format always defaults to `rgb24`.
+    * **Sourcer API:**
+        - [x] :skull_crossbones: Renamed `output_video_resolution` metadata property to `output_frames_resolution`.
+        - [x] :skull_crossbones: Renamed `output_video_framerate` metadata property to `output_framerate`.
+
+??? bug "Bug-fixes"
+    - [x] FFdecoder API:
+        * Removed redundant dummy value for `output_frames_pixfmt` metadata property.
+        * Fixed critical KeyError bug arises due to missing output metadata properties.
+            * Enforced `force_retrieve_missing` parameter in Sourcer API's `retrieve_metadata()` method for returning metadata missing in current Pipeline as `(metadata, metadata_missing)` tuple value instead of just `metadata`.
+            * Added new `missing_prop` internal class variable for handling metadata properties missing,  received from Sourcer API.
+            * Moved `ffdecoder_operational_mode` to missing metadata properties that cannot be updated but are read only.
+            * Added missing metadata properties to metadata class property object for easy printing along with other metadata information.
+            * Implemented missing metadata properties updation via. overridden metadata class property object.
+                * Added `counterpart_prop` dict to handle all counterpart source properties for each missing output properties.
+                * Implemented missing output properties auto-updation w.r.t counterpart source property.
+                * Added separate case for handling only missing metadata properties and notifying user about counterpart source properties.
+        * Fixed source metadata properties update bug causing non-existential missing metadata properties to be added to source metadata properties dictionary along with source metadata property.
+            * Replaced `update()` calling  on `value` dict directly with explicitly assigning values to source metadata properties dictionary.
+            * Simplified `missing_prop` validation.
+            * Removed unwanted `continue` in middle of loop.
+        * Remove unusable exclusive `yuv` frames patch.
+        * Fixed `KeyError` bug arises due to wrong variable placement.
+        * Fixed `approx_video_nframes` metadata property check.
+        * Fixed `av_interleaved_write_frame(): broken pipe` warning bug by switching `process.terminate()` with `process.kill()`.
+        * Fixed `AttributeError` bug caused due to typo in logger.
+    - [x] FFhelper:
+        * Fixed `check_sp_output()` method returning Standard Error (stderr) even when Nonetype.
+        * Fixed logger requiring `utf-8` decoding.
+        * Fixed missing `force_retrieve_stderr` argument to `check_sp_output` in `extract_device_n_demuxer` method on Linux platforms.
+        * Fixed logger message bug. 
+    - [x] Utils: 
+        * Fixed logger name typo.
+    - [x] Maintenance:
+        * Fixed hyperlinks to new GitHub's form schemas. 
+        * Fixed typos in logs messages.
+        * Removed redundant code.
+        * Updated code comments.
+    - [x] Setup:
+        * Rearranged `long_description` patches to address unused patch bug.
+    - [x] Bash Script:
+        * Fixed `chattr: No such file or directory` bug.
+    - [x] CI:
+        * Fixed missing `lavfi` demuxer for `mandelbrot` virtual source in Sourcer API's `test_probe_stream_n_retrieve_metadata` unittest.
+        * Fixed missing `ffparams` parameter bug in `test_discard_n_filter_params()` unittest.
+        * Fixed `test_camera_capture` test.
+        * Removed redundant similar `ValueError` checks.
+        * Fixed typo in pytest arguments.
+        * Fixed missing arguments.
+    - [x] Docs:
+        * Fixed invalid hyperlinks in ReadMe.md
+        * Fixed bad formatting and context.
+        * Fixed typos in code comments.
+        * Fixed several typos in docs.
+
+??? question "Pull Requests"
+    * PR #29
+    * PR #32
+
+&nbsp; 
+
+&nbsp; 
+
+## v0.2.3 (2022-08-11)
 
 ??? new "New Features"
     - [x] **Docs:**
-        * Added Zenodo Bibtex entry and badge in docs for easily citing a DeFFcode release.
+        * Added Zenodo Bibtex entry and badge in docs for easy citation.
         * Added new `<div>` tag bounding-box style to the Static FFmpeg binary download links in FFmpeg Installation Doc for better accessibility.
     - [x] **Maintenance:** 
         * Switched to new Issue GitHub's form schema using YAML:

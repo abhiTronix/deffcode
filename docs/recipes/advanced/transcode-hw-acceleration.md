@@ -46,23 +46,6 @@ We'll discuss its Hardware-Accelerated Video Transcoding capabilities using thes
 
     Following recipes requires additional python dependencies which can be installed easily as below:
 
-    - [x] **OpenCV:** OpenCV is required for previewing and encoding video frames. You can easily install it directly via [`pip`](https://pypi.org/project/opencv-python/):
-
-        ??? tip "OpenCV installation from source"
-
-            You can also follow online tutorials for building & installing OpenCV on [Windows](https://www.learnopencv.com/install-opencv3-on-windows/), [Linux](https://www.pyimagesearch.com/2018/05/28/ubuntu-18-04-how-to-install-opencv/), [MacOS](https://www.pyimagesearch.com/2018/08/17/install-opencv-4-on-macos/) and [Raspberry Pi](https://www.pyimagesearch.com/2018/09/26/install-opencv-4-on-your-raspberry-pi/) machines manually from its source. 
-
-            :warning: Make sure not to install both *pip* and *source* version together. Otherwise installation will fail to work!
-
-        ??? info "Other OpenCV binaries"
-
-            OpenCV mainainers also provide additional binaries via pip that contains both main modules and contrib/extra modules [`opencv-contrib-python`](https://pypi.org/project/opencv-contrib-python/), and for server (headless) environments like [`opencv-python-headless`](https://pypi.org/project/opencv-python-headless/) and [`opencv-contrib-python-headless`](https://pypi.org/project/opencv-contrib-python-headless/). You can also install ==any one of them== in similar manner. More information can be found [here](https://github.com/opencv/opencv-python#installation-and-usage).
-
-
-        ```sh
-        pip install opencv-python       
-        ```
-
     - [x] **VidGear:** VidGear is required for lossless encoding of video frames into file/stream. You can easily install it directly via [`pip`](https://pypi.org/project/opencv-python/):
 
         ```sh
@@ -108,21 +91,9 @@ We'll discuss its Hardware-Accelerated Video Transcoding capabilities using thes
 
     !!! summary "On the whole, You don't have to worry about it as you're getting to manipulate the real-time video frames with immense speed and flexibility which is impossible to do otherwise."
 
-In this example, we will be using Nvidia's **H.264 CUVID Video-decoder(`h264_cuvid`) with `–hwaccel cuvid` accelerator** in FFdecoder API to decode and keep decoded **BGR24** frames from a given Video file _(say `foo.mp4`)_ within GPU, all while rescaling _(with nvcuvid's `resize`)_ as well as encoding them in real-time with WriteGear API using Nvidia's hardware accelerated **H.264 NVENC Video-encoder(`h264_nvenc`)** into lossless video file within GPU. 
+In this example, we will be using Nvidia's Hardware Accerlated **CUDA Video-decoder(`cuda`)** in FFdecoder API to decode and keep decoded **YUV420p** frames from a given Video file _(say `foo.mp4`)_ within GPU, all while rescaling _(with nvcuvid's `resize`)_ as well as encoding them in real-time with WriteGear API using Nvidia's hardware accelerated **H.264 NVENC Video-encoder(`h264_nvenc`)** into lossless video file within GPU. 
 
-??? warning "Remember to check H.264 CUVID decoder and H.264 NVENC encoder support in FFmpeg"
-
-    - [x] **Using `h264_cuvid` decoder**: Remember to check if your FFmpeg compiled with H.264 CUVID decoder support. You can easily do this by executing following one-liner command in your terminal, and observing if output contains something similar as follows:
-
-        ```sh
-        $ ffmpeg  -hide_banner -decoders | grep h264 
-
-        VFS..D h264                 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10
-        V....D h264_qsv             H264 video (Intel Quick Sync Video acceleration) (codec h264)
-        V..... h264_cuvid           Nvidia CUVID H264 decoder (codec h264)
-        ```
-
-        !!! note "You can also use optimized HEVC CUVID decoder(`hevc_cuvid`) in the similar way, if supported."
+??? note "Remember to check H.264 NVENC encoder support in FFmpeg"
 
     - [x] **Using `h264_nvenc` encoder**: Remember to check if your FFmpeg compiled with H.264 NVENC encoder support. You can easily do this by executing following one-liner command in your terminal, and observing if output contains something similar as follows:
 
@@ -143,6 +114,10 @@ In this example, we will be using Nvidia's **H.264 CUVID Video-decoder(`h264_cuv
 !!! tip "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve source framerate."
 
 
+!!! warning "YUV video-frames decoded with DeFFcode APIs are not yet supported by OpenCV methods."
+    Currently, there's no way to use DeFFcode APIs decoded YUV video-frames in OpenCV methods, and also you cannot change pixel format to any other due to NV-accelerated video codec supporting only few pixel-formats.
+
+
 ```python
 # import the necessary packages
 from deffcode import FFdecoder
@@ -151,28 +126,39 @@ import json
 
 # define suitable FFmpeg parameter
 ffparams = {
-    "-vcodec": "h264_cuvid",  # H.264 CUVID decoder
-    "-ffprefixes": ["-vsync", "0", "–hwaccel", "cuvid"],  # accelerator
+    "-vcodec": None,  # skip any decoder and let FFmpeg chose
+    "-ffprefixes": [
+        "-vsync",
+        "0",
+        "-hwaccel", # chooses appropriate HW accelerator
+        "cuda",
+        "-hwaccel_output_format", # keeps the decoded frames in GPU memory
+        "cuda",
+    ],
+    "-custom_resolution": "null",  # discard `-custom_resolution`
+    "-framerate": "null",  # discard `-framerate`
+    "-vf": "scale_npp=format=yuv420p,hwdownload,format=yuv420p,fps=30.0",  # define your filters
 }
 
-# initialize and formulate the decoder with suitable source and params
+# initialize and formulate the decoder with params and custom filters
 decoder = FFdecoder(
-    "foo.mp4", frame_format="bgr24", verbose=True, **ffparams
+    "foo.mp4", frame_format="null", verbose=True, **ffparams  # discard frame_format
 ).formulate()
 
-# retrieve framerate from source JSON Metadata and pass it as `-input_framerate`
-# parameter for controlled framerate and define other parameters
+# retrieve framerate from JSON Metadata and pass it as 
+# `-input_framerate` parameter for controlled framerate
+# and add input pixfmt as yuv420p also
 output_params = {
-    "-input_framerate": json.loads(decoder.metadata)["source_video_framerate"],
-    "-vcodec": "h264_nvenc",  # H.264 NVENC encoder
-    "–resize": "1280x720",  # rescale to 1280x720
+    "-input_framerate": json.loads(decoder.metadata)["output_framerate"],
+    "-vcodec": "h264_nvenc",
+    "-input_pixfmt": "yuv420p"
 }
 
-# Define writer with defined parameters and suitable
-# output filename for e.g. `output_foo.mp4`
-writer = WriteGear(output_filename="output_foo.mp4", **output_params)
+# Define writer with default parameters and suitable
+# output filename for e.g. `output_foo_yuv.mp4`
+writer = WriteGear(output_filename="output_foo_yuv.mp4", **output_params)
 
-# grab the BGR24 frame from the decoder
+# grab the YUV420 frame from the decoder
 for frame in decoder.generateFrame():
 
     # check if frame is None
@@ -181,7 +167,7 @@ for frame in decoder.generateFrame():
 
     # {do something with the frame here}
 
-    # writing BGR24 frame to writer
+    # writing YUV420 frame to writer
     writer.write(frame)
 
 # terminate the decoder

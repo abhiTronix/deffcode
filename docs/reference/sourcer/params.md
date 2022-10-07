@@ -98,8 +98,32 @@ Its valid input can be one of the following:
     sourcer = Sourcer('rtsp://xx:yy@192.168.1.ee:fd/av0_0', verbose=True, **sourcer_params).probe_stream()
     ```
 
+- [x] **Camera Device Index:** Valid "device index" or "camera index" of the connected Camera Device. For example, for using `"0"` index device as source on :fontawesome-brands-windows: Windows, we can do as follows in Sourcer API: 
 
-- [x] **Video Capture Devices (Webcams):** Valid video probe device's name _(e.g. `"USB2.0 Camera"`)_ or its path _(e.g. `"/dev/video0"` on linux)_ or its index _(e.g. `"0"`)_ as input  w.r.t [`source_demuxer`](#source_demuxer) parameter value in use. For example, for probing `"USB2.0 Camera"` named device with `dshow` source demuxer on :fontawesome-brands-windows: Windows, we can do as follows in Sourcer API: 
+    ??? danger "Requirement for using Camera Device as source in Sourcer API"
+
+        - [x] **MUST have appropriate FFmpeg binaries, Drivers, and Softwares installed:**
+            
+            Internally, DeFFcode APIs achieves Index based Camera Device Capturing by employing some specific FFmpeg demuxers on different platforms(OSes). These platform specific demuxers are as follows:
+
+            | Platform(OS) | Demuxer |
+            |:------------:|:-------|
+            | :fontawesome-brands-windows: Windows OS|[`dshow`](https://trac.ffmpeg.org/wiki/DirectShow) _(or DirectShow)_ |
+            | :material-linux: Linux OS | [`video4linux2`](https://trac.ffmpeg.org/wiki/Capture/Webcam#Linux) _(or its alias `v4l2`)_ |
+            | :material-apple: Mac OS | [`avfoundation`](https://ffmpeg.org/ffmpeg-devices.html#avfoundation) |
+
+            **:warning: Important:** Kindly make sure your FFmpeg binaries support these platform specific demuxers as well as system have the appropriate video drivers and related softwares installed.
+
+        - [x] The [`source`](#source) parameter value **MUST be any Camera Device index** that can be of either **integer** _(e.g. `-1`,`0`,`1`, etc.)_ or **string of integer** _(e.g. `"-1"`,`"0"`,`"1"`, etc.)_ type.
+
+        - [x] The [`source_demuxer`](#source_demuxer) parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`**. 
+
+    ```python
+    # initialize the sourcer with "0" index source and probe it
+    sourcer = Sourcer("0", verbose=True).probe_stream()
+    ```
+
+- [x] **Video Capture Devices:** Valid video probe device's name _(e.g. `"USB2.0 Camera"`)_ or its path _(e.g. `"/dev/video0"` on linux)_ or its index _(e.g. `"0"`)_ as input  w.r.t [`source_demuxer`](#source_demuxer) parameter value in use. For example, for probing `"USB2.0 Camera"` named device with `dshow` source demuxer on :fontawesome-brands-windows: Windows, we can do as follows in Sourcer API: 
 
     ??? tip "Identifying and Specifying Device name/path/index and suitable Demuxer on different OSes"
 
@@ -323,6 +347,21 @@ This parameter specifies the demuxer(`-f`) for the input source _(such as `dshow
 
 !!! tip "Use `#!sh ffmpeg -demuxers` terminal command to lists all FFmpeg supported demuxers."
 
+??? info "Specifying `source_demuxer` for using Camera Device Index as source in Sourcer API"
+    
+    For using Camera Device Index as source in Sourcer API, the `source_demuxer` parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`:**
+    
+    === "`source_demuxer=None` _(Default and Recommended)_"
+        ```python
+        # initialize the sourcer with "0" index source and probe it
+        sourcer = Sourcer("0").probe_stream()
+        ```
+    === "`source_demuxer="auto"`"
+        ```python
+        # initialize the sourcer with "0" index source and probe it
+        sourcer = Sourcer("0", source_demuxer="auto).probe_stream()
+        ```
+
 **Data-Type:** String
 
 **Default Value:** Its default value is `None`.
@@ -375,7 +414,7 @@ Sourcer("foo.mp4", custom_ffmpeg="/foo/foo1/ffmpeg").probe_stream()
 
 ## **`verbose`**
 
-This parameter enables verbose _(if `True`)_, essential for debugging. 
+This parameter enables verbose logs _(if `True`)_, essential for debugging. 
 
 **Data-Type:** Boolean
 
@@ -384,6 +423,7 @@ This parameter enables verbose _(if `True`)_, essential for debugging.
 **Usage:**
 
 ```python
+# initialize the sourcer with verbose logs
 Sourcer("foo.mp4", verbose=True).probe_stream()
 ```
 
@@ -394,48 +434,23 @@ Sourcer("foo.mp4", verbose=True).probe_stream()
 
 This dictionary parameter accepts all [Exclusive Parameters](#exclusive-parameters) formatted as its attributes:
 
+???+ note "Additional FFmpeg parameters"
+    
+    In addition to Exclusive Parameters, Sourcer API supports almost any FFmpeg parameter _(supported by installed FFmpeg)_, and thereby can be passed as dictionary attributes in `sourcer_params` parameter.
+
+    !!! danger "Kindly read [**FFmpeg Docs**](https://ffmpeg.org/documentation.html) carefully before passing any additional values to `sourcer_params` parameter. Wrong invalid values may result in undesired errors or no output at all."
+
+    !!! alert "All FFmpeg parameters are case-sensitive. Remember to double check every parameter if any error(s) occurred."
+
 **Data-Type:** Dictionary
 
 **Default Value:** Its default value is `{}`.
 
 ### Exclusive Parameters
 
-> In addition to FFmpeg parameters, Sourcer API also supports few Exclusive Parameters, to allow users to flexibly change its probing properties, and handle some special FFmpeg parameters.
+> Sourcer API supports few Exclusive Parameters to allow users to flexibly change its probing properties and handle some special FFmpeg parameters.
 
 These parameters are discussed below:
-
-
-* **`-vcodec`** _(str)_ : This attribute works similar to `-vcodec` FFmpeg parameter for specifying supported decoders that are compiled with FFmpeg in use. If not specified, it's value is derived from source video metadata. Its usage is as follows: 
-
-    !!! tip "Use `#!sh ffmpeg -decoders` terminal command to lists all FFmpeg supported decoders."
-
-    !!! info "To remove `-vcodec` forcefully from FFmpeg Pipeline, assign its value Nonetype as `#!py3 {"-vcodec":None}` in sourcer_params"
-
-    ```python
-    # define suitable parameter
-    sourcer_params = {"-vcodec": "h264"} # set decoder to `h264`
-    ```
-
-&ensp;
-
-
-* **`-framerate`** _(float/int)_ : This attribute works similar to `-framerate` FFmpeg parameter for generating video-frames at specified framerate. If not specified, it calculated from source video metadata. Its usage is as follows: 
-
-    ```python
-    # define suitable parameter
-    sourcer_params = {"-framerate": 60.0} # set input video source framerate to 60fps
-    ```
-
-&ensp;
-
-* **`-custom_resolution`** _(tuple/list)_ : This attribute sets the custom resolution/size/dimensions of the output frames. Its value can either be a **tuple** => `(width,height)` or a **list** => `[width, height]`. If not specified, it calculated from source video metadata. Its usage is as follows: 
-    
-    ```python
-    # define suitable parameter
-    sourcer_params = {"-output_dimensions": (1280,720)} # to produce a 1280x720 resolution/scale output video
-    ```
-
-&ensp;
 
 * **`-ffprefixes`** _(list)_: This attribute sets the special FFmpeg parameters that generally occurs at the very beginning _(such as `-re`)_ before input (`-i`) source. The FFmpeg parameters defined with this attribute can repeated more than once and maintains its original order in the FFmpeg command. Its value can be of datatype **`list`** only and its usage is as follows: 
 

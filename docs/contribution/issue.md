@@ -52,6 +52,6 @@ If you've found a new bug or you've come up with some new feature which can impr
 * Add a brief but descriptive title for your issue.
 * Keep the issue phrasing in context of the problem.
 * Attach source-code/screenshots if you have one.
-* Finally, raise it by choosing the appropriate Issue Template: [Bug report](https://github.com/abhiTronix/deffcode/issues/new?labels=issue%3A+bug&template=bug_report.md), [Proposal](https://github.com/abhiTronix/deffcode/issues/new?labels=issue%3A+proposal&template=proposal.md), [Question](https://github.com/abhiTronix/deffcode/issues/new?labels=issue%3A+question&template=question.md).
+* Finally, raise it by choosing the appropriate Issue Template: [**Bug report 🐞**](https://github.com/abhiTronix/deffcode/issues/new?assignees=abhiTronix&labels=Bug+%3Alady_beetle%3A%2CNeeds+Triage+%3Amonocle_face%3A&template=bug_report.yaml&title=%5BBug%5D%3A+), [Idea 💡](https://github.com/abhiTronix/deffcode/issues/new?assignees=&labels=Idea+%3Abulb%3A&template=idea.yaml&title=%5BIdea%5D%3A+), [Question ❔](https://github.com/abhiTronix/deffcode/issues/new?assignees=&labels=Question+%3Agrey_question%3A&template=question.yaml&title=%5BQuestion%5D%3A+).
 
 &nbsp; 

@@ -104,7 +104,7 @@ decoder.terminate()
 
 In this example we will decode live **BGR24** video frames from RTSP/RTP protocol Streams in FFdecoder API, and preview them using OpenCV Library's `cv2.imshow()` method.
 
-!!! alert "This example assume you already have a RSTP Server running at specified RSTP address with syntax `rtsp://[RTSP_ADDRESS]:[RTSP_PORT]/[RTSP_PATH]` with video data already being published to it."
+!!! alert "This example assume you already have a RSTP Server running at specified RSTP address with syntax `rtsp://[RTSP_ADDRESS]:[RTSP_PORT]/[RTSP_PATH]` and video data already being published to it."
 
 !!! tip "For creating your own RSTP Server locally and publishing video data to it, You can refer this [WriteGear API's bonus example ➶](https://abhitronix.github.io/vidgear/dev/help/writegear_ex/#using-writegears-compression-mode-for-rtsprtp-live-streaming)"
 

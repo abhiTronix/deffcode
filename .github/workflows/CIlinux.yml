@@ -65,7 +65,7 @@ jobs:
         shell: bash
       - name: Run pytest and flake8
         run: |
-          timeout 1200 sudo python -m pytest --verbose --cov=deffcode --cov-report=xml  --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "EXIT_CODE=$code" >>$GITHUB_ENV; fi
+          timeout 1200 sudo python -m pytest -sv --cov=deffcode --cov-report=xml --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "EXIT_CODE=$code" >>$GITHUB_ENV; fi
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         if: success()
       - name: Upload coverage to Codecov

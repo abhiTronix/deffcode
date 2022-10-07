@@ -22,11 +22,12 @@ limitations under the License.
 import pytest
 import logging
 import os
+import tempfile
 from os.path import expanduser
 from deffcode.utils import dict2Args, logger_handler, delete_file_safe
 
 # define test logger
-logger = logging.getLogger("Test_utils")
+logger = logging.getLogger("Test_Utilities")
 logger.propagate = False
 logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
@@ -85,11 +86,21 @@ def test_dict2Args(dictionary):
         pytest.fail("Failed to complete this test!")
 
 
-def test_delete_file_safe():
+test_data = [
+    (os.path.join(expanduser("~"), "invalid"), True),
+    ("{}/Downloads/Test_videos/{}".format(tempfile.gettempdir(), "undelete.txt"), False),
+]
+
+
+@pytest.mark.parametrize("file_path, result", test_data)
+def test_delete_file_safe(file_path, result):
     """
     Testing delete_file_safe method
     """
     try:
-        delete_file_safe(os.path.join(expanduser("~"), "invalid"))
+        delete_file_safe(file_path)
     except Exception as e:
-        pytest.fail(str(e))
+        if result:
+            pytest.fail(str(e))
+        else:
+            pytest.xfail(str(e))

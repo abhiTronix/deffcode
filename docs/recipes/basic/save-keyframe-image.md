@@ -86,8 +86,9 @@ In this example we will seek to `00:00:01.45`_(or 1045msec)_ in time and decode 
 ??? tip "Time unit syntax in `-ss` FFmpeg parameter"
     
     You can use two different time unit formats with `-ss` FFmpeg parameter: 
-    - [x] **Sexagesimal(in seconds):** Uses *(HOURS:MM:SS.MILLISECONDS)*, such as in `01:23:45.678`
-    - [x] **Fractional:** such as in `02:30.05`, this is interpreted as 2 minutes, 30 seconds, and a half a second, which would be the same as using 150.5 in seconds.
+
+    - [x] **Sexagesimal(in seconds):** Uses *(HOURS:MM:SS.MILLISECONDS)* format, such as in `01:23:45.678`.
+    - [x] **Fractional:** such as in `02:30.05`. This is interpreted as _2 minutes, 30 and a half a second_, which would be the same as using `150.5` in seconds.
 
 === "Using Pillow"
 
