@@ -48,7 +48,7 @@ class TimeoutHTTPAdapter(HTTPAdapter):
     A custom Transport Adapter with default timeouts
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs): 
         self.timeout = DEFAULT_TIMEOUT
         if "timeout" in kwargs:
             self.timeout = kwargs["timeout"]
