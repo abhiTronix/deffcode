@@ -20,7 +20,7 @@ limitations under the License.
 
 # Release Notes
 
-## v0.2.4 (In progress) :material-new-box:
+## v0.2.4 (2022-10-07) :material-new-box:
 
 ??? new "New Features"
     - [x] **FFdecoder API:**
