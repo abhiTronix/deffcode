@@ -199,6 +199,15 @@ class FFdecoder:
         # handle valid FFmpeg assets location
         self.__ffmpeg = self.__sourcer_metadata["ffmpeg_binary_path"]
 
+        # handle YUV pixel formats(such as `yuv420p`, `yuv444p`, `nv12`, `nv21` etc.)
+        # patch for compatibility with OpenCV APIs.
+        self.__cv_patch = self.__extra_params.pop("-enforce_cv_patch", False)
+        if not (isinstance(self.__cv_patch, bool)):
+            self.__cv_patch = False
+            self.__verbose_logs and logger.critical(
+                "Enforcing OpenCV compatibility patch for YUV/NV frames."
+            )
+
         # handle pass-through audio mode works in conjunction with WriteGear [TODO]
         self.__passthrough_mode = self.__extra_params.pop("-passthrough_audio", False)
         if not (isinstance(self.__passthrough_mode, bool)):
@@ -428,7 +437,9 @@ class FFdecoder:
                 for x in self.__ff_pixfmt_metadata
                 if x[0] == rawframe_pixfmt
             ][0]
-            raw_bit_per_component = rawframesbpp // self.__raw_frame_depth
+            raw_bit_per_component = (
+                rawframesbpp // self.__raw_frame_depth if self.__raw_frame_depth else 0
+            )
             if 4 <= raw_bit_per_component <= 8:
                 self.__raw_frame_dtype = np.dtype("u1")
             elif 8 < raw_bit_per_component <= 16 and rawframe_pixfmt.endswith(
@@ -626,11 +637,15 @@ class FFdecoder:
             self.__process is None
         ), "Pipeline is not running! You must call `formulate()` method first."
 
-        # formulated raw frame size
+        # formulated raw frame size and apply YUV pixel formats patch(if applicable)
         raw_frame_size = (
-            self.__raw_frame_depth
-            * self.__raw_frame_resolution[0]
-            * self.__raw_frame_resolution[1]
+            (self.__raw_frame_resolution[0] * (self.__raw_frame_resolution[1] * 3 // 2))
+            if self.__raw_frame_pixfmt.startswith(("yuv", "nv")) and self.__cv_patch
+            else (
+                self.__raw_frame_depth
+                * self.__raw_frame_resolution[0]
+                * self.__raw_frame_resolution[1]
+            )
         )
         # next dataframe as numpy ndarray
         nparray = None
@@ -668,6 +683,12 @@ class FFdecoder:
                     self.__raw_frame_depth,
                 )
             )[:, :, 0]
+        elif self.__raw_frame_pixfmt.startswith(("yuv", "nv")) and self.__cv_patch:
+            # reconstruct exclusive YUV formats frames for OpenCV APIs
+            frame = frame.reshape(
+                self.__raw_frame_resolution[1] * 3 // 2,
+                self.__raw_frame_resolution[0],
+            )
         else:
             # reconstruct default frames
             frame = frame.reshape(
