@@ -50,7 +50,7 @@ logger.setLevel(logging.DEBUG)
     [
         (return_testvideo_path(fmt="av"), return_static_ffmpeg(), True),
         (
-            "https://raw.githubusercontent.com/abhiTronix/Imbakup/master/Images/starship.mkv",
+            "https://gitlab.com/abhiTronix/Imbakup/-/raw/master/Images/starship.mkv",
             "",
             True,
         ),

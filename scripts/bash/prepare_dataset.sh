@@ -27,9 +27,6 @@ mkdir -p "$TMPFOLDER"/Downloads
 mkdir -p "$TMPFOLDER"/Downloads/FFmpeg_static
 mkdir -p "$TMPFOLDER"/Downloads/Test_videos
 
-# Acknowledging machine architecture
-MACHINE_BIT=$(uname -m)
-
 #Defining alternate ffmpeg static binaries date/version
 ALTBINARIES_DATE="12-07-2022"
 
@@ -50,7 +47,7 @@ msys*)
 esac
 
 #Download and Configure FFmpeg Static
-cd "$TMPFOLDER"/Downloads/FFmpeg_static
+cd "$TMPFOLDER"/Downloads/FFmpeg_static || exit
 
 if [ $OS_NAME = "linux" ]; then
 
@@ -82,9 +79,9 @@ fi
 cd "$TMPFOLDER"/Downloads/Test_videos || exit
 
 echo "Downloading Test-Data..."
-curl https://raw.githubusercontent.com/abhiTronix/Imbakup/master/Images/big_buck_bunny_720p_1mb.mp4 -o BigBuckBunny_4sec.mp4
-curl https://raw.githubusercontent.com/abhiTronix/Imbakup/master/Images/big_buck_bunny_720p_1mb_vo.mp4 -o BigBuckBunny_4sec_VO.mp4
-curl https://raw.githubusercontent.com/abhiTronix/Imbakup/master/Images/big_buck_bunny_720p_1mb_ao.aac -o BigBuckBunny_4sec_AO.aac
+curl https://gitlab.com/abhiTronix/Imbakup/-/raw/master/Images/big_buck_bunny_720p_1mb.mp4 -o BigBuckBunny_4sec.mp4
+curl https://gitlab.com/abhiTronix/Imbakup/-/raw/master/Images/big_buck_bunny_720p_1mb_vo.mp4 -o BigBuckBunny_4sec_VO.mp4
+curl https://gitlab.com/abhiTronix/Imbakup/-/raw/master/Images/big_buck_bunny_720p_1mb_ao.aac -o BigBuckBunny_4sec_AO.aac
 curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/BigBuckBunny.mp4 -o BigBuckBunny.mp4
 curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfish-50-mbps-hd-h264.mkv -o 50_mbps_hd_h264.mkv
 curl -L https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfish-90-mbps-hd-hevc-10bit.mkv -o 90_mbps_hd_hevc_10bit.mkv

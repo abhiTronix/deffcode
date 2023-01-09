@@ -20,8 +20,8 @@ limitations under the License.
 
 <div align="center">
   
-  ![DeFFcode](docs/overrides/assets/images/deffcode.png#gh-light-mode-only)
-  ![DeFFcode](docs/overrides/assets/images/deffcode-dark.png#gh-dark-mode-only)
+  ![DeFFcode](https://abhitronix.github.io/deffcode/latest/assets/images/deffcode.png#gh-light-mode-only)
+  ![DeFFcode](https://abhitronix.github.io/deffcode/latest/assets/images/deffcode-dark.png#gh-dark-mode-only)
 
 </div>
 
@@ -108,7 +108,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 
 <br>
 <div align="center">
-  <a href="https://abhitronix.github.io/deffcode/latest/recipes/basic/transcode-live-frames-simplegraphs/#transcoding-trimmed-and-reversed-video"><img src="docs/overrides/assets/gifs/bigbuckbunny_reversed.gif" alt="Big Buck Bunny Reversed" title="Click to view source code" width="70%" /> </a>
+  <a href="https://abhitronix.github.io/deffcode/latest/recipes/basic/transcode-live-frames-simplegraphs/#transcoding-trimmed-and-reversed-video"><img src="https://abhitronix.github.io/deffcode/latest/assets/gifs/bigbuckbunny_reversed.gif" alt="Big Buck Bunny Reversed" title="Click to view source code" width="70%" /> </a>
   <br>
   <sub><i>Big Buck Bunny Reversed using Live Simple Filtergraph</i></sub>
 </div>
@@ -158,7 +158,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 
 <br>
 <p align="center">
-  <a href="https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-mandelbrot-test-pattern-with-vectorscope-waveforms"><img src="docs/overrides/assets/gifs/mandelbrot_vectorscope_waveforms.gif" alt="mandelbrot test pattern" title="Click to view source code" width="70%" /></a>
+  <a href="https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-mandelbrot-test-pattern-with-vectorscope-waveforms"><img src="https://abhitronix.github.io/deffcode/latest/assets/gifs/mandelbrot_vectorscope_waveforms.gif" alt="mandelbrot test pattern" title="Click to view source code" width="70%" /></a>
   <br>
   <sub><i>Live Mandelbrot pattern with a Vectorscope & two Waveforms</i></sub>
 </p>
@@ -290,7 +290,7 @@ We're offering support for DeFFcode on [**Gitter Community Channel**][gitter]. C
 # Donations
 
 <div align="center">
-   <img src="docs/overrides/assets/images/help_us.png" alt="Donation" width="50%" />
+   <img src="https://abhitronix.github.io/deffcode/latest/assets/images/help_us.png" alt="Donation" width="50%" />
    <p><i>DeFFcode is free and open source and will always remain so. ❤️</i></p>
 </div>
 
