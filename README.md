@@ -18,7 +18,12 @@ limitations under the License.
 ===============================================
 -->
 
-![GitHub-Mark-Light](https://abhitronix.github.io/deffcode/latest/assets/images/deffcode-dark.png#gh-dark-mode-only)![GitHub-Mark-Dark](https://abhitronix.github.io/deffcode/latest/assets/images/deffcode.png#gh-light-mode-only)
+<div align="center">
+
+  ![DeFFcode](https://user-images.githubusercontent.com/34266896/211494454-a16fe5b1-e7d2-44dd-84ba-67b0578611cb.png#gh-light-mode-only)
+  ![DeFFcode](https://user-images.githubusercontent.com/34266896/211494463-a63a03d2-72a6-46bb-b40a-ab485a63674b.png#gh-dark-mode-only)
+
+</div>
 
 <div align="center">
 
