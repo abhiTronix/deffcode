@@ -108,7 +108,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 
 <br>
 <div align="center">
-  <a href="https://abhitronix.github.io/deffcode/latest/recipes/basic/transcode-live-frames-simplegraphs/#transcoding-trimmed-and-reversed-video"><img src="https://abhitronix.github.io/deffcode/latest/assets/gifs/bigbuckbunny_reversed.gif" alt="Big Buck Bunny Reversed" title="Click to view source code" width="70%" /> </a>
+  <a href="https://abhitronix.github.io/deffcode/latest/recipes/basic/transcode-live-frames-simplegraphs/#transcoding-trimmed-and-reversed-video"><img src="https://user-images.githubusercontent.com/34266896/211499038-46cc246d-843b-4c89-8e9a-5536395da9e7.gif" title="Click to view source code" width="70%" /> </a>
   <br>
   <sub><i>Big Buck Bunny Reversed using Live Simple Filtergraph</i></sub>
 </div>
@@ -158,7 +158,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 
 <br>
 <p align="center">
-  <a href="https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-mandelbrot-test-pattern-with-vectorscope-waveforms"><img src="https://abhitronix.github.io/deffcode/latest/assets/gifs/mandelbrot_vectorscope_waveforms.gif" alt="mandelbrot test pattern" title="Click to view source code" width="70%" /></a>
+  <a href="https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-mandelbrot-test-pattern-with-vectorscope-waveforms"><img src="https://user-images.githubusercontent.com/34266896/211498819-13fe0487-e843-4315-b4f3-c881de6c8c4a.gif" alt="mandelbrot test pattern" title="Click to view source code" width="70%" /></a>
   <br>
   <sub><i>Live Mandelbrot pattern with a Vectorscope & two Waveforms</i></sub>
 </p>
