@@ -120,7 +120,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 
 - [Accessing RGB frames from a video file][accessing-rgb-frames-from-a-video-file]
 - [Capturing and Previewing BGR frames from a video file][capturing-and-previewing-bgr-frames-from-a-video-file] _(OpenCV Support)_
-- [Playing with any other FFmpeg pixel formats][capturing-and-previewing-bgr-frames-from-a-video-file]
+- [Playing with any other FFmpeg pixel formats][playing-with-any-other-ffmpeg-pixel-formats]
 - [Enumerating all Camera Devices with Indexes][enumerating-all-camera-devices-with-indexes]
 - [Capturing and Previewing frames from a Camera using Indexes][capturing-and-previewing-frames-from-a-camera-using-indexes]
 - [Capturing and Previewing frames from a HTTPs Stream][capturing-and-previewing-frames-from-a-https-stream]
@@ -175,7 +175,8 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [Generate and Decode frames from Game of Life Visualization][generate-and-decode-frames-from-game-of-life-visualization]
 - [Capturing and Previewing frames from a Webcam using Custom Demuxer][capturing-and-previewing-frames-from-a-webcam-using-custom-demuxer]
 - [Capturing and Previewing frames from your Desktop][capturing-and-previewing-frames-from-your-desktop] _(Screen Recording)_
-- [GPU-accelerated Hardware-based Video Decoding][gpu-accelerated-hardware-based-video-decoding]
+- [CUVID-accelerated Hardware-based Video Decoding and Previewing][cuvid-accelerated-hardware-based-video-decoding-and-previewing]
+- [CUDA-accelerated Hardware-based Video Decoding and Previewing][cuda-accelerated-hardware-based-video-decoding-and-previewing]
 
 </details>
 
@@ -188,7 +189,9 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [Transcoding video art with Jetcolor effect][transcoding-video-art-with-jetcolor-effect]
 - [Transcoding video art with Ghosting effect][transcoding-video-art-with-ghosting-effect]
 - [Transcoding video art with Pixelation effect][transcoding-video-art-with-pixelation-effect]
-- [GPU-accelerated Hardware-based Video Transcoding with WriteGear API][gpu-accelerated-hardware-based-video-transcoding-with-writegear-api]
+- [CUDA-accelerated Video Transcoding with OpenCV's VideoWriter API][cuda-accelerated-video-transcoding-with-opencvs-videowriter-api]
+- [CUDA-NVENC-accelerated Video Transcoding with WriteGear API][cuda-nvenc-accelerated-video-transcoding-with-writegear-api]
+- [CUDA-NVENC-accelerated End-to-end Lossless Video Transcoding with WriteGear API][cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api]
 
 </details>
 
@@ -375,7 +378,7 @@ Basic Recipes
 [extracting-video-metadata]: https://abhitronix.github.io/deffcode/latest/recipes/basic/extract-video-metadata/#extracting-video-metadata
 [accessing-rgb-frames-from-a-video-file]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#accessing-rgb-frames-from-a-video-file
 [capturing-and-previewing-bgr-frames-from-a-video-file]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file
-[capturing-and-previewing-bgr-frames-from-a-video-file]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file
+[playing-with-any-other-ffmpeg-pixel-formats]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats
 [enumerating-all-camera-devices-with-indexes]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-camera-devices/#enumerating-all-camera-devices-with-indexes
 [capturing-and-previewing-frames-from-a-camera-using-indexes]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-camera-devices/#capturing-and-previewing-frames-from-a-camera-using-indexes
 [capturing-and-previewing-frames-from-a-https-stream]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-network-streams/#capturing-and-previewing-frames-from-a-https-stream
@@ -411,7 +414,8 @@ Advanced Recipes
 [generate-and-decode-frames-from-gradients-with-custom-text-effect]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-gradients-with-custom-text-effect
 [generate-and-decode-frames-from-mandelbrot-test-pattern-with-vectorscope-waveforms]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-mandelbrot-test-pattern-with-vectorscope-waveforms
 [generate-and-decode-frames-from-game-of-life-visualization]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-virtual-sources/#generate-and-decode-frames-from-game-of-life-visualization
-[gpu-accelerated-hardware-based-video-decoding]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-hw-acceleration/#gpu-accelerated-hardware-based-video-decoding
+[cuvid-accelerated-hardware-based-video-decoding-and-previewing]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-hw-acceleration/#cuvid-accelerated-hardware-based-video-decoding-and-previewing
+[cuda-accelerated-hardware-based-video-decoding-and-previewing]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-hw-acceleration/#cuda-accelerated-hardware-based-video-decoding-and-previewing
 [transcoding-video-with-live-custom-watermark-image-overlay]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-live-frames-complexgraphs/#transcoding-video-with-live-custom-watermark-image-overlay
 [transcoding-video-from-sequence-of-images-with-additional-filtering]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-live-frames-complexgraphs/#transcoding-video-from-sequence-of-images-with-additional-filtering
 [transcoding-video-art-with-jetcolor-effect]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-art-filtergraphs/#transcoding-video-art-with-jetcolor-effect
@@ -420,7 +424,9 @@ Advanced Recipes
 [transcoding-video-art-with-pixelation-effect]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-art-filtergraphs/#transcoding-video-art-with-pixelation-effect
 [capturing-and-previewing-frames-from-a-webcam-using-custom-demuxer]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam-using-custom-demuxer
 [capturing-and-previewing-frames-from-your-desktop]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-your-desktop
-[gpu-accelerated-hardware-based-video-transcoding-with-writegear-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#gpu-accelerated-hardware-based-video-transcoding-with-writegear-api
+[cuda-accelerated-video-transcoding-with-opencvs-videowriter-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#cuda-accelerated-video-transcoding-with-opencvs-videowriter-api
+[cuda-nvenc-accelerated-video-transcoding-with-writegear-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#cuda-nvenc-accelerated-video-transcoding-with-writegear-api
+[cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api
 [added-new-attributes-to-metadata-in-ffdecoder-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#added-new-attributes-to-metadata-in-ffdecoder-api
 [overriding-source-video-metadata-in-ffdecoder-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#overriding-source-video-metadata-in-ffdecoder-api
 

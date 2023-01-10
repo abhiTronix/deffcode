@@ -370,9 +370,9 @@ Its valid input can be one of the following:
 
         === ":material-apple: MacOS"
 
-            MacOS users can use the [AVFoundation](https://ffmpeg.org/ffmpeg-devices.html#avfoundation) to list input devices and is the currently recommended framework by Apple for streamgrabbing on Mac OSX-10.7 (Lion) and later as well as on iOS. You can refer following steps to identify and specify your capture video device's name or index on MacOS/OSX machines:
+            MacOS users can use the [AVFoundation](https://ffmpeg.org/ffmpeg-devices.html#avfoundation) to list input devices and is the currently recommended framework by Apple for stream capturing on Mac OSX-10.7 (Lion) and later as well as on iOS. You can refer following steps to identify and specify your capture video device's name or index on MacOS/OSX machines:
 
-            !!! note "QTKit is also available for streamgrabbing on Mac OS X 10.4 (Tiger) and later, but has been marked deprecated since OS X 10.7 (Lion) and may not be available on future releases."
+            !!! note "QTKit is also available for stream capturing on Mac OS X 10.4 (Tiger) and later, but has been marked deprecated since OS X 10.7 (Lion) and may not be available on future releases."
 
 
             - [x] **Identify Video Devices:**  You can enumerate all the available input devices including screens ready to be captured using `avfoundation` as follows:
@@ -494,12 +494,9 @@ This parameter select the pixel format for output video frames _(such as `gray` 
 
     Any improper `frame_format` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-pix_fmt` FFmpeg parameter value in Decoding pipeline uses `output_frames_pixfmt` metadata property extracted from Output Stream. Thereby, in case if no valid `output_frames_resolution`  metadata property is found, then API finally defaults to **Default pixel-format**[^1] _(calculated variably)_.
 
-    !!! alert "The `output_frame_pixfmt` metadata property is only available when FFmpeg filters via. `-vf` or `-filter_complex` are manually defined."
-
-
 ??? info "Use `#!py3 frame_format="null"` to manually discard `-pix_fmt` FFmpeg parameter entirely from Decoding pipeline."
 
-    This feature allows users to manually skip `-pix_fmt` FFmpeg parameter in Decoding pipeline, essentially for using only `format` filter values, or even better, let FFmpeg itself choose the best available output frame pixel-format for the given source.
+    This feature allows users to manually skip `-pix_fmt` FFmpeg parameter in Decoding pipeline, essentially for using only `format` ffmpeg filter values instead, or even better let FFmpeg itself choose the best available output frame pixel-format for the given source.
 
 
 **Data-Type:** String
@@ -716,6 +713,19 @@ These parameters are discussed below:
     # define suitable parameter meant for `probe_stream()` method
     ffparams = {"-default_stream_indexes": (0,1)} # ("0th video stream", "1st audio stream")
     ```
+
+&ensp;
+
+* **`-enforce_cv_patch`** _(bool)_ : This attribute can be enabled(`True`) for patching YUV pixel-formats _(such as `YUV420p`, `yuv444p`, `NV12`, `NV21` etc.)_ frames to be seamless compatibility with OpenCV APIs such as `imshow()`, `write()` etc. It can be used as follows:
+
+    !!! warning "As of now, YUV pixel-formats starting with `YUV` and `NV` are only supported."
+    
+    ```python
+    # define suitable parameter
+    ffparams = {"-enforce_cv_patch": True} # enables OpenCV patch for YUV frames
+    ```
+
+    !!! example "YUV pixel-formats usage recipe :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats)"
 
 &ensp;
 

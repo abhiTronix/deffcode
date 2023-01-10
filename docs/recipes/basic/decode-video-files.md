@@ -30,7 +30,7 @@ We'll discuss its video files support and pixel format capabilities briefly in t
 
     ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../../installation/ffmpeg_install/) for its installation.
 
-???+ info "Additional Python Dependencies for following recipes"
+??? info "Additional Python Dependencies for following recipes"
 
     Following recipes requires additional python dependencies which can be installed easily as below:
 
@@ -44,7 +44,7 @@ We'll discuss its video files support and pixel format capabilities briefly in t
 
         ??? info "Other OpenCV binaries"
 
-            OpenCV mainainers also provide additional binaries via pip that contains both main modules and contrib/extra modules [`opencv-contrib-python`](https://pypi.org/project/opencv-contrib-python/), and for server (headless) environments like [`opencv-python-headless`](https://pypi.org/project/opencv-python-headless/) and [`opencv-contrib-python-headless`](https://pypi.org/project/opencv-contrib-python-headless/). You can also install ==any one of them== in similar manner. More information can be found [here](https://github.com/opencv/opencv-python#installation-and-usage).
+            OpenCV maintainers also provide additional binaries via pip that contains both main modules and contrib/extra modules [`opencv-contrib-python`](https://pypi.org/project/opencv-contrib-python/), and for server (headless) environments like [`opencv-python-headless`](https://pypi.org/project/opencv-python-headless/) and [`opencv-contrib-python-headless`](https://pypi.org/project/opencv-contrib-python-headless/). You can also install ==any one of them== in similar manner. More information can be found [here](https://github.com/opencv/opencv-python#installation-and-usage).
 
 
         ```sh
@@ -273,29 +273,42 @@ In this example we will decode live **Grayscale** and **YUV** video frames from 
     decoder.terminate()
     ```
 
-=== "Decode YUV"
+=== "Decode YUV frames"
 
-    !!! info "You can also use `yuv422p`(4:2:2 subsampling) or `yuv444p`(4:4:4 subsampling) instead for more higher dynamic range."
+    !!! quote "With FFdecoder API, frames extracted with YUV pixel formats _(`yuv420p`, `yuv444p`, `nv12`, `nv21` etc.)_ are generally incompatible with OpenCV APIs. But you can make them easily compatible by using exclusive [`-enforce_cv_patch`](../../reference/ffdecoder/params/#b-exclusive-parameters) boolean attribute of its `ffparam` dictionary parameter."
+
+    Let's try decoding YUV420p pixel-format frames in following python code:
+
+    !!! info "You can also use other YUV pixel formats such `yuv422p`(4:2:2 subsampling) or `yuv444p`(4:4:4 subsampling) etc. instead for more higher dynamic range in the similar manner."
 
     ```python
     # import the necessary packages
     from deffcode import FFdecoder
     import cv2
 
-    # initialize and formulate the decoder for YUV420 output
-    decoder = FFdecoder("input_foo.mp4", frame_format="yuv420p", verbose=True).formulate()
+    # enable OpenCV patch for YUV frames
+    ffparams = {"-enforce_cv_patch": True}
 
-    # grab the YUV420 frames from the decoder
+    # initialize and formulate the decoder for YUV420p output
+    decoder = FFdecoder(
+        "input_foo.mp4", frame_format="yuv420p", verbose=True, **ffparams
+    ).formulate()
+
+    # grab the YUV420p frames from the decoder
     for yuv in decoder.generateFrame():
 
         # check if frame is None
         if yuv is None:
             break
 
-        # {do something with the yuv frame here}
-        
+        # convert it to `BGR` pixel format,
+        # since imshow() method only accepts `BGR` frames
+        bgr = cv2.cvtColor(yuv, cv2.COLOR_YUV2BGR_I420)
+
+        # {do something with the bgr frame here}
+
         # Show output window
-        cv2.imshow("YUV Output", yuv)
+        cv2.imshow("Output", bgr)
 
         # check for 'q' key if pressed
         key = cv2.waitKey(1) & 0xFF
@@ -304,7 +317,7 @@ In this example we will decode live **Grayscale** and **YUV** video frames from 
 
     # close output window
     cv2.destroyAllWindows()
-    
+
     # terminate the decoder
     decoder.terminate()
     ```

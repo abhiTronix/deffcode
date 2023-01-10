@@ -42,7 +42,7 @@ We'll discuss transcoding using both these libraries briefly in the following re
 
     ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../../installation/ffmpeg_install/) for its installation.
 
-???+ info "Additional Python Dependencies for following recipes"
+??? info "Additional Python Dependencies for following recipes"
 
     Following recipes requires additional python dependencies which can be installed easily as below:
 
@@ -56,7 +56,7 @@ We'll discuss transcoding using both these libraries briefly in the following re
 
         ??? info "Other OpenCV binaries"
 
-            OpenCV mainainers also provide additional binaries via pip that contains both main modules and contrib/extra modules [`opencv-contrib-python`](https://pypi.org/project/opencv-contrib-python/), and for server (headless) environments like [`opencv-python-headless`](https://pypi.org/project/opencv-python-headless/) and [`opencv-contrib-python-headless`](https://pypi.org/project/opencv-contrib-python-headless/). You can also install ==any one of them== in similar manner. More information can be found [here](https://github.com/opencv/opencv-python#installation-and-usage).
+            OpenCV maintainers also provide additional binaries via pip that contains both main modules and contrib/extra modules [`opencv-contrib-python`](https://pypi.org/project/opencv-contrib-python/), and for server (headless) environments like [`opencv-python-headless`](https://pypi.org/project/opencv-python-headless/) and [`opencv-contrib-python-headless`](https://pypi.org/project/opencv-contrib-python-headless/). You can also install ==any one of them== in similar manner. More information can be found [here](https://github.com/opencv/opencv-python#installation-and-usage).
 
 
         ```sh
@@ -89,11 +89,9 @@ In this example we will decode different pixel formats video frames from a given
 
 !!! tip "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve output framerate and resolution."
 
-!!! alert "By default, OpenCV expects `BGR` format frames in its `cv2.write()` method."
-
-!!! note "The `YUV` pixel-format frames are NOT yet supported by OpenCV VideoWriter, try using WriteGear API instead."
-
 === "BGR frames"
+
+    By default, OpenCV expects `BGR` format frames in its `cv2.write()` method.
 
     ```python
     # import the necessary packages
@@ -146,7 +144,7 @@ In this example we will decode different pixel formats video frames from a given
 
 === "RGB frames"
 
-    !!! info "Since OpenCV expects `BGR` format frames in its `cv2.write()` method, therefore we need to convert `RGB` frames into `BGR` before encoding."
+    Since OpenCV expects `BGR` format frames in its `cv2.write()` method, therefore we need to convert `RGB` frames into `BGR` before encoding as follows:
 
     ```python
     # import the necessary packages
@@ -191,7 +189,7 @@ In this example we will decode different pixel formats video frames from a given
 
 === "GRAYSCALE frames"
 
-    !!! info "OpenCV directly consumes `GRAYSCALE` format frames in its `cv2.write()` method."
+    OpenCV also directly consumes `GRAYSCALE` frames in its `cv2.write()` method.
 
     ```python
     # import the necessary packages
@@ -231,6 +229,61 @@ In this example we will decode different pixel formats video frames from a given
     writer.release()
     ```
 
+=== "YUV frames"
+
+    !!! abstract "With FFdecoder API, frames extracted with YUV pixel formats _(`yuv420p`, `yuv444p`, `nv12`, `nv21` etc.)_ are generally incompatible with OpenCV APIs. But you can make them easily compatible by using exclusive [`-enforce_cv_patch`](../../reference/ffdecoder/params/#b-exclusive-parameters) boolean attribute of its `ffparam` dictionary parameter."
+
+    Let's try encoding YUV420p pixel-format frames with OpenCV's `write()` method in following python code:
+
+    !!! info "You can also use other YUV pixel-formats such `yuv422p`(4:2:2 subsampling) or `yuv444p`(4:4:4 subsampling) etc. instead for more higher dynamic range in the similar manner."
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import json, cv2
+
+    # enable OpenCV patch for YUV frames
+    ffparams = {"-enforce_cv_patch": True}
+
+    # initialize and formulate the decoder for YUV420p output
+    decoder = FFdecoder(
+        "input_foo.mp4", frame_format="yuv420p", verbose=True, **ffparams
+    ).formulate()
+
+    # retrieve JSON Metadata and convert it to dict
+    metadata_dict = json.loads(decoder.metadata)
+
+    # prepare OpenCV parameters
+    FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+    FRAMERATE = metadata_dict["output_framerate"]
+    FRAMESIZE = tuple(metadata_dict["output_frames_resolution"])
+
+    # Define writer with parameters and suitable output filename for e.g. `output_foo_gray.avi`
+    writer = cv2.VideoWriter("output_foo_gray.avi", FOURCC, FRAMERATE, FRAMESIZE)
+
+    # grab the yuv420p frame from the decoder
+    for frame in decoder.generateFrame():
+
+        # check if frame is None
+        if frame is None:
+            break
+
+        # convert it to `BGR` pixel format,
+        # since imshow() method only accepts `BGR` frames
+        bgr = cv2.cvtColor(yuv, cv2.COLOR_YUV2BGR_I420)
+
+        # {do something with the BGR frame here}
+
+        # writing BGR frame to writer
+        writer.write(frame)
+
+    # terminate the decoder
+    decoder.terminate()
+
+    # safely close writer
+    writer.release()
+    ```
+
 &nbsp;
 
 ## Transcoding lossless video using WriteGear API
@@ -251,9 +304,9 @@ In this example we will decode different pixel formats video frames from a given
 
 !!! tip "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve source framerate."
 
-!!! alert "WriteGear API by default expects `BGR` format frames in its `write()` class method."
-
 === "BGR frames"
+
+    WriteGear API by default expects `BGR` format frames in its `write()` class method.
 
     ```python
     # import the necessary packages
@@ -295,7 +348,7 @@ In this example we will decode different pixel formats video frames from a given
 
 === "RGB frames"
 
-    !!! info "You can use [`rgb_mode`](https://abhitronix.github.io/vidgear/latest/bonus/reference/writegear/#vidgear.gears.writegear.WriteGear.write) parameter in  `write()` class method to write `RGB` format frames instead of default `BGR`."
+    In WriteGear API, you can use [`rgb_mode`](https://abhitronix.github.io/vidgear/latest/bonus/reference/writegear/#vidgear.gears.writegear.WriteGear.write) parameter in  `write()` class method to write `RGB` format frames instead of default `BGR` as follows:
 
     ```python
     # import the necessary packages
@@ -337,7 +390,7 @@ In this example we will decode different pixel formats video frames from a given
 
 === "GRAYSCALE frames"
 
-    !!! info "WriteGear API directly consumes `GRAYSCALE` format frames in its `write()` class method. 
+    WriteGear API also directly consumes `GRAYSCALE` format frames in its `write()` class method. 
 
     ```python
     # import the necessary packages
@@ -379,7 +432,7 @@ In this example we will decode different pixel formats video frames from a given
 
 === "YUV frames"
 
-    !!! info "WriteGear API can easily consumes `YUV` format frames in its `write()` class method only in compression mode."
+    WriteGear API also directly consume `YUV` _(or basically any other supported pixel format)_ frames in its `write()` class method with its `-input_pixfmt` attribute in compression mode. For its  non-compression mode, see [above example](#transcoding-video-using-opencv-videowriter-api).
 
     !!! note "You can also use `yuv422p`(4:2:2 subsampling) or `yuv444p`(4:4:4 subsampling) instead for more higher dynamic ranges."
 
