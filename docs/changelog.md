@@ -20,7 +20,7 @@ limitations under the License.
 
 # Release Notes
 
-## v0.2.5 (2023-01-11)
+## v0.2.5 (2023-01-11) :material-new-box:
 
 ??? new "New Features"
     - [x] **FFdecoder:**
@@ -69,7 +69,8 @@ limitations under the License.
 		* Updated text and admonitions.
 		* Updated recipe assumptions.
 		* Updated `Readme.md` GIF URLs.
-		* Updated abstract text.
+		* Updated abstract text in recipes.
+        * Updated `changelog.md`.
 		* Updated recipe code.
 		* Removed old recipes.
 
@@ -83,6 +84,10 @@ limitations under the License.
         * Fixed https://github.com/badges/shields/issues/8671 badge issue in README.md
 		* Removed depreciated text.
         * Fixed several typos in docs.
+    - [x] CI:
+        * Added fix for codecov upload bug (https://github.com/codecov/codecov-action/issues/598).
+            * Updated `codecov-action` workflow to `v3.
+            * Added new `CODECOV_TOKEN` GitHub secret.
 
 ??? question "Pull Requests"
     * PR #37
@@ -91,7 +96,7 @@ limitations under the License.
 
 &nbsp; 
 
-## v0.2.4 (2022-10-07) :material-new-box:
+## v0.2.4 (2022-10-07)
 
 ??? new "New Features"
     - [x] **FFdecoder API:**
