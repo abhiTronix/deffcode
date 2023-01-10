@@ -42,7 +42,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
         .replace("<ins>", "")
         .replace("</ins>", "")
     )
-    # patch for unicodes
+    # patch for unicodes 
     long_description = long_description.replace("➶", ">>").replace("©", "(c)")
     # patch internal hyperlinks
     long_description = long_description.replace(
