@@ -121,6 +121,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [Accessing RGB frames from a video file][accessing-rgb-frames-from-a-video-file]
 - [Capturing and Previewing BGR frames from a video file][capturing-and-previewing-bgr-frames-from-a-video-file] _(OpenCV Support)_
 - [Playing with any other FFmpeg pixel formats][playing-with-any-other-ffmpeg-pixel-formats]
+- [Capturing and Previewing frames from a Looping Video][capturing-and-previewing-frames-from-a-looping-video]
 - [Enumerating all Camera Devices with Indexes][enumerating-all-camera-devices-with-indexes]
 - [Capturing and Previewing frames from a Camera using Indexes][capturing-and-previewing-frames-from-a-camera-using-indexes]
 - [Capturing and Previewing frames from a HTTPs Stream][capturing-and-previewing-frames-from-a-https-stream]
@@ -379,6 +380,7 @@ Basic Recipes
 [accessing-rgb-frames-from-a-video-file]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#accessing-rgb-frames-from-a-video-file
 [capturing-and-previewing-bgr-frames-from-a-video-file]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file
 [playing-with-any-other-ffmpeg-pixel-formats]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats
+[capturing-and-previewing-frames-from-a-looping-video]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#capturing-and-previewing-frames-from-a-looping-video
 [enumerating-all-camera-devices-with-indexes]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-camera-devices/#enumerating-all-camera-devices-with-indexes
 [capturing-and-previewing-frames-from-a-camera-using-indexes]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-camera-devices/#capturing-and-previewing-frames-from-a-camera-using-indexes
 [capturing-and-previewing-frames-from-a-https-stream]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-network-streams/#capturing-and-previewing-frames-from-a-https-stream

@@ -323,3 +323,110 @@ In this example we will decode live **Grayscale** and **YUV** video frames from 
     ```
 
 &nbsp;
+
+## Capturing and Previewing frames from a Looping Video
+
+In this example we will decode live **BGR24** video frames from looping video using different means in FFdecoder API, and preview them using OpenCV Library's `cv2.imshow()` method.
+
+=== "Using `-stream_loop` option"
+
+    The recommend way to loop video is to use `-stream_loop` option via. `-ffprefixes` list attribute of `ffparam` dictionary parameter in FFdecoder API. Possible values are integer values: `>0` value of loop, `0` means no loop, `-1` means infinite loop.
+
+    !!! note "Using `-stream_loop 3` will loop video `4` times."
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import cv2
+
+    # define `-stream_loop 3` for looping 4 times
+    ffparams = {"-ffprefixes":["-stream_loop", "3"]}
+
+    # initialize and formulate the decoder with suitable source
+    decoder = FFdecoder("input.mp4", frame_format="bgr24", verbose=True, **ffparams).formulate()
+
+    # print metadata as `json.dump`
+    print(decoder.metadata)
+
+    # grab the BGR24 frame from the decoder
+    for frame in decoder.generateFrame():
+
+        # check if frame is None
+        if frame is None:
+            break
+
+        # {do something with the frame here}
+
+        # Show output window
+        cv2.imshow("Output", frame)
+
+        # check for 'q' key if pressed
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord("q"):
+            break
+
+    # close output window
+    cv2.destroyAllWindows()
+
+    # terminate the decoder
+    decoder.terminate()
+    ```
+
+=== "Using `loop` filter"
+
+    Another way to loop video is to use `loop` complex filter via. `-filter_complex` FFmpeg flag as attribute of `ffparam` dictionary parameter in FFdecoder API. 
+
+    !!! warning "This filter places all frames into memory(RAM), so applying [`trim`](https://ffmpeg.org/ffmpeg-filters.html#toc-trim) filter first is strongly recommended. Otherwise you might probably run Out of Memory."
+
+    !!! tip "Using `loop` filter for looping video"
+        The filter accepts the following options:
+        
+        - `loop`: Sets the number of loops for integer values `>0`. Setting this value to `-1` will result in infinite loops. Default is `0`(no loops).
+        - `size`: Sets maximal size in number of frames. Default is `0`.
+        - `start`: Sets first frame of loop. Default is `0`.
+
+    !!! note "Using `loop=3` will loop video `4` times."
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import cv2
+
+    # define loop 4 times, each loop is 15 frames, each loop skips the first 25 frames
+    ffparams = {
+        "-filter_complex": "loop=loop=3:size=15:start=25" # Or use: `loop=3:15:25`
+    }  
+
+    # initialize and formulate the decoder with suitable source
+    decoder = FFdecoder(
+        "input.mp4", frame_format="bgr24", verbose=True, **ffparams
+    ).formulate()
+
+    # print metadata as `json.dump`
+    print(decoder.metadata)
+
+    # grab the BGR24 frame from the decoder
+    for frame in decoder.generateFrame():
+
+        # check if frame is None
+        if frame is None:
+            break
+
+        # {do something with the frame here}
+
+        # Show output window
+        cv2.imshow("Output", frame)
+
+        # check for 'q' key if pressed
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord("q"):
+            break
+
+    # close output window
+    cv2.destroyAllWindows()
+
+    # terminate the decoder
+    decoder.terminate()
+    ```
+
+&nbsp;
