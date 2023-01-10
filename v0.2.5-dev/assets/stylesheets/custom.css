@@ -42,18 +42,18 @@ limitations under the License.
 	border-color: rgb(0, 0, 139);
 }
 
-.md-typeset .advance > .admonition-title,
-.md-typeset .advance > summary,
-.md-typeset .experiment > .admonition-title,
-.md-typeset .experiment > summary {
+.md-typeset .advance>.admonition-title,
+.md-typeset .advance>summary,
+.md-typeset .experiment>.admonition-title,
+.md-typeset .experiment>summary {
 	background-color: rgb(0, 0, 139, 0.1);
 	border-color: rgb(0, 0, 139);
 }
 
-.md-typeset .advance > .admonition-title::before,
-.md-typeset .advance > summary::before,
-.md-typeset .experiment > .admonition-title::before,
-.md-typeset .experiment > summary::before {
+.md-typeset .advance>.admonition-title::before,
+.md-typeset .advance>summary::before,
+.md-typeset .experiment>.admonition-title::before,
+.md-typeset .experiment>summary::before {
 	background-color: rgb(0, 0, 139);
 	-webkit-mask-image: var(--md-admonition-icon--xadvance);
 	mask-image: var(--md-admonition-icon--xadvance);
@@ -65,14 +65,14 @@ limitations under the License.
 	border-color: rgb(255, 195, 0);
 }
 
-.md-typeset .new > .admonition-title,
-.md-typeset .new > summary {
-	background-color: rgb(255, 195, 0,0.1);
+.md-typeset .new>.admonition-title,
+.md-typeset .new>summary {
+	background-color: rgb(255, 195, 0, 0.1);
 	border-color: rgb(255, 195, 0);
 }
 
-.md-typeset .new > .admonition-title::before,
-.md-typeset .new > summary::before {
+.md-typeset .new>.admonition-title::before,
+.md-typeset .new>summary::before {
 	background-color: rgb(255, 195, 0);
 	-webkit-mask-image: var(--md-admonition-icon--new);
 	mask-image: var(--md-admonition-icon--new);
@@ -85,144 +85,146 @@ limitations under the License.
 	border-color: rgb(255, 0, 127);
 }
 
-.md-typeset .alert > .admonition-title,
-.md-typeset .alert > summary {
-	background-color: rgba(255, 0, 127 , 0.1);
+.md-typeset .alert>.admonition-title,
+.md-typeset .alert>summary {
+	background-color: rgba(255, 0, 127, 0.1);
 	border-color: rgb(255, 0, 127);
 }
 
-.md-typeset .alert > .admonition-title::before,
-.md-typeset .alert > summary::before {
+.md-typeset .alert>.admonition-title::before,
+.md-typeset .alert>summary::before {
 	background-color: rgb(255, 0, 127);
 	-webkit-mask-image: var(--md-admonition-icon--alert);
 	mask-image: var(--md-admonition-icon--alert);
 }
 
 /* Custom "Warning" admonition*/
-.md-typeset .attention > .admonition-title::before,
-.md-typeset .attention > summary::before,
-.md-typeset .caution > .admonition-title::before,
-.md-typeset .caution > summary::before,
-.md-typeset .warning > .admonition-title::before,
-.md-typeset .warning > summary::before {
+.md-typeset .attention>.admonition-title::before,
+.md-typeset .attention>summary::before,
+.md-typeset .caution>.admonition-title::before,
+.md-typeset .caution>summary::before,
+.md-typeset .warning>.admonition-title::before,
+.md-typeset .warning>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xwarning);
 	mask-image: var(--md-admonition-icon--xwarning);
 }
 
 /* Custom "Tip" admonition*/
-.md-typeset .hint > .admonition-title::before,
-.md-typeset .hint > summary::before,
-.md-typeset .important > .admonition-title::before,
-.md-typeset .important > summary::before,
-.md-typeset .tip > .admonition-title::before,
-.md-typeset .tip > summary::before {
+.md-typeset .hint>.admonition-title::before,
+.md-typeset .hint>summary::before,
+.md-typeset .important>.admonition-title::before,
+.md-typeset .important>summary::before,
+.md-typeset .tip>.admonition-title::before,
+.md-typeset .tip>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xtip) !important;
 	mask-image: var(--md-admonition-icon--xtip) !important;
 }
 
 /* Custom "Info" admonition*/
-.md-typeset .info > .admonition-title::before,
-.md-typeset .info > summary::before,
-.md-typeset .todo > .admonition-title::before,
-.md-typeset .todo > summary::before {
+.md-typeset .info>.admonition-title::before,
+.md-typeset .info>summary::before,
+.md-typeset .todo>.admonition-title::before,
+.md-typeset .todo>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xinfo) !important;
 	mask-image: var(--md-admonition-icon--xinfo) !important;
 }
 
 /* Custom "Danger" admonition*/
-.md-typeset .danger > .admonition-title::before,
-.md-typeset .danger > summary::before,
-.md-typeset .error > .admonition-title::before,
-.md-typeset .error > summary::before {
+.md-typeset .danger>.admonition-title::before,
+.md-typeset .danger>summary::before,
+.md-typeset .error>.admonition-title::before,
+.md-typeset .error>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xdanger) !important;
 	mask-image: var(--md-admonition-icon--xdanger) !important;
 }
 
 /* Custom "Note" admonition*/
-.md-typeset .note > .admonition-title::before,
-.md-typeset .note > summary::before {
+.md-typeset .note>.admonition-title::before,
+.md-typeset .note>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xnote);
 	mask-image: var(--md-admonition-icon--xnote);
 }
 
 /* Custom "Abstract" admonition*/
-.md-typeset .abstract > .admonition-title::before,
-.md-typeset .abstract > summary::before,
-.md-typeset .summary > .admonition-title::before,
-.md-typeset .summary > summary::before,
-.md-typeset .tldr > .admonition-title::before,
-.md-typeset .tldr > summary::before {
+.md-typeset .abstract>.admonition-title::before,
+.md-typeset .abstract>summary::before,
+.md-typeset .summary>.admonition-title::before,
+.md-typeset .summary>summary::before,
+.md-typeset .tldr>.admonition-title::before,
+.md-typeset .tldr>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xabstract);
 	mask-image: var(--md-admonition-icon--xabstract);
 }
 
 /* Custom "Question" admonition*/
-.md-typeset .faq > .admonition-title::before,
-.md-typeset .faq > summary::before,
-.md-typeset .help > .admonition-title::before,
-.md-typeset .help > summary::before,
-.md-typeset .question > .admonition-title::before,
-.md-typeset .question > summary::before {
+.md-typeset .faq>.admonition-title::before,
+.md-typeset .faq>summary::before,
+.md-typeset .help>.admonition-title::before,
+.md-typeset .help>summary::before,
+.md-typeset .question>.admonition-title::before,
+.md-typeset .question>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xquestion);
 	mask-image: var(--md-admonition-icon--xquestion);
 }
 
 /* Custom "Success" admonition*/
-.md-typeset .check > .admonition-title::before,
-.md-typeset .check > summary::before,
-.md-typeset .done > .admonition-title::before,
-.md-typeset .done > summary::before,
-.md-typeset .success > .admonition-title::before,
-.md-typeset .success > summary::before {
+.md-typeset .check>.admonition-title::before,
+.md-typeset .check>summary::before,
+.md-typeset .done>.admonition-title::before,
+.md-typeset .done>summary::before,
+.md-typeset .success>.admonition-title::before,
+.md-typeset .success>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xsuccess) !important;
 	mask-image: var(--md-admonition-icon--xsuccess) !important;
 }
 
 /* Custom "Fail" admonition*/
-.md-typeset .fail > .admonition-title::before,
-.md-typeset .fail > summary::before,
-.md-typeset .failure > .admonition-title::before,
-.md-typeset .failure > summary::before,
-.md-typeset .missing > .admonition-title::before,
-.md-typeset .missing > summary::before {
+.md-typeset .fail>.admonition-title::before,
+.md-typeset .fail>summary::before,
+.md-typeset .failure>.admonition-title::before,
+.md-typeset .failure>summary::before,
+.md-typeset .missing>.admonition-title::before,
+.md-typeset .missing>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xfail);
 	mask-image: var(--md-admonition-icon--xfail);
 }
 
 /* Custom "bug" admonition*/
-.md-typeset .bug > .admonition-title::before,
-.md-typeset .bug > summary::before {
+.md-typeset .bug>.admonition-title::before,
+.md-typeset .bug>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xbug) !important;
 	mask-image: var(--md-admonition-icon--xbug) !important;
 }
 
 /* Custom "Example" admonition*/
-.md-typeset .example > .admonition-title::before,
-.md-typeset .example > summary::before {
+.md-typeset .example>.admonition-title::before,
+.md-typeset .example>summary::before {
 	-webkit-mask-image: var(--md-admonition-icon--xexample);
 	mask-image: var(--md-admonition-icon--xexample);
 }
 
 /* Handles Gitter Sidecard UI */
 .gitter-open-chat-button {
-    background-color: var(--md-primary-fg-color) !important;
-    font-family: inherit !important;
-    font-size: 12px;
-    -webkit-filter: none !important;
-    filter: none !important;
+	background-color: var(--md-primary-fg-color) !important;
+	font-family: inherit !important;
+	font-size: 12px;
+	-webkit-filter: none !important;
+	filter: none !important;
 }
 
 
 /* Handles DeFFcode UI */
-.md-nav__item--active > .md-nav__link {
+.md-nav__item--active>.md-nav__link {
 	font-weight: bold;
 }
+
 .center {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
 	width: 80%;
 }
+
 .doc-heading {
 	padding-top: 50px;
 }
@@ -261,7 +263,7 @@ limitations under the License.
 /* Custom Blockquotes */
 blockquote {
 	padding: 0.5em 10px;
-	quotes: "\201C""\201D""\2018""\2019";
+	quotes: "\201C" "\201D" "\2018" "\2019";
 }
 
 blockquote:before {
@@ -306,15 +308,22 @@ footer.sponsorship:not(:hover) .twemoji.heart-throb-hover svg {
 
 /* Heart Animation */
 @keyframes heart {
-  0%, 40%, 80%, 100% {
-    transform: scale(1);
-  }
-  20%, 60% {
-    transform: scale(1.15);
-  }
+
+	0%,
+	40%,
+	80%,
+	100% {
+		transform: scale(1);
+	}
+
+	20%,
+	60% {
+		transform: scale(1.15);
+	}
 }
+
 .heart {
-  animation: heart 1000ms infinite;
+	animation: heart 1000ms infinite;
 }
 
 /* Custom Button UI */
@@ -363,36 +372,41 @@ footer.sponsorship:not(:hover) .twemoji.heart-throb-hover svg {
 
 /* Dark Theme Changes */
 
-body[data-md-color-scheme="slate"] img[class="shadow"]{
-   -webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
-  	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+body[data-md-color-scheme="slate"] img[class="shadow"] {
+	-webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
 }
 
-body[data-md-color-scheme="slate"] div[class="btn-container"]{
-   -webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
-  	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+body[data-md-color-scheme="slate"] div[class="btn-container"] {
+	-webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
 }
 
-body[data-md-color-scheme="slate"] div[class="highlight"]{
-   -webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
-  	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+body[data-md-color-scheme="slate"] div[class="highlight"] {
+	-webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
 }
 
-body[data-md-color-scheme="slate"] div[class^="admonition"]{
-   -webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
-  	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+body[data-md-color-scheme="slate"] div[class^="admonition"] {
+	-webkit-filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
+	filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5));
 }
 
-body[data-md-color-scheme="slate"] img[class="shadow2"]{
-   -webkit-filter: drop-shadow(1px 1px 0 black);
-  	filter: drop-shadow(1px 1px 0 black);
+body[data-md-color-scheme="slate"] img[class="shadow2"] {
+	-webkit-filter: drop-shadow(1px 1px 0 black);
+	filter: drop-shadow(1px 1px 0 black);
 }
+
 [data-md-color-scheme="slate"] {
-  --md-hue: 285; 
+	--md-hue: 285;
+}
+
+.md-typeset {
+	font-size: .75rem !important;
 }
 
 
 /* Custom Spacing*/
 .spacer {
-  height: 1px;
+	height: 1px;
 }
