@@ -362,6 +362,12 @@ class Sourcer:
                 "approx_video_nframes": (
                     int(self.__approx_video_nframes)
                     if self.__approx_video_nframes
+                    and not any(
+                        "loop" in x for x in self.__ffmpeg_prefixes
+                    )  # check if any loops in prefix
+                    and not any(
+                        "loop" in x for x in dict2Args(self.__sourcer_params)
+                    )  # check if any loops in filters
                     else None
                 ),
                 "source_video_bitrate": self.__default_video_bitrate,

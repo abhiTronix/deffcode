@@ -609,7 +609,7 @@ class FFdecoder:
                 self.__raw_frame_num = None
                 # log that number of frames are unknown
                 self.__verbose_logs and logger.info(
-                    "Live/Network Stream detected! Number of frames in given source are not known."
+                    "Number of frames in given source are unknown. Live/Network/Looping stream detected!"
                 )
 
             # log Mode of Operation
