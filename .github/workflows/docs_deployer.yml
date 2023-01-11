@@ -49,6 +49,7 @@ jobs:
         run: |
           pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
           pip install jinja2==3.0.*
+          pip install git+https://github.com/facelessuser/pymdown-extensions@main#egg=pymdown-extensions
         if: success()
       - name: git configure
         run: |
