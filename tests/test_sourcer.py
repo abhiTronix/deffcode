@@ -42,12 +42,18 @@ logger.setLevel(logging.DEBUG)
     [
         (
             return_generated_frames_path(return_static_ffmpeg()),
-            {"-ffprefixes": "invalid"},  # invalid ffprefixes
+            {
+                "-ffprefixes": "invalid",  # invalid ffprefixes
+                "-filter_complex": "loop=loop=3:size=15:start=25",
+            },
             return_static_ffmpeg(),
         ),
         (
             "rtmp://live.twitch.tv/",
-            {"-ffmpeg_download_path": ["invalid"]},  # invalid FFmpeg download path
+            {
+                "-ffmpeg_download_path": ["invalid"],  # invalid FFmpeg download path
+                "-ffprefixes": ["-stream_loop", "3"],
+            },
             return_static_ffmpeg(),
         ),
         (

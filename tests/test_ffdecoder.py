@@ -50,7 +50,7 @@ logger.setLevel(logging.DEBUG)
     [
         (return_testvideo_path(fmt="av"), return_static_ffmpeg(), True),
         (
-            "https://raw.githubusercontent.com/abhiTronix/Imbakup/master/Images/starship.mkv",
+            "https://gitlab.com/abhiTronix/Imbakup/-/raw/master/Images/starship.mkv",
             "",
             True,
         ),
@@ -116,7 +116,7 @@ def test_source_playback(source, custom_ffmpeg, output):
 
 
 @pytest.mark.parametrize(
-    "pixfmts", ["bgr24", "gray", "rgba", "invalid", "invalid2", "yuv444p", "bgr48be"]
+    "pixfmts", ["bgr24", "gray", "rgba", "invalid", "invalid2", "yuv420p", "bgr48be"]
 )
 def test_frame_format(pixfmts):
     """
@@ -129,7 +129,16 @@ def test_frame_format(pixfmts):
     ffparams = {"-pix_fmt": "bgr24"}
     try:
         # formulate the decoder with suitable source(for e.g. foo.mp4)
-        if pixfmts != "invalid2":
+        if pixfmts == "yuv420p":
+            ffparams = {"-enforce_cv_patch": True}
+            decoder = FFdecoder(
+                source,
+                frame_format=pixfmts,
+                custom_ffmpeg=return_static_ffmpeg(),
+                verbose=True,
+                **ffparams,
+            ).formulate()
+        elif pixfmts != "invalid2":
             decoder = FFdecoder(
                 source,
                 frame_format=pixfmts,
@@ -149,10 +158,12 @@ def test_frame_format(pixfmts):
 
         # grab RGB24(default) 3D frames from decoder
         for frame in decoder.generateFrame():
+            if pixfmts == "yuv420p":
+                # try converting to BGR frame
+                frame = cv2.cvtColor(frame, cv2.COLOR_YUV2BGR_I420)
             # lets print its shape
-            print(frame.shape)
+            logger.debug(frame.shape)
             break
-
     except Exception as e:
         pytest.fail(str(e))
     finally:
@@ -454,6 +465,7 @@ test_data = [
         {
             "-custom_resolution": "null",  # discard `-custom_resolution`
             "-framerate": "null",  # discard `-framerate`
+            "-enforce_cv_patch": "invalid",  # invalid value for testing
             "-vf": "format=bgr24,scale=320:240,fps=60",  # format=bgr24, scale=320x240, framerate=60fps
         },
         True,

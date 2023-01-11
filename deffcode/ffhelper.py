@@ -27,8 +27,7 @@ import subprocess as sp
 
 from tqdm import tqdm
 from pathlib import Path
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter, Retry
 
 # import utils packages
 from .utils import logger_handler, delete_file_safe
@@ -48,7 +47,7 @@ class TimeoutHTTPAdapter(HTTPAdapter):
     A custom Transport Adapter with default timeouts
     """
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         self.timeout = DEFAULT_TIMEOUT
         if "timeout" in kwargs:
             self.timeout = kwargs["timeout"]
@@ -215,7 +214,11 @@ def download_ffmpeg_binaries(path, os_windows=False, os_bit=""):
                     http.mount("https://", adapter)
                     response = http.get(file_url, stream=True)
                     response.raise_for_status()
-                    total_length = response.headers.get("content-length")
+                    total_length = (
+                        response.headers.get("content-length")
+                        if "content-length" in response.headers
+                        else len(response.content)
+                    )
                     assert not (
                         total_length is None
                     ), "[Helper:ERROR] :: Failed to retrieve files, check your Internet connectivity!"

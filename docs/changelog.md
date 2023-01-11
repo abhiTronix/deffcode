@@ -20,7 +20,83 @@ limitations under the License.
 
 # Release Notes
 
-## v0.2.4 (2022-10-07) :material-new-box:
+## v0.2.5 (2023-01-11) :material-new-box:
+
+??? new "New Features"
+    - [x] **FFdecoder:**
+        * Added OpenCV compatibility patch for YUV pixel-formats.
+            * Implemented new patch for handling YUV pixel-formats(such as `YUV420p`, `yuv444p`, `NV12`, `NV21` etc.) for exclusive compatibility with OpenCV APIs.
+                * **Note:** Only YUV pixel-formats starting with `YUV` and `NV` are currently supported.
+            * Added new `-enforce_cv_patch` boolean attribute for enabling OpenCV compatibility patch.
+	- [x] **Sourcer:**
+		* Added Looping Video support.
+			* Now raw-frame numbers revert to null(`None`) whenever any looping is defined through filter(such as `-filter_complex "loop=loop=3:size=75:start=25"`) or prefix(`"-ffprefixes":["-stream_loop", "3"]`).
+    - [x] **Docs:** 
+        * Added YUV frames example code for `Capturing and Previewing BGR frames from a video file` recipe.
+		* Added YUV frames example code for `Transcoding video using OpenCV VideoWriter API recipe.
+		* Added YUV frames example code for `Transcoding lossless video using WriteGear API recipe.
+		* Added new CUVID-accelerated Hardware-based Video Decoding and Previewing recipe.
+		* Added new CUDA-accelerated Hardware-based Video Decoding and Previewing recipe.
+		* Added new CUDA-accelerated Video Transcoding with OpenCV`s VideoWriter API recipe.
+		* Added new CUDA-NVENC-accelerated Video Transcoding with WriteGear API recipe both for consuming BGR and NV12 frames.
+		* Added new CUDA-NVENC-accelerated End-to-end Lossless Video Transcoding with WriteGear API recipe which is still WIP(💬confirmed with a GIF from tenor).
+		* Added new Capturing and Previewing frames from a Looping Video recipe using `-stream_loop` option and `loop` filter.
+		* Added docs for `-enforce_cv_patch` boolean attribute in `ffparam` dictionary parameter.
+		* Added new python dependency block for recipes.
+		* Reflected new OpenCV compatibility patch for YUV pixel-formats in code.
+		* Added new `content.code.copy` and `content.code.link` features.
+
+??? success "Updates/Improvements"  
+    - [x] FFhelper:
+		* Replaced depreciating `Retry` API from `requests.packages` with `requests.adapters`.
+	- [x] Maintenance: 
+		* Replaced `raw.github.com` links with GitLab and GH links.
+		* Removed unused code.
+        * Updated log message.
+    - [x] CI:
+        * Updated `test_FFdecoder_params` unittest to include `with` statement access method.
+		* Updated `test_frame_format` test to include `-enforce_cv_patch` boolean attribute.
+		* Updated `test_source` to test looping video support.
+    - [x] Setup:
+        * Removed unused imports and patches.
+        * Bumped version to `0.2.5`.
+    - [x] Docs:
+		* Updated Limitation: Bottleneck in Hardware-Accelerated Video Transcoding performance with Real-time Frame processing passage.
+		* Updated and corrected docs hyperlinks in index.md and ReadMe.md
+		* Update Zenodo Badge and BibTex entry.
+		* Updated `Readme.md` banner image URLs.
+		* Updated md-typeset text font size to `.75rem`.
+		* Updated text and admonitions.
+		* Updated recipe assumptions.
+		* Updated `Readme.md` GIF URLs.
+		* Updated abstract text in recipes.
+        * Updated `changelog.md`.
+		* Updated recipe code.
+		* Removed old recipes.
+
+??? bug "Bug-fixes"
+    - [x] FFdecoder API:
+        * Fixed Zero division bug while calculating `raw_bit_per_component`.
+	- [x] FFhelper:
+		* Fixed response.headers returning `content-length` as Nonetype since it may not necessarily have the Content-Length header set.
+  			* **Reason:** The response from gitlab.com  contains a Transfer-Encoding field as `'Transfer-Encoding': 'chunked'`, which means data is sent in a series of chunks, so the Content-Length header is emitted. More info: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding#Directives
+    - [x] Docs:
+        * Fixed https://github.com/badges/shields/issues/8671 badge issue in README.md
+		* Removed depreciated text.
+        * Fixed several typos in docs.
+    - [x] CI:
+        * Added fix for codecov upload bug (https://github.com/codecov/codecov-action/issues/598).
+            * Updated `codecov-action` workflow to `v3.
+            * Added new `CODECOV_TOKEN` GitHub secret.
+
+??? question "Pull Requests"
+    * PR #37
+
+&nbsp; 
+
+&nbsp; 
+
+## v0.2.4 (2022-10-07)
 
 ??? new "New Features"
     - [x] **FFdecoder API:**

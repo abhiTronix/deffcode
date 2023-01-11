@@ -69,9 +69,10 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         if: success()
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           name: ${{ matrix.python-version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           verbose: true
         if: ${{ env.EXIT_CODE != '124' }}

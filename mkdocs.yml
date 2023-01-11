@@ -43,6 +43,8 @@ theme:
     - search.highlight
     - search.share
     - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
   palette:
     # Light mode
     - media: "(prefers-color-scheme: light)"
@@ -106,9 +108,9 @@ extra:
     provider: google
     property: UA-131929464-1
 extra_css:
-    - assets/stylesheets/custom.css
+  - assets/stylesheets/custom.css
 extra_javascript:
-    - assets/javascripts/extra.js
+  - assets/javascripts/extra.js
 
 # Extensions
 markdown_extensions:
@@ -157,49 +159,47 @@ markdown_extensions:
 
 # Page tree
 nav:
-  - Home: 
-    - Introduction: 
-      - Introduction: index.md
-    - Installation Notes: 
-      - Overview: installation/index.md
-      - FFmpeg Installation: installation/ffmpeg_install.md
-    - Contribution Guidelines:
-      - Overview: contribution/index.md
-      - Issue Guidelines: contribution/issue.md
-      - Pull Request(PR) Guidelines: contribution/PR.md 
-    - Changelog: changelog.md
-    - License: license.md
+  - Home:
+      - Introduction:
+          - Introduction: index.md
+      - Installation Notes:
+          - Overview: installation/index.md
+          - FFmpeg Installation: installation/ffmpeg_install.md
+      - Contribution Guidelines:
+          - Overview: contribution/index.md
+          - Issue Guidelines: contribution/issue.md
+          - Pull Request(PR) Guidelines: contribution/PR.md
+      - Changelog: changelog.md
+      - License: license.md
   - Recipies:
-    - Basic Recipes: 
-      - Overview: recipes/basic/index.md
-      - Decoding Video Files: recipes/basic/decode-video-files.md
-      - Decoding Camera Devices: recipes/basic/decode-camera-devices.md
-      - Decoding Network Streams: recipes/basic/decode-network-streams.md
-      - Decoding Image sequences: recipes/basic/decode-image-sequences.md
-      - Transcoding Live frames: recipes/basic/transcode-live-frames.md 
-      - Transcoding Live Simple Filtergraphs: recipes/basic/transcode-live-frames-simplegraphs.md
-      - Saving Key-frames as Image: recipes/basic/save-keyframe-image.md
-      - Extracting video metadata: recipes/basic/extract-video-metadata.md
-    - Advanced Recipies: 
-      - Overview: recipes/advanced/index.md
-      - Decoding Live Virtual Sources: recipes/advanced/decode-live-virtual-sources.md
-      - Decoding Live Feed Devices: recipes/advanced/decode-live-feed-devices.md
-      - Hardware-Accelerated Video Decoding: recipes/advanced/decode-hw-acceleration.md
-      - Transcoding Live Complex Filtergraphs: recipes/advanced/transcode-live-frames-complexgraphs.md
-      - Transcoding Video Art with Filtergraphs: recipes/advanced/transcode-art-filtergraphs.md
-      - Hardware-Accelerated Video Transcoding: recipes/advanced/transcode-hw-acceleration.md 
-      - Updating Video Metadata: recipes/advanced/update-metadata.md 
+      - Basic Recipes:
+          - Overview: recipes/basic/index.md
+          - Decoding Video Files: recipes/basic/decode-video-files.md
+          - Decoding Camera Devices: recipes/basic/decode-camera-devices.md
+          - Decoding Network Streams: recipes/basic/decode-network-streams.md
+          - Decoding Image sequences: recipes/basic/decode-image-sequences.md
+          - Transcoding Live frames: recipes/basic/transcode-live-frames.md
+          - Transcoding Live Simple Filtergraphs: recipes/basic/transcode-live-frames-simplegraphs.md
+          - Saving Key-frames as Image: recipes/basic/save-keyframe-image.md
+          - Extracting video metadata: recipes/basic/extract-video-metadata.md
+      - Advanced Recipies:
+          - Overview: recipes/advanced/index.md
+          - Decoding Live Virtual Sources: recipes/advanced/decode-live-virtual-sources.md
+          - Decoding Live Feed Devices: recipes/advanced/decode-live-feed-devices.md
+          - Hardware-Accelerated Video Decoding: recipes/advanced/decode-hw-acceleration.md
+          - Transcoding Live Complex Filtergraphs: recipes/advanced/transcode-live-frames-complexgraphs.md
+          - Transcoding Video Art with Filtergraphs: recipes/advanced/transcode-art-filtergraphs.md
+          - Hardware-Accelerated Video Transcoding: recipes/advanced/transcode-hw-acceleration.md
+          - Updating Video Metadata: recipes/advanced/update-metadata.md
   - API References:
-    - deffcode.FFdecoder: 
-      - API: reference/ffdecoder/index.md
-      - API Parameters: reference/ffdecoder/params.md
-    - deffcode.Sourcer: 
-      - API: reference/sourcer/index.md
-      - API Parameters: reference/sourcer/params.md
-    - deffcode.ffhelper: reference/ffhelper.md
-    - deffcode.utils: reference/utils.md
+      - deffcode.FFdecoder:
+          - API: reference/ffdecoder/index.md
+          - API Parameters: reference/ffdecoder/params.md
+      - deffcode.Sourcer:
+          - API: reference/sourcer/index.md
+          - API Parameters: reference/sourcer/params.md
+      - deffcode.ffhelper: reference/ffhelper.md
+      - deffcode.utils: reference/utils.md
   - Help Section:
-    - Help Us: help.md
-    - Get Help: help/get_help.md
-    
-
+      - Help Us: help.md
+      - Get Help: help/get_help.md

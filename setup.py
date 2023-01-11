@@ -19,7 +19,6 @@ limitations under the License.
 """
 
 # import the necessary packages
-import setuptools
 from setuptools import setup
 from distutils.util import convert_path
 
@@ -43,14 +42,11 @@ with open("README.md", "r", encoding="utf-8") as fh:
         .replace("<ins>", "")
         .replace("</ins>", "")
     )
-    # patch for unicodes
+    # patch for unicodes 
     long_description = long_description.replace("➶", ">>").replace("©", "(c)")
     # patch internal hyperlinks
     long_description = long_description.replace(
         "(#", "(https://github.com/abhiTronix/deffcode#"
-    )
-    long_description = long_description.replace(
-        "docs/overrides/", "https://abhitronix.github.io/deffcode/latest/"
     )
 
 

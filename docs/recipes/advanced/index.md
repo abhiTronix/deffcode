@@ -55,7 +55,8 @@ The following challenging recipes will take your skills to the next level and wi
     - [Capturing and Previewing frames from a Webcam using Custom Demuxer](../advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam-using-custom-demuxer)
     - [Capturing and Previewing frames from your Desktop](../advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-your-desktop) _(Screen Recording)_
 - [x] **[:octicons-cpu-16: Hardware-Accelerated Video Decoding](../advanced/decode-hw-acceleration/#hardware-accelerated-video-decoding)**
-    - [GPU-accelerated Hardware-based Video Decoding](../advanced/decode-hw-acceleration/#gpu-accelerated-hardware-based-video-decoding)
+    - [CUVID-accelerated Hardware-based Video Decoding and Previewing](../advanced/decode-hw-acceleration/#cuvid-accelerated-hardware-based-video-decoding-and-previewing)
+    - [CUDA-accelerated Hardware-based Video Decoding and Previewing](../advanced/decode-hw-acceleration/#cuda-accelerated-hardware-based-video-decoding-and-previewing)
 
 <div class="spacer"></div>
 
@@ -70,7 +71,9 @@ The following challenging recipes will take your skills to the next level and wi
     - [Transcoding video art with Ghosting effect](../advanced/transcode-art-filtergraphs/#transcoding-video-art-with-ghosting-effect)
     - [Transcoding video art with Pixelation effect](../advanced/transcode-art-filtergraphs/#transcoding-video-art-with-pixelation-effect)
 - [x] **[:fontawesome-solid-microchip: Hardware-Accelerated Video Transcoding](../advanced/transcode-hw-acceleration/#hardware-accelerated-video-transcoding)**
-    - [GPU-accelerated Hardware-based Video Transcoding with WriteGear API](../advanced/transcode-hw-acceleration/#gpu-accelerated-hardware-based-video-transcoding-with-writegear-api)
+    - [CUDA-accelerated Video Transcoding with OpenCV's VideoWriter API](../advanced/transcode-hw-acceleration/#cuda-accelerated-video-transcoding-with-opencvs-videowriter-api)
+    - [CUDA-NVENC-accelerated Video Transcoding with WriteGear API](../advanced/transcode-hw-acceleration/#cuda-nvenc-accelerated-video-transcoding-with-writegear-api)
+    - [CUDA-NVENC-accelerated End-to-end Lossless Video Transcoding with WriteGear API](../advanced/transcode-hw-acceleration/#cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api)
 
 <div class="spacer"></div>
 
