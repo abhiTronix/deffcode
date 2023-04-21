@@ -34,10 +34,10 @@ jobs:
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: install_deffcode
@@ -47,9 +47,8 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
+          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy pymdown-extensions
           pip install jinja2==3.0.*
-          pip install git+https://github.com/facelessuser/pymdown-extensions@main#egg=pymdown-extensions
         if: success()
       - name: git configure
         run: |
@@ -82,10 +81,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: install_deffcode
@@ -95,9 +94,8 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
+          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy pymdown-extensions
           pip install jinja2==3.0.*
-          pip install git+https://github.com/facelessuser/pymdown-extensions@main#egg=pymdown-extensions
         if: success()
       - name: git configure
         run: |
@@ -131,11 +129,11 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - run: git checkout dev
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: install_deffcode
@@ -145,9 +143,8 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
+          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy pymdown-extensions
           pip install jinja2==3.0.*
-          pip install git+https://github.com/facelessuser/pymdown-extensions@main#egg=pymdown-extensions
         if: success()
       - name: git configure
         run: |

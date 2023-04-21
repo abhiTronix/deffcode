@@ -38,8 +38,8 @@ jobs:
       matrix:
         python-version: ['3.7', '3.8', '3.9', '3.10']
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install APT Dependencies
@@ -56,8 +56,8 @@ jobs:
         run: |
           sudo pip install -U pip wheel numpy 
           sudo pip install -U .
-          sudo pip install git+https://github.com/abhiTronix/vidgear@testing#egg=vidgear[core]
-          sudo pip install -U opencv-python-headless
+          sudo pip install -U opencv-python-headless 
+          sudo pip install -U vidgear[core]
           sudo pip install -U flake8 six codecov pytest pytest-cov
         if: success()
       - name: Run prepare_dataset Bash script
