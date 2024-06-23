@@ -17,6 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ===============================================
 """
+
 # import the necessary packages
 
 import os, cv2
@@ -95,9 +96,7 @@ def return_generated_frames_path(path):
         video_path = return_testvideo_path(fmt="vo")
         # Define writer with default parameters
         writer = WriteGear(
-            output_filename=os.path.join(
-                *[tempfile.gettempdir(), "temp_write", "Output.mp4"]
-            ),
+            output=os.path.join(*[tempfile.gettempdir(), "temp_write", "Output.mp4"]),
             custom_ffmpeg=path,
         )
         # execute FFmpeg command
