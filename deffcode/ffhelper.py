@@ -344,15 +344,14 @@ def get_supported_demuxers(path):
     """
     demuxers = check_sp_output([path, "-hide_banner", "-demuxers"])
     splitted = [x.decode("utf-8").strip() for x in demuxers.split(b"\n")]
-    logger.critical(splitted)
     split_index = [idx for idx, s in enumerate(splitted) if "--" in s][0]
     supported_demuxers = splitted[split_index + 1 : len(splitted) - 1]
     # compile regex
-    finder = re.compile(r"\s\s[a-z0-9_,-]+\s+")
+    finder = re.compile(r"[a-z0-9_,-]{2,}\s\s")
     # find all outputs
     outputs = finder.findall("\n".join(supported_demuxers))
     # return output findings
-    return [o.strip() if not ("," in o) else o.split(",")[-1].strip() for o in outputs]
+    return [o.strip() for o in outputs]
 
 
 def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
@@ -394,14 +393,6 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
 
     # log if specified
     verbose and logger.debug("Auto-Searching for valid devices...")
-
-    logger.critical(
-        "{} :: {} :: {}".format(
-            req_demuxer,
-            req_demuxer in get_supported_demuxers(path),
-            get_supported_demuxers(path),
-        )
-    )
 
     # assert if demuxer is supported by provided ffmpeg.
     assert req_demuxer in get_supported_demuxers(

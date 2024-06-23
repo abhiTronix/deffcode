@@ -451,13 +451,6 @@ class Sourcer:
 
         **Returns:** `True` if passed tests else `False`.
         """
-        logger.critical(
-            "{} :: {} :: {}".format(
-                source_demuxer,
-                source_demuxer in get_supported_demuxers(self.__ffmpeg),
-                get_supported_demuxers(self.__ffmpeg),
-            )
-        )
         # validate source demuxer(if defined)
         if not (source_demuxer is None):
             # check if "auto" demuxer is specified
