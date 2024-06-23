@@ -637,6 +637,7 @@ def is_valid_url(path, url=None, verbose=False):
     supported_protocols = splitted[splitted.index("Output:") + 1 : len(splitted) - 1]
     # RTSP is a demuxer somehow
     # support both RTSP and RTSPS(over SSL)
+    logger.critical(get_supported_demuxers(path))
     supported_protocols += (
         ["rtsp", "rtsps"] if "rtsp" in get_supported_demuxers(path) else []
     )
