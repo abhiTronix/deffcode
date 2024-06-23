@@ -394,6 +394,14 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
     # log if specified
     verbose and logger.debug("Auto-Searching for valid devices...")
 
+    logger.critical(
+        "{} :: {} :: {}".format(
+            req_demuxer,
+            req_demuxer in get_supported_demuxers(path),
+            get_supported_demuxers(path),
+        )
+    )
+
     # assert if demuxer is supported by provided ffmpeg.
     assert req_demuxer in get_supported_demuxers(
         path
@@ -637,7 +645,6 @@ def is_valid_url(path, url=None, verbose=False):
     supported_protocols = splitted[splitted.index("Output:") + 1 : len(splitted) - 1]
     # RTSP is a demuxer somehow
     # support both RTSP and RTSPS(over SSL)
-    logger.critical(get_supported_demuxers(path))
     supported_protocols += (
         ["rtsp", "rtsps"] if "rtsp" in get_supported_demuxers(path) else []
     )

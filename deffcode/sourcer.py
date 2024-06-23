@@ -100,9 +100,11 @@ class Sourcer:
 
         # sanitize sourcer_params
         self.__sourcer_params = {
-            str(k).strip(): str(v).strip()
-            if not isinstance(v, (dict, list, int, float, tuple))
-            else v
+            str(k).strip(): (
+                str(v).strip()
+                if not isinstance(v, (dict, list, int, float, tuple))
+                else v
+            )
             for k, v in sourcer_params.items()
         }
 
@@ -449,6 +451,13 @@ class Sourcer:
 
         **Returns:** `True` if passed tests else `False`.
         """
+        logger.critical(
+            "{} :: {} :: {}".format(
+                source_demuxer,
+                source_demuxer in get_supported_demuxers(self.__ffmpeg),
+                get_supported_demuxers(self.__ffmpeg),
+            )
+        )
         # validate source demuxer(if defined)
         if not (source_demuxer is None):
             # check if "auto" demuxer is specified
@@ -496,14 +505,18 @@ class Sourcer:
                     self.__source_demuxer = source_demuxer
                     self.__verbose_logs and logger.debug(
                         "Successfully configured device `{}` at index `{}` with demuxer `{}`.".format(
-                            self.__extracted_devices_list[index]
-                            if self.__machine_OS != "Linux"
-                            else next(
-                                iter(self.__extracted_devices_list[index].values())
-                            )[0],
-                            index
-                            if index >= 0
-                            else len(self.__extracted_devices_list) + index,
+                            (
+                                self.__extracted_devices_list[index]
+                                if self.__machine_OS != "Linux"
+                                else next(
+                                    iter(self.__extracted_devices_list[index].values())
+                                )[0]
+                            ),
+                            (
+                                index
+                                if index >= 0
+                                else len(self.__extracted_devices_list) + index
+                            ),
                             self.__source_demuxer,
                         )
                     )
@@ -603,9 +616,11 @@ class Sourcer:
         ]
         if video_bitrate_text:
             selected_stream = video_bitrate_text[
-                default_stream
-                if default_stream > 0 and default_stream < len(video_bitrate_text)
-                else 0
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(video_bitrate_text)
+                    else 0
+                )
             ]
             filtered_bitrate = re.findall(
                 r",\s[0-9]+\s\w\w[\/]s", selected_stream.strip()
@@ -637,9 +652,11 @@ class Sourcer:
         ]
         if meta_text:
             selected_stream = meta_text[
-                default_stream
-                if default_stream > 0 and default_stream < len(meta_text)
-                else 0
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
             filtered_pixfmt = re.findall(
                 r"Video:\s[a-z0-9_-]*", selected_stream.strip()
@@ -673,9 +690,11 @@ class Sourcer:
         )
         if meta_text:
             selected_stream = meta_text[
-                default_stream
-                if default_stream > 0 and default_stream < len(meta_text)
-                else 0
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
             filtered_pixfmt = re.findall(
                 r",\s[a-z][a-z0-9_-]*", selected_stream.strip()
@@ -702,9 +721,11 @@ class Sourcer:
         result = {}
         if meta_text:
             selected_stream = meta_text[
-                default_stream
-                if default_stream > 0 and default_stream < len(meta_text)
-                else 0
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
             # filter data
             filtered_audio_bitrate = re.findall(
@@ -774,9 +795,11 @@ class Sourcer:
         result = {}
         if meta_text:
             selected_stream = meta_text[
-                default_stream
-                if default_stream > 0 and default_stream < len(meta_text)
-                else 0
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
 
             # filter data
@@ -807,9 +830,11 @@ class Sourcer:
             # extract video orientation metadata
             if meta_text_orientation:
                 selected_stream = meta_text_orientation[
-                    default_stream
-                    if default_stream > 0 and default_stream < len(meta_text)
-                    else 0
+                    (
+                        default_stream
+                        if default_stream > 0 and default_stream < len(meta_text)
+                        else 0
+                    )
                 ]
                 filtered_orientation = re.findall(
                     r"[-]?\d+\.\d+", selected_stream.strip()
