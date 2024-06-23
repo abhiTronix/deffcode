@@ -344,7 +344,8 @@ def get_supported_demuxers(path):
     """
     demuxers = check_sp_output([path, "-hide_banner", "-demuxers"])
     splitted = [x.decode("utf-8").strip() for x in demuxers.split(b"\n")]
-    supported_demuxers = splitted[splitted.index("--") + 1 : len(splitted) - 1]
+    split_index = [idx for idx, s in enumerate(splitted) if "--" in s][0]
+    supported_demuxers = splitted[split_index + 1 : len(splitted) - 1]
     # compile regex
     finder = re.compile(r"\s\s[a-z0-9_,-]+\s+")
     # find all outputs
@@ -518,10 +519,12 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
                 logger.info(
                     "[{}]: {}".format(
                         idx,
-                        dev
-                        if machine_OS != "Linux"
-                        else "{} at path `{}`".format(
-                            next(iter(dev.values()))[0], next(iter(dev.keys()))
+                        (
+                            dev
+                            if machine_OS != "Linux"
+                            else "{} at path `{}`".format(
+                                next(iter(dev.values()))[0], next(iter(dev.keys()))
+                            )
                         ),
                     )
                 )
