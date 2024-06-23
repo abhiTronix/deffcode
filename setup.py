@@ -35,14 +35,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     # patch to remove github README specific text
     long_description = (
         long_description.replace(
-            "![DeFFcode](docs/overrides/assets/images/deffcode-dark.png#gh-dark-mode-only)",
+            "![DeFFcode](https://user-images.githubusercontent.com/34266896/211494463-a63a03d2-72a6-46bb-b40a-ab485a63674b.png#gh-dark-mode-only)",
             "",
         )
         .replace("#gh-light-mode-only", "")
         .replace("<ins>", "")
         .replace("</ins>", "")
     )
-    # patch for unicodes 
+    # patch for unicodes
     long_description = long_description.replace("➶", ">>").replace("©", "(c)")
     # patch internal hyperlinks
     long_description = long_description.replace(

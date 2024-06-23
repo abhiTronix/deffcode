@@ -23,7 +23,7 @@ on:
     types: [published]
 
 env:
-  PYTHON_VERSION: 3.8
+  PYTHON_VERSION: 3.9
   GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
   GIT_NAME: ${{ secrets.GIT_NAME }}
   GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
@@ -34,10 +34,10 @@ jobs:
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: install_deffcode
@@ -47,9 +47,9 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
+          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin          
+          pip install -U mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
           pip install jinja2==3.0.*
-          pip install git+https://github.com/facelessuser/pymdown-extensions@main#egg=pymdown-extensions
         if: success()
       - name: git configure
         run: |
@@ -72,7 +72,7 @@ jobs:
       - name: mike deploy docs release
         run: |
           echo "${{ env.NAME_RELEASE }}"
-          mike deploy --push --update-aliases --no-redirect ${{ env.NAME_RELEASE }} ${{ env.RELEASE_NAME }} --title=${{ env.RELEASE_NAME }} 
+          mike deploy --push --update-aliases --alias-type=copy ${{ env.NAME_RELEASE }} ${{ env.RELEASE_NAME }} --title=${{ env.RELEASE_NAME }} 
         env:
           NAME_RELEASE: "v${{ env.RELEASE_NAME }}-release"
         if: success() && ${{ steps.skip_check.outputs.should_skip != 'true' }}
@@ -82,10 +82,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: install_deffcode
@@ -95,9 +95,9 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
+          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin          
+          pip install -U mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
           pip install jinja2==3.0.*
-          pip install git+https://github.com/facelessuser/pymdown-extensions@main#egg=pymdown-extensions
         if: success()
       - name: git configure
         run: |
@@ -120,7 +120,7 @@ jobs:
       - name: mike deploy docs stable
         run: |
           echo "${{ env.NAME_STABLE }}"
-          mike deploy --push --update-aliases --no-redirect ${{ env.NAME_STABLE }} latest --title=latest
+          mike deploy --push --update-aliases --alias-type=copy ${{ env.NAME_STABLE }} latest --title=latest
           mike set-default --push latest
         env:
           NAME_STABLE: "v${{ env.RELEASE_NAME }}-stable"
@@ -131,11 +131,11 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - run: git checkout dev
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: install_deffcode
@@ -145,9 +145,9 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
+          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin          
+          pip install -U mkdocs-exclude mike mkdocstrings mkdocstrings-python-legacy
           pip install jinja2==3.0.*
-          pip install git+https://github.com/facelessuser/pymdown-extensions@main#egg=pymdown-extensions
         if: success()
       - name: git configure
         run: |
@@ -170,7 +170,7 @@ jobs:
       - name: mike deploy docs dev
         run: |
           echo "Releasing ${{ env.NAME_DEV }}"
-          mike deploy --push --update-aliases --no-redirect ${{ env.NAME_DEV }} dev --title=dev
+          mike deploy --push --update-aliases --alias-type=copy ${{ env.NAME_DEV }} dev --title=dev
         env:
           NAME_DEV: "v${{ env.RELEASE_NAME }}-dev"
         if: success() && ${{ steps.skip_check.outputs.should_skip != 'true' }}

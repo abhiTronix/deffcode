@@ -100,9 +100,11 @@ class Sourcer:
 
         # sanitize sourcer_params
         self.__sourcer_params = {
-            str(k).strip(): str(v).strip()
-            if not isinstance(v, (dict, list, int, float, tuple))
-            else v
+            str(k).strip(): (
+                str(v).strip()
+                if not isinstance(v, (dict, list, int, float, tuple))
+                else v
+            )
             for k, v in sourcer_params.items()
         }
 
@@ -199,6 +201,7 @@ class Sourcer:
 
         # various source stream params
         self.__default_video_resolution = ""  # handles stream resolution
+        self.__default_video_orientation = ""  # handles stream's video orientation
         self.__default_video_framerate = ""  # handles stream framerate
         self.__default_video_bitrate = ""  # handles stream's video bitrate
         self.__default_video_pixfmt = ""  # handles stream's video pixfmt
@@ -218,6 +221,7 @@ class Sourcer:
         self.__output_frames_resolution = ""  # handles output stream resolution
         self.__output_framerate = ""  # handles output stream framerate
         self.__output_frames_pixfmt = ""  # handles output frame pixel format
+        self.__output_orientation = ""  # handles output frame orientation
 
         # check whether metadata probed or not?
         self.__metadata_probed = False
@@ -251,6 +255,7 @@ class Sourcer:
         if video_rfparams:
             self.__default_video_resolution = video_rfparams["resolution"]
             self.__default_video_framerate = video_rfparams["framerate"]
+            self.__default_video_orientation = video_rfparams["orientation"]
 
         # parse output parameters through filters (if available)
         if not (self.__metadata_output is None):
@@ -261,6 +266,7 @@ class Sourcer:
             if out_video_rfparams:
                 self.__output_frames_resolution = out_video_rfparams["resolution"]
                 self.__output_framerate = out_video_rfparams["framerate"]
+                self.__output_orientation = out_video_rfparams["orientation"]
             # parse output pixel-format
             self.__output_frames_pixfmt = self.__extract_video_pixfmt(
                 default_stream=default_stream_indexes[0], extract_output=True
@@ -357,6 +363,7 @@ class Sourcer:
                 "source_video_resolution": self.__default_video_resolution,
                 "source_video_pixfmt": self.__default_video_pixfmt,
                 "source_video_framerate": self.__default_video_framerate,
+                "source_video_orientation": self.__default_video_orientation,
                 "source_video_decoder": self.__default_video_decoder,
                 "source_duration_sec": self.__default_source_duration,
                 "approx_video_nframes": (
@@ -385,6 +392,7 @@ class Sourcer:
                     "output_frames_resolution": self.__output_frames_resolution,
                     "output_frames_pixfmt": self.__output_frames_pixfmt,
                     "output_framerate": self.__output_framerate,
+                    "output_orientation": self.__output_orientation,
                 }
             )
         else:
@@ -397,6 +405,7 @@ class Sourcer:
                     "output_frames_resolution": self.__default_video_resolution,
                     "output_frames_pixfmt": self.__default_video_pixfmt,
                     "output_framerate": self.__default_video_framerate,
+                    "output_orientation": self.__default_video_orientation,
                 }
             )
         # log it
@@ -489,14 +498,18 @@ class Sourcer:
                     self.__source_demuxer = source_demuxer
                     self.__verbose_logs and logger.debug(
                         "Successfully configured device `{}` at index `{}` with demuxer `{}`.".format(
-                            self.__extracted_devices_list[index]
-                            if self.__machine_OS != "Linux"
-                            else next(
-                                iter(self.__extracted_devices_list[index].values())
-                            )[0],
-                            index
-                            if index >= 0
-                            else len(self.__extracted_devices_list) + index,
+                            (
+                                self.__extracted_devices_list[index]
+                                if self.__machine_OS != "Linux"
+                                else next(
+                                    iter(self.__extracted_devices_list[index].values())
+                                )[0]
+                            ),
+                            (
+                                index
+                                if index >= 0
+                                else len(self.__extracted_devices_list) + index
+                            ),
                             self.__source_demuxer,
                         )
                     )
@@ -596,9 +609,11 @@ class Sourcer:
         ]
         if video_bitrate_text:
             selected_stream = video_bitrate_text[
-                default_stream
-                if default_stream > 0 and default_stream < len(video_bitrate_text)
-                else 0
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(video_bitrate_text)
+                    else 0
+                )
             ]
             filtered_bitrate = re.findall(
                 r",\s[0-9]+\s\w\w[\/]s", selected_stream.strip()
@@ -630,9 +645,11 @@ class Sourcer:
         ]
         if meta_text:
             selected_stream = meta_text[
-                default_stream
-                if default_stream > 0 and default_stream < len(meta_text)
-                else 0
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
             filtered_pixfmt = re.findall(
                 r"Video:\s[a-z0-9_-]*", selected_stream.strip()
@@ -666,9 +683,11 @@ class Sourcer:
         )
         if meta_text:
             selected_stream = meta_text[
-                default_stream
-                if default_stream > 0 and default_stream < len(meta_text)
-                else 0
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
             filtered_pixfmt = re.findall(
                 r",\s[a-z][a-z0-9_-]*", selected_stream.strip()
@@ -695,9 +714,11 @@ class Sourcer:
         result = {}
         if meta_text:
             selected_stream = meta_text[
-                default_stream
-                if default_stream > 0 and default_stream < len(meta_text)
-                else 0
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
             # filter data
             filtered_audio_bitrate = re.findall(
@@ -725,7 +746,7 @@ class Sourcer:
 
     def __extract_resolution_framerate(self, default_stream=0, extract_output=False):
         """
-        This Internal method parses default video-stream resolution and framerate from metadata.
+        This Internal method parses default video-stream resolution, orientation, and framerate from metadata.
 
         Parameters:
             default_stream (int): selects specific audio-stream in case of multiple ones.
@@ -748,12 +769,30 @@ class Sourcer:
                 if all(x in line for x in identifiers)
             ]
         )
+        # extract video orientation metadata if available
+        identifiers_orientation = ["displaymatrix:", "rotation"]
+        meta_text_orientation = (
+            [
+                line.strip()
+                for line in self.__ffsp_output.split("\n")
+                if all(x in line for x in identifiers_orientation)
+            ]
+            if not extract_output
+            else [
+                line.strip()
+                for line in self.__metadata_output.split("\n")
+                if all(x in line for x in identifiers_orientation)
+            ]
+        )
+        # use metadata if available
         result = {}
         if meta_text:
             selected_stream = meta_text[
-                default_stream
-                if default_stream > 0 and default_stream < len(meta_text)
-                else 0
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
 
             # filter data
@@ -781,7 +820,23 @@ class Sourcer:
             if filtered_resolution:
                 result["resolution"] = [int(x) for x in filtered_resolution[0]]
 
-        return result if result and (len(result) == 2) else {}
+            # extract video orientation metadata
+            if meta_text_orientation:
+                selected_stream = meta_text_orientation[
+                    (
+                        default_stream
+                        if default_stream > 0 and default_stream < len(meta_text)
+                        else 0
+                    )
+                ]
+                filtered_orientation = re.findall(
+                    r"[-]?\d+\.\d+", selected_stream.strip()
+                )
+                result["orientation"] = float(filtered_orientation[0])
+            else:
+                result["orientation"] = 0.0
+
+        return result if result and (len(result) == 3) else {}
 
     def __extract_duration(self, inseconds=True):
         """

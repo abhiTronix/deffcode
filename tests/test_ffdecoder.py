@@ -17,6 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ===============================================
 """
+
 # import the necessary packages
 
 import os
@@ -366,9 +367,11 @@ def test_FFdecoder_params(source, ffparams, result):
         with FFdecoder(
             source,
             frame_format="bgr24",
-            source_demuxer="lavfi"
-            if (isinstance(source, str) and source.startswith("testsrc"))
-            else None,
+            source_demuxer=(
+                "lavfi"
+                if (isinstance(source, str) and source.startswith("testsrc"))
+                else None
+            ),
             **ffparams,
         ) as decoder:
 
@@ -413,12 +416,12 @@ test_data = [
     (
         0,
         None,
-        True if platform.system() in ["Linux", "Darwin"] else False,
+        True if platform.system() == "Linux" else False,
     ),  # +ve index and no demuxer
     (
         "-1",
         "auto",
-        True if platform.system() in ["Linux", "Darwin"] else False,
+        True if platform.system() == "Linux" else False,
     ),  # -ve index and "auto" demuxer
     ("5", "auto", False),  # out-of-range index and "auto" demuxer
     ("invalid", "auto", False),  # invalid source and "auto" demuxer
