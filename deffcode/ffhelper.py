@@ -344,6 +344,7 @@ def get_supported_demuxers(path):
     """
     demuxers = check_sp_output([path, "-hide_banner", "-demuxers"])
     splitted = [x.decode("utf-8").strip() for x in demuxers.split(b"\n")]
+    logger.critical(splitted)
     split_index = [idx for idx, s in enumerate(splitted) if "--" in s][0]
     supported_demuxers = splitted[split_index + 1 : len(splitted) - 1]
     # compile regex
