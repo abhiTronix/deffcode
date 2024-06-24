@@ -14,11 +14,6 @@
     ]
   },
   {
-    "version": "v0.2.5-stable",
-    "title": "latest",
-    "aliases": []
-  },
-  {
     "version": "v0.2.5-release",
     "title": "0.2.5",
     "aliases": [
