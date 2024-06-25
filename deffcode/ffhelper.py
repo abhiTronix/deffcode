@@ -683,7 +683,7 @@ def check_sp_output(*args, **kwargs):
     retcode = process.poll()
     # handle return code
     if retcode and not (retrieve_stderr):
-        logger.error("[Pipline-Error] :: {}".format(output.decode("utf-8")))
+        logger.error("[Pipeline-Error] :: {}".format(output.decode("utf-8")))
         cmd = kwargs.get("args")
         if cmd is None:
             cmd = args[0]
@@ -692,7 +692,7 @@ def check_sp_output(*args, **kwargs):
         raise error
     # raise error if no output
     bool(output) or bool(stderr) or logger.error(
-        "[Pipline-Error] :: Pipline failed to exact any data from command: {}!".format(
+        "[Pipeline-Error] :: Pipeline failed to exact any data from command: {}!".format(
             args[0] if args else []
         )
     )

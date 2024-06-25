@@ -19,6 +19,7 @@ limitations under the License.
 """
 
 # import the necessary packages
+import platform
 import logging
 import numpy as np
 import subprocess as sp
@@ -106,10 +107,16 @@ class FFdecoder:
         # handles user-defined parameters
         self.__extra_params = {}
 
-        # handle process to be frames written
+        # handles process to be frames written
         self.__process = None
 
-        # handle exclusive metadata
+        # handles disabling window for ffmpeg subprocess on Windows
+        self.__ffmpeg_window_disabler_patch = False
+
+        # checks machine OS
+        self.__machine_OS = platform.system()
+
+        # handles exclusive metadata
         self.__ff_pixfmt_metadata = None  # metadata
         self.__raw_frame_num = None  # raw-frame number
         self.__raw_frame_pixfmt = None  # raw-frame pixformat
@@ -127,23 +134,26 @@ class FFdecoder:
         # operation mode variable
         self.__opmode = None
 
-        # handle termination
+        # handles termination
         self.__terminate_stream = False
 
         # cleans and reformat user-defined parameters
         self.__extra_params = {
-            str(k).strip(): str(v).strip()
-            if not (v is None) and not isinstance(v, (dict, list, int, float, tuple))
-            else v
+            str(k).strip(): (
+                str(v).strip()
+                if not (v is None)
+                and not isinstance(v, (dict, list, int, float, tuple))
+                else v
+            )
             for k, v in ffparams.items()
         }
 
-        # handle custom Sourcer API params
+        # handles custom Sourcer API params
         sourcer_params = self.__extra_params.pop("-custom_sourcer_params", {})
         # reset improper values
         sourcer_params = {} if not isinstance(sourcer_params, dict) else sourcer_params
 
-        # handle user ffmpeg pre-headers(parameters such as `-re`) parameters (must be a list)
+        # handles user ffmpeg pre-headers(parameters such as `-re`) parameters (must be a list)
         self.__ffmpeg_prefixes = self.__extra_params.pop("-ffprefixes", [])
         # check if not valid type
         if not isinstance(self.__ffmpeg_prefixes, list):
@@ -205,8 +215,28 @@ class FFdecoder:
         if not (isinstance(self.__cv_patch, bool)):
             self.__cv_patch = False
             self.__verbose_logs and logger.critical(
-                "Enforcing OpenCV compatibility patch for YUV/NV frames."
+                "Enforcing OpenCV compatibility patch for YUV/NV video frames."
             )
+
+        # handle disabling window for ffmpeg subprocess on Windows OS
+        # this patch prevents ffmpeg creation window from opening when
+        # building exe files
+        ffmpeg_window_disabler_patch = self.__extra_params.pop(
+            "-disable_ffmpeg_window", False
+        )
+        if ffmpeg_window_disabler_patch and isinstance(
+            ffmpeg_window_disabler_patch, bool
+        ):
+            # check if value is valid
+            if self.__machine_OS != "Windows" or self.__verbose_logs:
+                logger.warning(
+                    "Optional `-disable_ffmpeg_window` flag is only available on Windows OS with `verbose=False`. Discarding!"
+                )
+            else:
+                self.__ffmpeg_window_disabler_patch = ffmpeg_window_disabler_patch
+        else:
+            # handle improper values
+            self.__ffmpeg_window_disabler_patch = False
 
         # handle pass-through audio mode works in conjunction with WriteGear [TODO]
         self.__passthrough_mode = self.__extra_params.pop("-passthrough_audio", False)
@@ -288,7 +318,6 @@ class FFdecoder:
             self.__custom_resolution = None
 
     def formulate(self):
-
         """
         This method formulates all necessary FFmpeg pipeline arguments and executes it inside the FFmpeg `subprocess` pipe.
 
@@ -420,13 +449,15 @@ class FFdecoder:
                 else:
                     logger.warning(
                         "{} Switching to default `{}` pixel-format!".format(
-                            "Provided FFmpeg does not supports `{}` pixel-format.".format(
-                                self.__sourcer_metadata["output_frames_pixfmt"]
-                                if "output_frames_pixfmt" in self.__sourcer_metadata
-                                else self.__frame_format
-                            )
-                            if self.__frame_format != "null"
-                            else "No usable pixel-format defined.",
+                            (
+                                "Provided FFmpeg does not supports `{}` pixel-format.".format(
+                                    self.__sourcer_metadata["output_frames_pixfmt"]
+                                    if "output_frames_pixfmt" in self.__sourcer_metadata
+                                    else self.__frame_format
+                                )
+                                if self.__frame_format != "null"
+                                else "No usable pixel-format defined."
+                            ),
                             default_pixfmt,
                         )
                     )
@@ -467,9 +498,9 @@ class FFdecoder:
             self.__raw_frame_pixfmt = rawframe_pixfmt
             # also override as metadata(if available)
             if "output_frames_pixfmt" in self.__sourcer_metadata:
-                self.__sourcer_metadata[
-                    "output_frames_pixfmt"
-                ] = self.__raw_frame_pixfmt
+                self.__sourcer_metadata["output_frames_pixfmt"] = (
+                    self.__raw_frame_pixfmt
+                )
 
             # handle raw-frame resolution
             # notify FFmpeg `-s` parameter cannot be assigned directly
@@ -804,9 +835,11 @@ class FFdecoder:
                     self.__verbose_logs and logger.info(
                         "Updating `{}`{} metadata property to `{}`.".format(
                             key,
-                            " and its counterpart"
-                            if key in counterpart_prop.values()
-                            else "",
+                            (
+                                " and its counterpart"
+                                if key in counterpart_prop.values()
+                                else ""
+                            ),
                             value[key],
                         )
                     )
@@ -838,7 +871,6 @@ class FFdecoder:
             raise ValueError("Invalid datatype metadata assigned. Aborting!")
 
     def __launch_FFdecoderline(self, input_params, output_params):
-
         """
         This Internal method executes FFmpeg pipeline arguments inside a `subprocess` pipe in a new process.
 
@@ -877,7 +909,13 @@ class FFdecoder:
         else:
             # In silent mode
             self.__process = sp.Popen(
-                cmd, stdin=sp.DEVNULL, stdout=sp.PIPE, stderr=sp.DEVNULL
+                cmd,
+                stdin=sp.DEVNULL,
+                stdout=sp.PIPE,
+                stderr=sp.DEVNULL,
+                creationflags=(  # this prevents ffmpeg creation window from opening when building exe files on Windows
+                    sp.DETACHED_PROCESS if self.__ffmpeg_window_disabler_patch else 0
+                ),
             )
 
     def terminate(self):

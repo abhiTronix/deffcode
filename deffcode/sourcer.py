@@ -87,7 +87,7 @@ class Sourcer:
             verbose (bool): enables/disables verbose.
             sourcer_params (dict): provides the flexibility to control supported internal and FFmpeg parameters.
         """
-        # checks if machine in-use is running windows os or not
+        # checks machine OS
         self.__machine_OS = platform.system()
 
         # define internal parameters

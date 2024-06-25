@@ -112,6 +112,10 @@ extra_css:
 extra_javascript:
   - assets/javascripts/extra.js
 
+# Logging
+validation:
+  unrecognized_links: ignore
+
 # Extensions
 markdown_extensions:
   - admonition

@@ -185,11 +185,12 @@ def test_frame_format(pixfmts):
                 ),
                 "output_frames_pixfmt": 1234,  # invalid pixformat
                 "source_video_resolution": [640],  # invalid resolution
+                "-disable_ffmpeg_window": "Invalid",
             },
             False,
         ),
         (
-            {"output_frames_pixfmt": "invalid"},
+            {"output_frames_pixfmt": "invalid", "-disable_ffmpeg_window": False},
             False,
         ),
         (["invalid"], False),
@@ -216,7 +217,11 @@ def test_metadata(custom_params, checks):
     source = return_testvideo_path(fmt="vo")
     try:
         # custom vars
-        ffparams = {"-framerate": None} if not checks else {"-framerate": 25.0}
+        ffparams = (
+            {"-framerate": None}
+            if not checks
+            else {"-framerate": 25.0, "-disable_ffmpeg_window": True}
+        )
         # formulate the decoder with suitable source(for e.g. foo.mp4)
         decoder = FFdecoder(
             source, custom_ffmpeg=return_static_ffmpeg(), verbose=True, **ffparams

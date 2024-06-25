@@ -729,6 +729,17 @@ These parameters are discussed below:
 
 &ensp;
 
+* **`-disable_ffmpeg_window`** _(bool)_: This attribute can be used to prevent the FFmpeg command line window from appearing when using the FFdecoder API on Windows. This is especially useful when creating an `.exe` file for your Python script with logging disabled(`verbose=False`), as it stops the FFmpeg window from popping up even in windowed or no-console mode. Its usage is as follows:
+
+    !!! warning "The `-disable_ffmpeg_window` flag is only available on :fontawesome-brands-windows: Windows OS with logging disabled."
+
+    ```python
+    # define suitable parameter
+    ffparams = {"-disable_ffmpeg_window": True} # disables FFmpeg creation window
+    ```
+
+&ensp;
+
 * **`-passthrough_audio`** _(bool/list)_ : _(Yet to be supported)_
 
 &nbsp; 
