@@ -936,9 +936,7 @@ class FFdecoder:
         # close `stdout` output
         self.__process.stdout and self.__process.stdout.close()
         # terminate/kill process if still processing
-        if self.__process.poll() is None:
-            # demuxers prefer kill
-            self.__process.kill()
+        self.__process.poll() is None and self.__process.terminate()
         # wait if not exiting
         self.__process.wait()
         self.__process = None
