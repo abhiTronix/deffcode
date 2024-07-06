@@ -1,4 +1,4 @@
-/* 
+/*
 ===============================================
 DeFFcode library source-code is deployed under the Apache 2.0 License:
 
@@ -18,7 +18,4 @@ limitations under the License.
 ===============================================
 */
 
-// gitter sidecard
-((window.gitter = {}).chat = {}).options = {
-  room: 'deffcode-python/community'
-};
+// empty
