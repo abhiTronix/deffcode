@@ -21,11 +21,11 @@ limitations under the License.
 # :material-fast-forward-60: Saving Key-frames as Image
 
 
-> DeFFcode's FFdecoder API provide effortless and precise **Frame Seeking** with `-ss` FFmpeg parameter that enable us to save any frame from a specific part of our input source.  
+!!! abstract "When working with video files, you might want to extract a specific part, like an image frame from a particular time in the video. This process is called _Seeking_."
 
-We'll discuss aboout it briefly in the following recipes:
+> DeFFcode's FFdecoder API provide effortless and precise **Frame Seeking** with `-ss` FFmpeg parameter that enable us to save any frame from a specific part of our input source in a couple of ways.  
 
-&thinsp;
+We'll discuss about it briefly in the following recipes:
 
 !!! warning "DeFFcode APIs requires FFmpeg executable"
 
@@ -81,7 +81,7 @@ We'll discuss aboout it briefly in the following recipes:
 
 ## Extracting Key-frames as PNG image
 
-In this example we will seek to `00:00:01.45`_(or 1045msec)_ in time and decode one single frame in FFdecoder API, and thereby saving it as PNG image using few prominent Image processing python libraries by providing valid filename _(e.g. `foo_image.png`)_.
+In this example, we will utilize both Input and Output Seeking to seek to `00:00:01.45` _(or 1045 ms)_ and decode a single frame using the FFdecoder API. We will then save it as a PNG image using prominent image processing Python libraries, providing a valid filename _(e.g., `foo_image.png`)_.
 
 ??? tip "Time unit syntax in `-ss` FFmpeg parameter"
     
@@ -90,6 +90,22 @@ In this example we will seek to `00:00:01.45`_(or 1045msec)_ in time and decode 
     - [x] **Sexagesimal(in seconds):** Uses *(HOURS:MM:SS.MILLISECONDS)* format, such as in `01:23:45.678`.
     - [x] **Fractional:** such as in `02:30.05`. This is interpreted as _2 minutes, 30 and a half a second_, which would be the same as using `150.5` in seconds.
 
+### A. Input Seeking (Recommended)
+
+This is when you tell FFmpeg to jump to a specific time in the video before it starts reading it.
+
+??? question "When to use Input Seeking?"
+
+    Best for speed and accuracy with minimal CPU usage, but may reset timestamps:
+
+    - [x] **Pros:**
+        - **Fast:** Fast seeking as it jumps directly to the specified keyframe.
+        - **Low CPU Usage:** Reduced processing power since it doesn't decode frames until the specified time.
+    - [ ] **Cons:**
+        - **No Filter Preservation:** Timestamp-sensitive filters (like subtitles) might not work as expected since timestamps are reset.
+
+!!! note "The recommend way to use Input Seeking is to use `-ss` parameter via. exclusive [`-ffprefixes`](../../reference/ffdecoder/params/#b-exclusive-parameters) list attribute of `ffparam` dictionary parameter in FFdecoder API."
+    
 === "Using Pillow"
 
     In Pillow, the `fromarray()` function can be used to create an image memory from an **RGB** frame:
@@ -99,8 +115,147 @@ In this example we will seek to `00:00:01.45`_(or 1045msec)_ in time and decode 
     from deffcode import FFdecoder
     from PIL import Image
 
-    # define the FFmpeg parameter to seek to 00:00:01.45(or 1s and 45msec)
-    # in time and get one single frame
+    # define the FFmpeg parameter to jump to 00:00:01.45(or 1s and 45msec)
+    # in time in the video before it starts reading it and get one single frame
+    ffparams = {"-ffprefixes": ["-ss", "00:00:01.45"], "-frames:v": 1}
+
+    # initialize and formulate the decoder with suitable source
+    decoder = FFdecoder("foo.mp4", **ffparams).formulate()
+
+    # grab the RGB24(default) frame from the decoder
+    frame = next(decoder.generateFrame(), None)
+
+    # check if frame is None
+    if not (frame is None):
+        # Convert to Image
+        im = Image.fromarray(frame)
+        # Save Image as PNG
+        im.save("foo_image.png")
+    else:
+        raise ValueError("Something is wrong!")
+
+    # terminate the decoder
+    decoder.terminate()
+    ```
+
+=== "Using OpenCV"
+
+    In OpenCV, the `imwrite()` function can export **BGR** frame as an image file:
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import cv2
+
+    # define the FFmpeg parameter to jump to 00:00:01.45(or 1s and 45msec)
+    # in time in the video before it starts reading it and get one single frame
+    ffparams = {"-ffprefixes": ["-ss", "00:00:01.45"], "-frames:v": 1}
+
+    # initialize and formulate the decoder for BGR24 outputwith suitable source
+    decoder = FFdecoder("foo.mp4", frame_format="bgr24", **ffparams).formulate()
+
+    # grab the BGR24 frame from the decoder
+    frame = next(decoder.generateFrame(), None)
+
+    # check if frame is None
+    if not(frame is None):
+        # Save our image as PNG
+        cv2.imwrite('foo_image.png', frame)
+    else:
+        raise ValueError("Something is wrong!")
+
+    # terminate the decoder
+    decoder.terminate()
+    ```
+
+=== "Using Matplotlib"
+
+    In Matplotlib, the `imsave()` function can save an **RGB** frame as an image file:
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import matplotlib.pyplot as plt
+
+    # define the FFmpeg parameter to jump to 00:00:01.45(or 1s and 45msec)
+    # in time in the video before it starts reading it and get one single frame
+    ffparams = {"-ffprefixes": ["-ss", "00:00:01.45"], "-frames:v": 1}
+
+    # initialize and formulate the decoder with suitable source
+    decoder = FFdecoder("foo.mp4", **ffparams).formulate()
+
+    # grab the RGB24(default) frame from the decoder
+    frame = next(decoder.generateFrame(), None)
+
+    # check if frame is None
+    if not(frame is None):
+        # Save our image as PNG
+        plt.imsave('foo_image.png', frame)
+    else:
+        raise ValueError("Something is wrong!")
+
+    # terminate the decoder
+    decoder.terminate()
+    ```
+
+=== "Using Imageio"
+
+    In Imageio, the `imwrite()` function can be used to create an image memory from an **RGB** frame:
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import imageio
+
+    # define the FFmpeg parameter to jump to 00:00:01.45(or 1s and 45msec)
+    # in time in the video before it starts reading it and get one single frame
+    ffparams = {"-ffprefixes": ["-ss", "00:00:01.45"], "-frames:v": 1}
+
+    # initialize and formulate the decoder with suitable source
+    decoder = FFdecoder("foo.mp4", **ffparams).formulate()
+
+    # grab the RGB24(default) frame from the decoder
+    frame = next(decoder.generateFrame(), None)
+
+    # check if frame is None
+    if not(frame is None):
+        # Save our output
+        imageio.imwrite('foo_image.jpeg', frame)
+    else:
+        raise ValueError("Something is wrong!")
+
+    # terminate the decoder
+    decoder.terminate()
+    ```
+
+### B. Output Seeking
+
+This is when you tell FFmpeg to start seeking the video after it has read it.
+
+??? question "When to use Output Seeking?"
+
+    Best for accurate filtering and timestamp preservation, but slower and CPU-intensive.
+
+    - [x] **Pros:**
+        - **Timestamp Integrity:** Maintains original timestamps, which is crucial for filters and processing (e.g., subtitle syncing).
+        - **Precise Frame Retrieval:** Decodes every frame, ensuring exact frame extraction.
+        - **Filter Compatibility:** Works well with various filters that require accurate timestamps.
+    - [ ] **Cons:**
+        - **Slower Processing:** Decodes and discards frames until it reaches the specified time, which can be time-consuming.
+        - **Higher CPU Usage:** Increased processing power required due to frame-by-frame decoding.
+        - **Long Latency for Large Offsets:** Longer waiting times for videos with large offsets.
+    
+=== "Using Pillow"
+
+    In Pillow, the `fromarray()` function can be used to create an image memory from an **RGB** frame:
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    from PIL import Image
+
+    # define the FFmpeg parameter to first read the frames and afterward
+    # jump to 00:00:01.45(or 1s and 45msec) and get one single frame
     ffparams = {"-ss": "00:00:01.45", "-frames:v": 1}
 
     # initialize and formulate the decoder with suitable source
@@ -131,9 +286,9 @@ In this example we will seek to `00:00:01.45`_(or 1045msec)_ in time and decode 
     from deffcode import FFdecoder
     import cv2
 
-    # define the FFmpeg parameter to seek to 00:00:01.45(or 1s and 45msec) 
-    # in time and get one single frame
-    ffparams = {"-ss": "00:00:01.45", "-frames:v":1}
+    # define the FFmpeg parameter to first read the frames and afterward
+    # jump to 00:00:01.45(or 1s and 45msec) and get one single frame
+    ffparams = {"-ss": "00:00:01.45", "-frames:v": 1}
 
     # initialize and formulate the decoder for BGR24 outputwith suitable source
     decoder = FFdecoder("foo.mp4", frame_format="bgr24", **ffparams).formulate()
@@ -161,9 +316,9 @@ In this example we will seek to `00:00:01.45`_(or 1045msec)_ in time and decode 
     from deffcode import FFdecoder
     import matplotlib.pyplot as plt
 
-    # define the FFmpeg parameter to seek to 00:00:01.45(or 1s and 45msec) 
-    # in time and get one single frame
-    ffparams = {"-ss": "00:00:01.45", "-frames:v":1}
+    # define the FFmpeg parameter to first read the frames and afterward
+    # jump to 00:00:01.45(or 1s and 45msec) and get one single frame
+    ffparams = {"-ss": "00:00:01.45", "-frames:v": 1}
 
     # initialize and formulate the decoder with suitable source
     decoder = FFdecoder("foo.mp4", **ffparams).formulate()
@@ -191,9 +346,9 @@ In this example we will seek to `00:00:01.45`_(or 1045msec)_ in time and decode 
     from deffcode import FFdecoder
     import imageio
 
-    # define the FFmpeg parameter to seek to 00:00:01.45(or 1s and 45msec) 
-    # in time and get one single frame
-    ffparams = {"-ss": "00:00:01.45", "-frames:v":1}
+    # define the FFmpeg parameter to first read the frames and afterward
+    # jump to 00:00:01.45(or 1s and 45msec) and get one single frame
+    ffparams = {"-ss": "00:00:01.45", "-frames:v": 1}
 
     # initialize and formulate the decoder with suitable source
     decoder = FFdecoder("foo.mp4", **ffparams).formulate()
@@ -222,11 +377,14 @@ In this example we will seek to `00:00:01.45`_(or 1045msec)_ in time and decode 
 <figcaption><code>fancy_thumbnail.jpg</code> (Courtesy - <a href="https://peach.blender.org/trailer-page/">BigBuckBunny</a>)</figcaption>
 </figure>
 
-In this example we first apply FFmpeg’s `tblend` filter  with an `hardmix` blend mode _(cool stuff)_ and then seek to `00:00:25.917`_(or 25.917sec)_ in time to retrieve our single frame thumbnail, and thereby save it as JPEG image with valid filename _(e.g. `fancy_thumbnail.jpg`)_ using Pillow library.
+In this example we first apply FFmpeg’s `tblend` filter  with an `hardmix` blend mode _(cool stuff)_, and after reading those frames seek to `00:00:25.917`_(or 25.917sec)_ in time to retrieve our single frame thumbnail, and finally save it as JPEG image with valid filename _(e.g. `fancy_thumbnail.jpg`)_ using Pillow library.
+
+!!! alert "Use Output Seeking with filters for accurate results, as Input Seeking can reset timestamps and lead to inaccuracies."
 
 ??? tip "Time unit syntax in `-ss` FFmpeg parameter"
     
     You can use two different time unit formats with `-ss` FFmpeg parameter: 
+
     - [x] **Sexagesimal(in seconds):** Uses *(HOURS:MM:SS.MILLISECONDS)*, such as in `01:23:45.678`
     - [x] **Fractional:** such as in `02:30.05`, this is interpreted as 2 minutes, 30 seconds, and a half a second, which would be the same as using 150.5 in seconds.
 
