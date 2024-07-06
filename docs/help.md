@@ -58,17 +58,6 @@ You can try helping solving those issues, or give valuable feedback/review on ne
 &thinsp; 
 
 
-## :material-twitter: Tweet about DeFFcode
-
-Tweet about DeFFcode and Spread the word 🗣:
-
-<a href="https://twitter.com/intent/tweet?button_hashtag=deffcode&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-size="large" data-text="Checkout DeFFcode - A High-performance Real-time Video frames Generator for generating blazingly fast video frames in python." data-url="https://abhitronix.github.io/deffcode" data-related="abhi_una12" data-show-count="false">Tweet #deffcode</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-Let others know how you are using DeFFcode and why you like it!
-
-&thinsp; 
-
-
 ## :fontawesome-solid-gift: Helping Author
 
 > Donations help keep DeFFcode's development alive and motivate me _(as author)_. :heart:{ .heart }
@@ -90,7 +79,6 @@ You can connect with me, the author 👋:
 ![Author Image](https://avatars.githubusercontent.com/u/34266896?v=4){ align=left width="160" loading=lazy }
 
 * Follow author on GitHub: [![GitHub follow](https://img.shields.io/github/followers/abhiTronix?label=Follow%20%40abhiTronix&logo=github&style=flat-square)](https://github.com/abhiTronix)
-* Follow author on Twitter: <a href="https://twitter.com/abhi_una12?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow &commat;abhi_una12</a>
 * Get in touch with author on Linkedin: [![Linkedin follow](https://img.shields.io/badge/Follow-&commat;Abhishek&thinsp;Thakur-orange.svg?logo=linkedin&style=flat-square)](https://in.linkedin.com/in/abhishek-abhitronix?trk=profile-badge)
 
 <!-- Place this tag in your head or just before your close body tag. -->
