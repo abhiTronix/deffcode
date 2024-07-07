@@ -2,167 +2,167 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/changelog/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/help/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/license/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/contribution/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/contribution/PR/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/contribution/issue/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/help/get_help/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/installation/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/installation/ffmpeg_install/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/advanced/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/advanced/decode-hw-acceleration/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/advanced/decode-live-feed-devices/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/advanced/decode-live-virtual-sources/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/advanced/transcode-art-filtergraphs/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/advanced/transcode-hw-acceleration/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/advanced/transcode-live-frames-complexgraphs/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/advanced/update-metadata/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/basic/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/basic/decode-camera-devices/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/basic/decode-image-sequences/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/basic/decode-network-streams/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/basic/decode-video-files/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/basic/extract-video-metadata/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/basic/save-keyframe-image/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/basic/transcode-live-frames-simplegraphs/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/recipes/basic/transcode-live-frames/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/reference/ffhelper/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/reference/utils/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/reference/ffdecoder/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/reference/ffdecoder/params/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/reference/sourcer/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://abhitronix.github.io/deffcode/v0.2.6-dev/reference/sourcer/params/</loc>
-         <lastmod>2024-07-06</lastmod>
+         <lastmod>2024-07-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
