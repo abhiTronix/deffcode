@@ -330,7 +330,7 @@ In this example we will decode live **BGR24** video frames from looping video us
 
 === "Using `-stream_loop` option"
 
-    The recommend way to loop video is to use `-stream_loop` option via. `-ffprefixes` list attribute of `ffparam` dictionary parameter in FFdecoder API. Possible values are integer values: `>0` value of loop, `0` means no loop, `-1` means infinite loop.
+    The recommend way to loop video is to use `-stream_loop` option via. [`-ffprefixes`](../../reference/ffdecoder/params/#b-exclusive-parameters) list attribute of `ffparam` dictionary parameter in FFdecoder API. **Possible values are integer values:** `> 0` value of loop, `0` means no loop, `-1` means infinite loop.
 
     !!! note "Using `-stream_loop 3` will loop video `4` times."
 
