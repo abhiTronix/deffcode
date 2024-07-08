@@ -20,6 +20,95 @@ limitations under the License.
 
 # Release Notes
 
+## v0.2.6 (2024-07-08) :material-new-box:
+
+???+ new "New Features"
+    - [x] **FFdecoder:**
+        * Introduced a new optional `-disable_ffmpeg_window` boolean parameter.
+	        * 💬 Prevents the FFmpeg command line window from appearing by applying the `DETACHED_PROCESS` flag to the subprocess FFmpeg pipeline when building `.exe` files on Windows in silent (`verbose=False`) mode.
+	- [x] **Sourcer:**
+		* Added new parameters to metadata to accurately display video orientation.
+            * Added `source_video_orientation` parameter (default `0.0`).
+            * Added `output_orientation` parameter (default `0.0`).
+    - [x] **FFHelper:**
+        * Added support for SRTP/RTSPS in `is_valid_url` function.
+            * Enhanced `is_valid_url` method to support both RTP/RTSP and SRTP/RTSPS protocols.
+            * 💬 SRTP/RTSPS extends RTSP/RTP to encrypt video/audio data using ciphers like AES with a 128-bit key.
+    - [x] **Core:**
+        * Added official support for Python `3.11.x` legacies.
+            * Added Python-3.11 support across CI/CD configurations.
+            * Added Python-3.11 to setup.py metadata.
+    - [x] **Docs:** 
+        * Added context and detailed instructions for Input and Output Seeking methods.
+            * Introduced `Input Seeking` and `Output Seeking` sections with pros, cons, and usage examples.
+            * Added warning about using output seeking with filters for accuracy.
+        * Added new `tables` markdown extension for improved table formatting.
+        * Added documentation for the new optional `-disable_ffmpeg_window` boolean parameter.
+        * Added `unrecognized_links: ignore` to `mkdocs.yml` to minimize logging during validation.
+        * Added new features to `mkdocs.yml` related to `navigation`, `content`, and `toc`.
+
+??? success "Updates/Improvements"  
+    - [x] FFdecoder:
+        * Changed process termination from `kill()` to `terminate()` if the process is still running, to ensure graceful shutdown.
+   	        * 💬 The `terminate()` method sends the `SIGTERM` signal to a process, which typically allows for a graceful shutdown. On Unix, this uses the `SIGTERM` signal, while on Windows, it uses `TerminateProcess()`.
+    - [x] FFhelper:
+		* Improved regex pattern in `get_supported_demuxers` method.
+            * Simplified regex search for demuxers and handled multi-line output correctly.
+            * Improved output extraction logic to handle commas within demuxer names.
+    - [x] Sourcer:
+        * Updated `extract_resolution_framerate` method to also return video orientation.
+            * Added new regex pattern and filter for accurate video orientation extraction.
+    - [x] Setup:
+        * Updated patch for `long_description`.
+        * Bumped version to `0.2.6`.
+	- [x] Maintenance: 
+		* Refactored logging messages and code comments for better readability and maintainability.
+        * Simplified conditional check using short-circuiting.
+    - [x] Docs:
+		* Updated `mkdocs.yml` to improve overall documents structure and readability
+            * Set the default version of the documentation to 'latest'.
+            * Set `edit_uri` for GitHub edit links to facilitate easier contributions.
+            * Replaced deprecated `materialx` with supported `extensions` emoji generator.
+            * Enhanced the active tab fonts with `font-weight: bold` in `custom.css`.
+            * Updated LinkedIn URL.
+            * Removed Twitter section from help and site metadata.
+            * Migrated to Google Analytics 4.
+            * Enabled `line_spans: __span` and `pygments_lang_class: true` parameters in `pymdownx.highlight` markdown extension.
+            * Enabled `normalize_issue_symbols: true` in `pymdownx.magiclink` markdown extension.
+        * Updated the Zenodo badges and the BibTeX entry to reflect recent changes.
+        * Included GitHub sponsors in `FUNDING.yml`.
+        * Removed deprecated Gitter community chat sidecard.
+    - [x] CI:
+        * Updated paths to ignore additional files and types in CI/CD Pipelines and Codecov:
+            * Included `*.html`, `*.js`, `*.css`, `mkdocs.yml`, `README.md` to ignore list.
+        * Changed runner from `ubuntu-latest` to `ubuntu-20.04` in GitHub Actions.
+        * Updated dependencies in `docs_deployer.yml` for better readability.
+        * Modified Mike deploy commands to use `--alias-type=copy` instead of deprecated `--no-redirect`.
+        * Removed unsupported darwin platform from `test_FFdecoder_params` test.
+
+??? danger "Breaking Updates/Changes"
+    * **Core:**
+        - [x] :skull_crossbones: Ended support for Python `3.7.x` legacies.
+            * Increased `python_requires` to `3.8` and above in setup.py.
+            * Removed Python `3.7` from setup.py metadata.
+            * Removed Python `3.7` support from CI/CD pipelines.
+
+??? bug "Bug-fixes"
+    - [x] FFdecoder API:
+        * Fixed regex expression bugs in `get_supported_demuxers` method.
+    - [x] CI:
+        * Fixed Assertion error with WriteGear API.
+
+??? question "Pull Requests"
+    * PR #53
+    * PR #52
+    * PR #51
+    * PR #49
+
+&nbsp; 
+
+&nbsp; 
+
 ## v0.2.5 (2023-01-11) :material-new-box:
 
 ??? new "New Features"

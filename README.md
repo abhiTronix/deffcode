@@ -283,7 +283,7 @@ print(sourcer.retrieve_metadata(pretty_json=True))
 
 > We're happy to meet new contributors💗
 
-We welcome your contributions to help us improve and extend this project. If you want to get involved with VidGear development, checkout the **[Contribution Guidelines ▶️][contribute]**
+We welcome your contributions to help us improve and extend this project. If you want to get involved with DeFFcode development, checkout the **[Contribution Guidelines ▶️][contribute]**
 
 We're offering support for DeFFcode on [**Gitter Community Channel**][gitter]. Come and join the conversation over there!
 
