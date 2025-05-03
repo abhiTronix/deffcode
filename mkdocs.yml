@@ -187,7 +187,7 @@ nav:
           - Pull Request(PR) Guidelines: contribution/PR.md
       - Changelog: changelog.md
       - License: license.md
-  - Recipies:
+  - Recipes:
       - Basic Recipes:
           - Overview: recipes/basic/index.md
           - Decoding Video Files: recipes/basic/decode-video-files.md
