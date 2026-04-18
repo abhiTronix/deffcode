@@ -288,7 +288,35 @@ In this example we will decode different pixel formats video frames from a given
 
 ## Transcoding lossless video using WriteGear API
 
-!!! danger "==WriteGear's Compression Mode support for FFdecoder API is currently in beta so you can expect much higher than usual CPU utilization!=="
+!!! danger "High CPU Usage when chaining FFdecoder with WriteGear"
+
+    When chaining FFdecoder with WriteGear, both FFmpeg processes _(decoding + encoding)_ run **as fast as your hardware allows** with no artificial pacing between them. This causes the pipeline to max out your CPU to process the video in the shortest time possible, which may be undesirable.
+
+    You can mitigate this in two ways depending on your use case:
+
+    === "Throttle to Real-Time Speed"
+
+        Pass the `-re` flag via FFdecoder's `-ffprefixes` parameter to force FFmpeg to read the input at its native framerate. This naturally paces the pipeline to real-time speed and **drastically reduces CPU usage**:
+
+        ```python
+        # force input to be read at native framerate
+        decoder = FFdecoder("foo.mp4", frame_format="bgr24", **{"-ffprefixes": ["-re"]}).formulate()
+        ```
+
+    === "Limit FFmpeg Threads"
+
+        Pass `-threads` to both FFdecoder and WriteGear to cap the number of CPU threads each FFmpeg process may use. This leaves headroom for other system tasks:
+
+        ```python
+        # limit decoder to 2 threads
+        decoder = FFdecoder("foo.mp4", frame_format="bgr24", **{"-threads": 2}).formulate()
+
+        # limit encoder to 2 threads
+        writer = WriteGear(output="output_foo.mp4", **{"-input_framerate": fps, "-threads": 2})
+        ```
+
+    !!! tip "Hardware Acceleration"
+        If your machine has a dedicated GPU, you can offload encoding to the GPU entirely — for example by passing `"-vcodec": "h264_nvenc"` to WriteGear _(NVIDIA)_ — shifting the heavy lifting off the CPU.
 
 ???+ quote "Lossless transcoding  with FFdecoder and WriteGear API"
     
@@ -325,7 +353,7 @@ In this example we will decode different pixel formats video frames from a given
 
     # Define writer with default parameters and suitable
     # output filename for e.g. `output_foo.mp4`
-    writer = WriteGear(output_filename="output_foo.mp4", **output_params)
+    writer = WriteGear(output="output_foo.mp4", **output_params)
 
     # grab the BGR24 frame from the decoder
     for frame in decoder.generateFrame():
@@ -367,7 +395,7 @@ In this example we will decode different pixel formats video frames from a given
 
     # Define writer with default parameters and suitable
     # output filename for e.g. `output_foo.mp4`
-    writer = WriteGear(output_filename="output_foo.mp4", **output_params)
+    writer = WriteGear(output="output_foo.mp4", **output_params)
 
     # grab the BGR24 frame from the decoder
     for frame in decoder.generateFrame():
@@ -409,7 +437,7 @@ In this example we will decode different pixel formats video frames from a given
 
     # Define writer with default parameters and suitable
     # output filename for e.g. `output_foo_gray.mp4`
-    writer = WriteGear(output_filename="output_foo_gray.mp4", **output_params)
+    writer = WriteGear(output="output_foo_gray.mp4", **output_params)
 
     # grab the GRAYSCALE frame from the decoder
     for frame in decoder.generateFrame():
@@ -457,7 +485,7 @@ In this example we will decode different pixel formats video frames from a given
 
     # Define writer with default parameters and suitable
     # output filename for e.g. `output_foo_yuv.mp4`
-    writer = WriteGear(output_filename="output_foo_yuv.mp4", logging=True, **output_params)
+    writer = WriteGear(output="output_foo_yuv.mp4", logging=True, **output_params)
 
     # grab the YUV420 frame from the decoder
     for frame in decoder.generateFrame():
