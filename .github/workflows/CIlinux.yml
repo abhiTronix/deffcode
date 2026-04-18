@@ -60,7 +60,7 @@ jobs:
           sudo chmod +x scripts/bash/prepare_dataset.sh
       - name: Install Pip Dependencies
         run: |
-          sudo pip install -U pip numpy 
+          sudo pip install -U numpy 
           sudo pip install -U .
           sudo pip install -U opencv-python-headless 
           sudo pip install -U vidgear[core]
