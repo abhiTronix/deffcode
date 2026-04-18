@@ -102,7 +102,7 @@ DeFFcode is well-tested and supported on the following systems(but not limited t
 
 ## Supported Python legacies
 
-:fontawesome-brands-python: [**Python 3.7+**](https://www.python.org/downloads/) are only supported legacies for installing DeFFcode `v0.1.0` and above.
+:fontawesome-brands-python: [**Python 3.10+**](https://www.python.org/downloads/) are only supported legacies for installing DeFFcode `v0.2.7` and above.
 
 &thinsp;
 
