@@ -527,7 +527,7 @@ This parameter can be used to manually assigns the system _file-path/directory_ 
 
     ??? question "How to change FFmpeg Static Binaries download directory?"
 
-        You can use `-ffmpeg_download_path` _(via. [`-custom_sourcer_params`](#exclusive-parameters))_ exclusive parameter in FFdecoder API to set the custom directory for downloading FFmpeg Static Binaries during the [Auto-Installation](../../../installation/ffmpeg_install/#a-auto-installation) step on Windows Machines. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows in FFdecoder API:
+        You can use `-ffmpeg_download_path` _(via. [`-custom_sourcer_params`](#b-exclusive-parameters))_ exclusive parameter in FFdecoder API to set the custom directory for downloading FFmpeg Static Binaries during the [Auto-Installation](../../../installation/ffmpeg_install/#a-auto-installation) step on Windows Machines. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows in FFdecoder API:
 
         ```python
         # # define suitable parameter to download at "C:/User/foo/foo1"
@@ -698,7 +698,7 @@ These parameters are discussed below:
 
 &ensp;
 
-* **`-custom_sourcer_params`** _(dict)_ :  This attribute assigns all [**Exclusive Parameter**](../../sourcer/params/#exclusive-parameters) meant for Sourcer API's `sourcer_params` dictionary parameter directly through FFdecoder API. Its usage is as follows: 
+* **`-custom_sourcer_params`** _(dict)_ :  This attribute assigns all [**Exclusive Parameter**](../../sourcer/params/#b-exclusive-parameters) meant for Sourcer API's `sourcer_params` dictionary parameter directly through FFdecoder API. Its usage is as follows: 
     
     ```python
     # define suitable parameter meant for `sourcer_params`

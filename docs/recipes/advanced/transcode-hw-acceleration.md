@@ -36,14 +36,14 @@ limitations under the License.
     As we know, using the `–hwaccel cuda -hwaccel_output_format cuda` flags in FFmpeg pipeline will keep video frames in GPU memory, and this ensures that the memory transfers (system memory to video memory and vice versa) are eliminated, and that transcoding is performed with the highest possible performance on the available GPU hardware.
 
     <figure markdown>
-      ![HW Acceleration](../../../assets/images/hw_accel.png){ width="350" }
+      ![HW Acceleration](../../assets/images/hw_accel.png){ width="350" }
       <figcaption>General Memory Flow with Hardware Acceleration</figcaption>
     </figure>
     
     But unfortunately, for processing real-time frames in our python script with FFdecoder and WriteGear APIs, we're bound to sacrifice this performance gain by explicitly copying raw decoded frames between System and GPU memory _(via the PCIe bus)_, thereby creating self-made latency in transfer time and increasing PCIe bandwidth occupancy due to overheads in communication over the bus. Moreover, given PCIe bandwidth limits, copying uncompressed image data would quickly saturate the PCIe bus. 
 
     <figure markdown>
-      ![HW Acceleration Limitation](../../../assets/images/hw_accel_limitation.png){ width="350" }
+      ![HW Acceleration Limitation](../../assets/images/hw_accel_limitation.png){ width="350" }
       <figcaption>Memory Flow with Hardware Acceleration <br>and Real-time Processing</figcaption>
     </figure>
 
