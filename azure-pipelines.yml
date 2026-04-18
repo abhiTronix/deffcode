@@ -37,14 +37,14 @@ pool:
 
 strategy:
   matrix:
-    Python38:
-      python.version: "3.8"
-    Python39:
-      python.version: "3.9"
     Python310:
       python.version: "3.10"
     Python311:
       python.version: "3.11"
+    Python312:
+      python.version: "3.12"
+    Python313:
+      python.version: "3.13"
 
 steps:
 - task: UsePythonVersion@0
@@ -76,18 +76,18 @@ steps:
 - script: |
     timeout 1500 pytest -sv --cov=deffcode --cov-report=xml --cov-report=html --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "##vso[task.setvariable variable=exit_code]$code"; fi
   displayName: 'pytest'
-  
+
 - bash: |
     echo "Exit Code was: $(exit_code)"
     curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
-    curl -Os https://uploader.codecov.io/latest/macos/codecov
-    curl -Os https://uploader.codecov.io/latest/macos/codecov.SHA256SUM
-    curl -Os https://uploader.codecov.io/latest/macos/codecov.SHA256SUM.sig
+    curl -Os https://cli.codecov.io/latest/macos/codecov
+    curl -Os https://cli.codecov.io/latest/macos/codecov.SHA256SUM
+    curl -Os https://cli.codecov.io/latest/macos/codecov.SHA256SUM.sig
     gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
     shasum -a 256 -c codecov.SHA256SUM
     chmod +x codecov
     if [ "$(exit_code)" != "124" ]; then
-      ./codecov -t $CODECOV_TOKEN -f coverage.xml -C $(Build.SourceVersion) -B $(Build.SourceBranch) -b $(Build.BuildNumber);
+      ./codecov  --verbose upload-process --fail-on-error -t $CODECOV_TOKEN -f coverage.xml -C $(Build.SourceVersion) -B $(Build.SourceBranch) -b $(Build.BuildNumber);
     else
       echo "Timeout test - Skipped Codecov!"; 
     fi
