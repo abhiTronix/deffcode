@@ -331,7 +331,7 @@ class Sourcer:
 
         Parameters:
             pretty_json (bool): whether to return metadata as JSON string(if `True`) or Dictionary(if `False`) type?
-            force_retrieve_output (bool): whether to also return metadata missing in current Pipeline. This method returns `(metadata, metadata_missing)` tuple if `force_retrieve_output=True` instead of `metadata`.
+            force_retrieve_missing (bool): whether to also return metadata missing in current Pipeline. This method returns `(metadata, metadata_missing)` tuple if `force_retrieve_missing=True` instead of `metadata`.
 
         **Returns:** `metadata` or `(metadata, metadata_missing)`, formatted as JSON string or python dictionary.
         """
