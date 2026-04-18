@@ -50,17 +50,17 @@ logger.setLevel(logging.DEBUG)
     [
         (return_testvideo_path(fmt="av"), return_static_ffmpeg(), True),
         (
-            return_generated_frames_path(return_static_ffmpeg()),
-            "",
-            True,
-        ),
-        ("unknown://invalid.com/", "", False),
-        (return_testvideo_path(fmt="ao"), return_static_ffmpeg(), False),
-        (
             "https://gitlab.com/abhiTronix/Imbakup/-/raw/master/Images/sample_480p.avi",
             return_static_ffmpeg(),
             True,
-        )
+        ),
+        ("unknown://invalid.com/", "", False),
+        (return_testvideo_path(fmt="ao"), "", False),
+        (
+            return_generated_frames_path(return_static_ffmpeg()),
+            return_static_ffmpeg(),
+            True,
+        ),
     ],
 )
 def test_source_playback(source, custom_ffmpeg, output):
