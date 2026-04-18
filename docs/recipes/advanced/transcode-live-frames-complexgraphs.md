@@ -80,7 +80,7 @@ We'll discuss the transcoding of live complex filtergraphs in the following reci
 ## Transcoding video with Live Custom watermark image overlay
 
 <figure markdown>
-  ![Big Buck Bunny with watermark](../../../assets/gifs/watermark_overlay.gif)
+  ![Big Buck Bunny with watermark](../../assets/gifs/watermark_overlay.gif)
   <figcaption>Big Buck Bunny with custom watermark</figcaption>
 </figure>
 
@@ -153,7 +153,7 @@ writer.close()
 ## Transcoding video from sequence of Images with additional filtering
 
 <figure markdown>
-  ![mandelbrot test pattern](../../../assets/gifs/fish_mandelbrot.gif)
+  ![mandelbrot test pattern](../../assets/gifs/fish_mandelbrot.gif)
   <figcaption>Mandelbrot pattern blend with Fish school video</figcaption>
 </figure>
 

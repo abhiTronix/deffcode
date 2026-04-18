@@ -28,7 +28,7 @@ limitations under the License.
 
     They can be processed by simply inserting an additional step between decoding and encoding of video frames:
 
-    ![Simple filtergraphs](../../../assets/images/simplefiltergraphs.png){ loading=lazy }
+    ![Simple filtergraphs](../../assets/images/simplefiltergraphs.png){ loading=lazy }
 
     Simple filtergraphs are configured with the per-stream `-filter` option _(with `-vf` for video)_. 
 
@@ -84,7 +84,7 @@ We'll discuss the Transcoding Video Art with Filtergraphs in the following recip
 > Based on the QCTools bitplane visualization, this video art has numerical values ranging between `-1`(no change) and `10`(noisiest) for the `Y` _(luminance)_, `U` and `V` _(chroma or color difference)_ planes, yielding cool and different results for different values.
 
 <figure markdown>
-  ![Bitplane Visualization](../../../assets/gifs/bitplane_visualization.gif)
+  ![Bitplane Visualization](../../assets/gifs/bitplane_visualization.gif)
   <figcaption>YUV Bitplane Visualization</figcaption>
 </figure>
 
@@ -155,7 +155,7 @@ writer.close()
 > This video art uses FFmpeg's [`pseudocolor`](https://ffmpeg.org/ffmpeg-filters.html#toc-pseudocolor) filter to create a **Jetcolor effect** which is high contrast, high brightness, and high saturation colormap that ranges from blue to red, and passes through the colors cyan, yellow, and orange. The jet colormap is associated with an astrophysical fluid jet simulation from the National Center for Supercomputer Applications. 
 
 <figure markdown>
-  ![Jetcolor effect](../../../assets/gifs/jetcolor_effect.gif)
+  ![Jetcolor effect](../../assets/gifs/jetcolor_effect.gif)
   <figcaption>Jetcolor effect</figcaption>
 </figure>
 
@@ -232,7 +232,7 @@ writer.close()
 > This video art using FFmpeg’s [`lagfun`](https://ffmpeg.org/ffmpeg-filters.html#toc-lagfun) filter to create a video echo/ghost/trailing effect.
 
 <figure markdown>
-  ![Ghosting effect](../../../assets/gifs/ghosting_effect.gif)
+  ![Ghosting effect](../../assets/gifs/ghosting_effect.gif)
   <figcaption>Ghosting effect</figcaption>
 </figure>
 
@@ -300,7 +300,7 @@ writer.close()
 > This video art uses FFmpeg’s `overlay`, `smartblur` and stacks of `dilation` filters to intentionally Pixelate your video in artistically cool looking ways such that each pixel become visible to the naked eye.
 
 <figure markdown>
-  ![Pixelation effect](../../../assets/gifs/pixelation_effect.gif)
+  ![Pixelation effect](../../assets/gifs/pixelation_effect.gif)
   <figcaption>Pixelation effect</figcaption>
 </figure>
 
