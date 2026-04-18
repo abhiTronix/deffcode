@@ -68,8 +68,8 @@ steps:
   displayName: 'Prepare dataset'
 
 - script: |
-    python -m pip install --upgrade pip wheel numpy
-    pip install --upgrade vidgear[core] opencv-python-headless codecov pytest pytest-cov pytest-azurepipelines
+    python -m pip install --upgrade pip wheel numpy cython opencv-python
+    pip install --upgrade vidgear[core] codecov pytest pytest-cov pytest-azurepipelines
     pip install --upgrade .
   displayName: 'Install pip dependencies'
 
