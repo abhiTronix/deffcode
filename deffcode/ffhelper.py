@@ -19,18 +19,22 @@ limitations under the License.
 """
 
 # import the necessary packages
-import os, re
-import requests
-import logging
-import platform
-import subprocess as sp
+from __future__ import annotations
 
-from tqdm import tqdm
+import logging
+import os
+import platform
+import re
+import subprocess as sp
 from pathlib import Path
+from typing import Any
+
+import requests
 from requests.adapters import HTTPAdapter, Retry
+from tqdm import tqdm
 
 # import utils packages
-from .utils import logger_handler, delete_file_safe
+from .utils import delete_file_safe, logger_handler
 
 # define logger
 logger = logging.getLogger("FFhelper")
@@ -47,14 +51,14 @@ class TimeoutHTTPAdapter(HTTPAdapter):
     A custom Transport Adapter with default timeouts
     """
 
-    def __init__(self, *args, **kwargs):
-        self.timeout = DEFAULT_TIMEOUT
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self.timeout: float = DEFAULT_TIMEOUT
         if "timeout" in kwargs:
             self.timeout = kwargs["timeout"]
             del kwargs["timeout"]
         super().__init__(*args, **kwargs)
 
-    def send(self, request, **kwargs):
+    def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:
         timeout = kwargs.get("timeout")
         if timeout is None:
             kwargs["timeout"] = self.timeout
@@ -62,8 +66,11 @@ class TimeoutHTTPAdapter(HTTPAdapter):
 
 
 def get_valid_ffmpeg_path(
-    custom_ffmpeg="", is_windows=False, ffmpeg_download_path="", verbose=False
-):
+    custom_ffmpeg: str = "",
+    is_windows: bool = False,
+    ffmpeg_download_path: str = "",
+    verbose: bool = False,
+) -> str | bool:
     """
     ## get_valid_ffmpeg_path
 
@@ -154,7 +161,9 @@ def get_valid_ffmpeg_path(
     return final_path if validate_ffmpeg(final_path, verbose=verbose) else False
 
 
-def download_ffmpeg_binaries(path, os_windows=False, os_bit=""):
+def download_ffmpeg_binaries(
+    path: str, os_windows: bool = False, os_bit: str = ""
+) -> str:
     """
     ## download_ffmpeg_binaries
 
@@ -219,9 +228,7 @@ def download_ffmpeg_binaries(path, os_windows=False, os_bit=""):
                         if "content-length" in response.headers
                         else len(response.content)
                     )
-                    assert not (
-                        total_length is None
-                    ), "[Helper:ERROR] :: Failed to retrieve files, check your Internet connectivity!"
+                    assert total_length is not None, "[Helper:ERROR] :: Failed to retrieve files, check your Internet connectivity!"
                     bar = tqdm(total=int(total_length), unit="B", unit_scale=True)
                     for data in response.iter_content(chunk_size=4096):
                         f.write(data)
@@ -229,7 +236,7 @@ def download_ffmpeg_binaries(path, os_windows=False, os_bit=""):
                     bar.close()
             logger.debug("Extracting executables.")
             with zipfile.ZipFile(file_name, "r") as zip_ref:
-                zip_fname, _ = os.path.split(zip_ref.infolist()[0].filename)
+                _zip_fname, _ = os.path.split(zip_ref.infolist()[0].filename)
                 zip_ref.extractall(base_path)
             # perform cleaning
             delete_file_safe(file_name)
@@ -239,7 +246,7 @@ def download_ffmpeg_binaries(path, os_windows=False, os_bit=""):
     return final_path
 
 
-def validate_ffmpeg(path, verbose=False):
+def validate_ffmpeg(path: str, verbose: bool = False) -> bool:
     """
     ## validate_ffmpeg
 
@@ -272,7 +279,7 @@ def validate_ffmpeg(path, verbose=False):
     return True
 
 
-def get_supported_pixfmts(path):
+def get_supported_pixfmts(path: str) -> list[tuple[str, str, str]]:
     """
     ## get_supported_pixfmts
 
@@ -298,13 +305,13 @@ def get_supported_pixfmts(path):
     outputs = finder.findall("\n".join(supported_pxfmts))
     # return output findings
     return [
-        ([s for s in o[0].split(" ")][-1], o[1].strip(), o[2].strip())
+        (list(o[0].split(" "))[-1], o[1].strip(), o[2].strip())
         for o in outputs
         if len(o) == 3
     ]
 
 
-def get_supported_vdecoders(path):
+def get_supported_vdecoders(path: str) -> list[str]:
     """
     ## get_supported_vdecoders
 
@@ -328,10 +335,10 @@ def get_supported_vdecoders(path):
     # find all outputs
     outputs = finder.findall("\n".join(supported_vdecoders))
     # return output findings
-    return [[s for s in o.split(" ")][-1] for o in outputs]
+    return [list(o.split(" "))[-1] for o in outputs]
 
 
-def get_supported_demuxers(path):
+def get_supported_demuxers(path: str) -> list[str]:
     """
     ## get_supported_demuxers
 
@@ -345,16 +352,18 @@ def get_supported_demuxers(path):
     # extract and clean FFmpeg output
     demuxers = check_sp_output([path, "-hide_banner", "-demuxers"])
     splitted = [x.decode("utf-8").strip() for x in demuxers.split(b"\n")]
-    split_index = [idx for idx, s in enumerate(splitted) if "--" in s][0]
+    split_index = next(idx for idx, s in enumerate(splitted) if "--" in s)
     supported_demuxers = splitted[split_index + 1 : len(splitted) - 1]
     # search all demuxers
     outputs = [re.search(r"\s[a-z0-9_,-]{2,}\s", d) for d in supported_demuxers]
     outputs = [o.group(0) for o in outputs if o]
     # return demuxers output
-    return [o.strip() if not ("," in o) else o.split(",")[-1].strip() for o in outputs]
+    return [o.strip() if "," not in o else o.split(",")[-1].strip() for o in outputs]
 
 
-def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
+def extract_device_n_demuxer(
+    path: str, machine_OS: str | None = None, verbose: bool = False
+) -> tuple[list[Any], str]:
     """
     ## get_valid_devicepath
 
@@ -369,22 +378,22 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
     **Returns:** Tuple of list of supported device(s) path/name/index and OS specific demuxer used.
     """
     # validate `machine_OS` parameter value
-    assert not (machine_OS is None) and isinstance(
+    assert machine_OS is not None and isinstance(
         machine_OS, str
     ), "`machine_OS` parameter value is empty or invalid type. Aborting!"
 
     # initialize params
-    devices = []  # handles devices discovered
-    req_demuxer = None  # handle required demuxer
+    devices: list[Any] = []  # handles devices discovered
+    req_demuxer: str | None = None  # handle required demuxer
 
     # define all valid FFmpeg demuxers w.r.t OS platforms
-    valid_demuxers = dict(Windows="dshow", Darwin="avfoundation", Linux="v4l2")
+    valid_demuxers = {"Windows": "dshow", "Darwin": "avfoundation", "Linux": "v4l2"}
 
     # check OS is supported
-    if not machine_OS.strip() in list(valid_demuxers.keys()):
+    if machine_OS.strip() not in list(valid_demuxers.keys()):
         # raise error if OS isn't supported
         raise ValueError(
-            """Unsupported OS detected! The `source_demuxer='auto'` value isn't supported on your OS, 
+            """Unsupported OS detected! The `source_demuxer='auto'` value isn't supported on your OS,
                 Kindly assign `source` and `source_demuxer` parameter values manually."""
         )
     else:
@@ -410,13 +419,13 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
     if machine_OS == "Windows":
         # get metadata
         metadata = check_sp_output(
-            [path] + default_ffcommand.split(" "),
+            [path, *default_ffcommand.split(" ")],
             force_retrieve_stderr=True,
         )
         # clean and split metadata
         splitted = [x.decode("utf-8").strip() for x in metadata.split(b"\n")]
         # find video only
-        head, sep, tail = "\n".join(splitted).partition("DirectShow audio")
+        head, _sep, _tail = "\n".join(splitted).partition("DirectShow audio")
         if head.strip():
             # compile regex
             finder = re.compile(r'"(.*?[^\\])"')
@@ -435,17 +444,17 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
         # check if command executed properly
         if (
             not decoded
-            or set(["command", "not", "found"]).issubset(decoded.split(" "))
+            or {"command", "not", "found"}.issubset(decoded.split(" "))
             or (
-                set(["Cannot", "open", "device"]).issubset(decoded.split(" "))
-                and not ("):" in decoded)
+                {"Cannot", "open", "device"}.issubset(decoded.split(" "))
+                and "):" not in decoded
             )
         ):
             logger.error(
                 "Cannot execute `v4l2-ctl` command. "
                 + (
                     "Kindly install `v4l-utils` package on your linux machine."
-                    if set(["command", "not", "found"]).issubset(decoded.split(" "))
+                    if {"command", "not", "found"}.issubset(decoded.split(" "))
                     else "Permission denied! Add your username to the `video` group to fix this error."
                 )
             )
@@ -496,13 +505,13 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
     else:  # Darwin OSes
         # get metadata
         metadata = check_sp_output(
-            [path] + default_ffcommand.split(" "),
+            [path, *default_ffcommand.split(" ")],
             force_retrieve_stderr=True,
         )
         # clean and split metadata
         splitted = [x.decode("utf-8").strip() for x in metadata.split(b"\n")]
         # find video only
-        head, sep, tail = "\n".join(splitted).partition("AVFoundation audio")
+        head, _sep, _tail = "\n".join(splitted).partition("AVFoundation audio")
         if head.strip():
             # compile regex
             finder = re.compile(r"\[[0-9]\](.*)")
@@ -542,7 +551,9 @@ def extract_device_n_demuxer(path, machine_OS=None, verbose=False):
         )
 
 
-def validate_imgseqdir(source, extension="jpg", verbose=False):
+def validate_imgseqdir(
+    source: str, extension: str = "jpg", verbose: bool = False
+) -> bool:
     """
     ## validate_imgseqdir
 
@@ -564,13 +575,15 @@ def validate_imgseqdir(source, extension="jpg", verbose=False):
             return False
         else:
             return (
-                True if len(list(dirpath.glob("*.{}".format(extension)))) > 2 else False
+                len(list(dirpath.glob("*.{}".format(extension)))) > 2
             )
     except:
         return False
 
 
-def is_valid_image_seq(path, source=None, verbose=False):
+def is_valid_image_seq(
+    path: str, source: str | None = None, verbose: bool = False
+) -> bool:
     """
     ## is_valid_image_seq
 
@@ -593,7 +606,7 @@ def is_valid_image_seq(path, source=None, verbose=False):
     supported_image_formats = [
         x.split("_")[0] for x in extract_formats if x.endswith("_pipe")
     ]
-    filename, extension = os.path.splitext(source)
+    _filename, extension = os.path.splitext(source)
     # Test and return result whether scheme is supported
     if extension and source.endswith(tuple(supported_image_formats)):
         if validate_imgseqdir(source, extension=extension[1:], verbose=verbose):
@@ -612,7 +625,9 @@ def is_valid_image_seq(path, source=None, verbose=False):
         return False
 
 
-def is_valid_url(path, url=None, verbose=False):
+def is_valid_url(
+    path: str, url: str | None = None, verbose: bool = False
+) -> bool:
     """
     ## is_valid_url
 
@@ -653,7 +668,7 @@ def is_valid_url(path, url=None, verbose=False):
         return False
 
 
-def check_sp_output(*args, **kwargs):
+def check_sp_output(*args: Any, **kwargs: Any) -> bytes:
     """
     ## check_sp_output
 
@@ -673,9 +688,9 @@ def check_sp_output(*args, **kwargs):
     retrieve_stderr = kwargs.pop("force_retrieve_stderr", False)
     # execute command in subprocess
     process = sp.Popen(
+        *args,
         stdout=sp.PIPE,
         stderr=sp.DEVNULL if not (retrieve_stderr) else sp.PIPE,
-        *args,
         **kwargs,
     )
     # communicate and poll process

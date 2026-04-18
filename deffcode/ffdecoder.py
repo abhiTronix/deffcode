@@ -19,19 +19,26 @@ limitations under the License.
 """
 
 # import the necessary packages
-import platform
+from __future__ import annotations
+
 import logging
-import numpy as np
+import platform
 import subprocess as sp
 from collections import OrderedDict
+from collections.abc import Generator
+from types import TracebackType
+from typing import Any
 
-# import utils packages
-from .utils import dict2Args, logger_handler
-from .sourcer import Sourcer
+import numpy as np
+
 from .ffhelper import (
     get_supported_pixfmts,
     get_supported_vdecoders,
 )
+from .sourcer import Sourcer
+
+# import utils packages
+from .utils import dict2Args, logger_handler
 
 # define FFdecoder logger
 logger = logging.getLogger("FFdecoder")
@@ -72,13 +79,13 @@ class FFdecoder:
 
     def __init__(
         self,
-        source,
-        source_demuxer=None,
-        frame_format=None,
-        custom_ffmpeg="",
-        verbose=False,
-        **ffparams
-    ):
+        source: str | int,
+        source_demuxer: str | None = None,
+        frame_format: str | None = None,
+        custom_ffmpeg: str = "",
+        verbose: bool = False,
+        **ffparams: Any,
+    ) -> None:
         """
         This constructor method initializes the object state and attributes of the FFdecoder Class.
 
@@ -141,7 +148,7 @@ class FFdecoder:
         self.__extra_params = {
             str(k).strip(): (
                 str(v).strip()
-                if not (v is None)
+                if v is not None
                 and not isinstance(v, (dict, list, int, float, tuple))
                 else v
             )
@@ -187,7 +194,7 @@ class FFdecoder:
         )
 
         # pass FFmpeg filter to Sourcer API params for processing
-        if set(["-vf", "-filter_complex"]).intersection(self.__extra_params.keys()):
+        if {"-vf", "-filter_complex"}.intersection(self.__extra_params.keys()):
             key = "-vf" if "-vf" in self.__extra_params else "-filter_complex"
             sourcer_params[key] = self.__extra_params[key]
 
@@ -282,7 +289,7 @@ class FFdecoder:
             self.__inputframerate = float(__framerate) if __framerate > 0.0 else 0.0
         else:
             # warn if wrong type
-            not (__framerate is None) and logger.warning(
+            __framerate is not None and logger.warning(
                 "Discarding invalid `-framerate` value of wrong type `{}`!".format(
                     type(__framerate).__name__
                 )
@@ -309,7 +316,7 @@ class FFdecoder:
             )
         else:
             # log it
-            not (self.__custom_resolution is None) and logger.warning(
+            self.__custom_resolution is not None and logger.warning(
                 "Discarding invalid `-custom_resolution` value: `{}`!".format(
                     self.__custom_resolution
                 )
@@ -317,7 +324,7 @@ class FFdecoder:
             # reset improper values
             self.__custom_resolution = None
 
-    def formulate(self):
+    def formulate(self) -> FFdecoder:
         """
         This method formulates all necessary FFmpeg pipeline arguments and executes it inside the FFmpeg `subprocess` pipe.
 
@@ -354,7 +361,7 @@ class FFdecoder:
                 self.__extra_params.pop("-vcodec", None)
             else:
                 # assign video decoder selected here.
-                if not "-vcodec" in self.__extra_params:
+                if "-vcodec" not in self.__extra_params:
                     input_params["-vcodec"] = default_vdecodec
                 else:
                     input_params["-vcodec"] = self.__extra_params.pop(
@@ -362,7 +369,7 @@ class FFdecoder:
                     )
                 if (
                     default_vdecodec != "unknown"
-                    and not input_params["-vcodec"] in supported_vdecodecs
+                    and input_params["-vcodec"] not in supported_vdecodecs
                 ):
                     # reset to default if not supported
                     logger.warning(
@@ -372,7 +379,7 @@ class FFdecoder:
                     )
                     input_params["-vcodec"] = default_vdecodec
                 # raise error if not valid decoder found
-                if not input_params["-vcodec"] in supported_vdecodecs:
+                if input_params["-vcodec"] not in supported_vdecodecs:
                     raise RuntimeError(
                         "Provided FFmpeg does not support any known usable video-decoders."
                         " Either define your own manually or switch to another FFmpeg binaries(if available)."
@@ -385,7 +392,7 @@ class FFdecoder:
                 )
             if "-frames:v" in self.__extra_params:
                 value = self.__extra_params.pop("-frames:v", None)
-                if not (value is None) and value > 0:
+                if value is not None and value > 0:
                     output_params["-frames:v"] = value
 
             # dynamically calculate default raw-frames pixel format(if not assigned by user).
@@ -414,7 +421,7 @@ class FFdecoder:
             # assign output raw-frames pixel format
             rawframe_pixfmt = None
             if (
-                not (self.__frame_format is None)
+                self.__frame_format is not None
                 and self.__frame_format in supported_pixfmts
             ):
                 # check if valid and supported `frame_format` parameter assigned
@@ -451,9 +458,7 @@ class FFdecoder:
                         "{} Switching to default `{}` pixel-format!".format(
                             (
                                 "Provided FFmpeg does not supports `{}` pixel-format.".format(
-                                    self.__sourcer_metadata["output_frames_pixfmt"]
-                                    if "output_frames_pixfmt" in self.__sourcer_metadata
-                                    else self.__frame_format
+                                    self.__sourcer_metadata.get("output_frames_pixfmt", self.__frame_format)
                                 )
                                 if self.__frame_format != "null"
                                 else "No usable pixel-format defined."
@@ -463,11 +468,11 @@ class FFdecoder:
                     )
 
             # dynamically calculate raw-frame datatype based on pixel-format selected
-            (self.__raw_frame_depth, rawframesbpp) = [
+            (self.__raw_frame_depth, rawframesbpp) = next(
                 (int(x[1]), int(x[2]))
                 for x in self.__ff_pixfmt_metadata
                 if x[0] == rawframe_pixfmt
-            ][0]
+            )
             raw_bit_per_component = (
                 rawframesbpp // self.__raw_frame_depth if self.__raw_frame_depth else 0
             )
@@ -482,7 +487,7 @@ class FFdecoder:
                     self.__raw_frame_dtype = np.dtype(">u2")
             else:
                 # reset to both pixel-format and datatype to default if not supported
-                not (self.__frame_format is None) and logger.warning(
+                self.__frame_format is not None and logger.warning(
                     "Selected pixel-format `{}` dtype is not supported by FFdecoder API. Switching to default `rgb24` pixel-format!".format(
                         rawframe_pixfmt
                     )
@@ -510,7 +515,7 @@ class FFdecoder:
                 )
                 self.__extra_params.pop("-s", None)
             # assign output rawframe resolution
-            if not (self.__custom_resolution is None) and not isinstance(
+            if self.__custom_resolution is not None and not isinstance(
                 self.__custom_resolution, str
             ):
                 # assign if assigned by user and not "null"(str)
@@ -632,7 +637,7 @@ class FFdecoder:
             if "-frames:v" in input_params:
                 self.__raw_frame_num = input_params["-frames:v"]
             elif (
-                not (self.__sourcer_metadata["approx_video_nframes"] is None)
+                self.__sourcer_metadata["approx_video_nframes"] is not None
                 and self.__sourcer_metadata["approx_video_nframes"] > 0
             ):
                 self.__raw_frame_num = self.__sourcer_metadata["approx_video_nframes"]
@@ -660,13 +665,11 @@ class FFdecoder:
             logger.error("This pipeline is already created and running!")
         return self
 
-    def __fetchNextfromPipeline(self):
+    def __fetchNextfromPipeline(self) -> np.ndarray | None:
         """
         This Internal method to fetch next dataframes(1D arrays) from `subprocess` pipe's standard output(`stdout`) into a Numpy buffer.
         """
-        assert not (
-            self.__process is None
-        ), "Pipeline is not running! You must call `formulate()` method first."
+        assert self.__process is not None, "Pipeline is not running! You must call `formulate()` method first."
 
         # formulated raw frame size and apply YUV pixel formats patch(if applicable)
         raw_frame_size = (
@@ -692,11 +695,11 @@ class FFdecoder:
             raise RuntimeError("Frame buffering failed with error: {}".format(str(e)))
         return (
             nparray
-            if not (nparray is None) and len(nparray) == raw_frame_size
+            if nparray is not None and len(nparray) == raw_frame_size
             else None
         )
 
-    def __fetchNextFrame(self):
+    def __fetchNextFrame(self) -> np.ndarray | None:
         """
         This Internal method grabs and decodes next 3D `ndarray` video-frame from the buffer.
         """
@@ -732,7 +735,7 @@ class FFdecoder:
         # return frame
         return frame
 
-    def generateFrame(self):
+    def generateFrame(self) -> Generator[np.ndarray, None, None]:
         """
         This method returns a [Generator function](https://wiki.python.org/moin/Generators)
         _(also an Iterator using `next()`)_ of video frames, grabbed continuously from the buffer.
@@ -752,7 +755,7 @@ class FFdecoder:
                     break
                 yield frame
 
-    def __enter__(self):
+    def __enter__(self) -> FFdecoder:
         """
         Handles entry with the `with` statement. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/).
 
@@ -760,14 +763,19 @@ class FFdecoder:
         """
         return self.formulate()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         """
         Handles exit with the `with` statement. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/).
         """
         self.terminate()
 
     @property
-    def metadata(self):
+    def metadata(self) -> str:
         """
         A property object that dumps metadata information as JSON string.
 
@@ -787,7 +795,7 @@ class FFdecoder:
         )
 
     @metadata.setter
-    def metadata(self, value):
+    def metadata(self, value: dict[str, Any]) -> None:
         """
         A property object that updates metadata information with user-defined dictionary.
 
@@ -826,7 +834,7 @@ class FFdecoder:
                             ". Try updating `{}` property instead!".format(
                                 counterpart_prop[key]
                             )
-                            if key in counterpart_prop.keys()
+                            if key in counterpart_prop
                             else " and cannot be updated!"
                         )
                     )
@@ -870,7 +878,9 @@ class FFdecoder:
             # otherwise raise error
             raise ValueError("Invalid datatype metadata assigned. Aborting!")
 
-    def __launch_FFdecoderline(self, input_params, output_params):
+    def __launch_FFdecoderline(
+        self, input_params: dict[str, Any], output_params: dict[str, Any]
+    ) -> None:
         """
         This Internal method executes FFmpeg pipeline arguments inside a `subprocess` pipe in a new process.
 
@@ -892,7 +902,7 @@ class FFdecoder:
             + input_parameters
             + (
                 ["-f", self.__sourcer_metadata["source_demuxer"]]
-                if ("source_demuxer" in self.__sourcer_metadata.keys())
+                if ("source_demuxer" in self.__sourcer_metadata)
                 else []
             )
             + ["-i", self.__sourcer_metadata["source"]]
@@ -918,7 +928,7 @@ class FFdecoder:
                 ),
             )
 
-    def terminate(self):
+    def terminate(self) -> None:
         """
         Safely terminates all processes.
         """
@@ -927,7 +937,7 @@ class FFdecoder:
         self.__verbose_logs and logger.debug("Terminating FFdecoder Pipeline...")
         self.__terminate_stream = True
         # check if no process was initiated at first place
-        if self.__process is None or not (self.__process.poll() is None):
+        if self.__process is None or self.__process.poll() is not None:
             logger.info("Pipeline already terminated.")
             return
         # Attempt to close pipeline.
