@@ -57,3 +57,48 @@ packages = ["deffcode"]
 
 [tool.setuptools.dynamic]
 version = {attr = "deffcode.version.__version__"}
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = [
+    "build",
+    "dist",
+    ".venv",
+    "venv",
+    "docs",
+    "*.egg-info",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # Pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+    "PIE",  # flake8-pie
+    "RUF",  # Ruff-specific rules
+]
+ignore = [
+    "E501",   # line-too-long (handled by formatter)
+    "B008",   # function calls in argument defaults
+    "B904",   # raise ... from ...
+    "SIM105", # contextlib.suppress (pattern clarity)
+    "SIM108", # ternary-in-place
+    "UP032",  # f-strings (keep .format() calls for readability in logs)
+    "RUF012", # mutable class attrs with ClassVar
+    "E722",   # bare except (kept intentional in a few places)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011", "E402", "F401"]
+"deffcode/__init__.py" = ["F401"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
