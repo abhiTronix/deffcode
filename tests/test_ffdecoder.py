@@ -48,14 +48,14 @@ logger.setLevel(logging.DEBUG)
 @pytest.mark.parametrize(
     "source, custom_ffmpeg, output",
     [
-        (return_testvideo_path(fmt="av"), return_static_ffmpeg(), True),
+        (return_testvideo_path(fmt="av"), "", True),
         (
             "https://abhitronix.github.io/html/Big_Buck_Bunny_1080_10s_1MB.mp4",
-            return_static_ffmpeg(),
+            "",
             True,
         ),
         ("unknown://invalid.com/", "", False),
-        (return_testvideo_path(fmt="ao"), "", False),
+        (return_testvideo_path(fmt="ao"), return_static_ffmpeg(), False),
         (
             return_generated_frames_path(return_static_ffmpeg()),
             return_static_ffmpeg(),
