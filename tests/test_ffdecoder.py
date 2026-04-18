@@ -45,23 +45,22 @@ logger.propagate = False
 logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
 
-
 @pytest.mark.parametrize(
     "source, custom_ffmpeg, output",
     [
         (return_testvideo_path(fmt="av"), return_static_ffmpeg(), True),
         (
-            "https://gitlab.com/abhiTronix/Imbakup/-/raw/master/Images/sample_480p.avi",
+            return_generated_frames_path(return_static_ffmpeg()),
             "",
             True,
         ),
         ("unknown://invalid.com/", "", False),
         (return_testvideo_path(fmt="ao"), return_static_ffmpeg(), False),
         (
-            return_generated_frames_path(return_static_ffmpeg()),
+            "https://gitlab.com/abhiTronix/Imbakup/-/raw/master/Images/sample_480p.avi",
             return_static_ffmpeg(),
             True,
-        ),
+        )
     ],
 )
 def test_source_playback(source, custom_ffmpeg, output):
