@@ -18,17 +18,22 @@ limitations under the License.
 ===============================================
 """
 # import the necessary packages
+from __future__ import annotations
+
+import logging
+from typing import Any
 
 import pytest
-import logging
+
+from deffcode import Sourcer
+from deffcode.utils import logger_handler
+
 from .essentials import (
+    actual_frame_count_n_frame_size,
+    return_generated_frames_path,
     return_static_ffmpeg,
     return_testvideo_path,
-    return_generated_frames_path,
-    actual_frame_count_n_frame_size,
 )
-from deffcode.utils import logger_handler
-from deffcode import Sourcer
 
 # define test logger
 logger = logging.getLogger("Test_Sourcer")
@@ -73,7 +78,9 @@ logger.setLevel(logging.DEBUG)
         ),
     ],
 )
-def test_source(source, sourcer_params, custom_ffmpeg):
+def test_source(
+    source: str, sourcer_params: dict[str, Any], custom_ffmpeg: str
+) -> None:
     """
     Paths Source - Test various source paths/urls supported by Sourcer.
     """
@@ -109,7 +116,11 @@ def test_source(source, sourcer_params, custom_ffmpeg):
         ),
     ],
 )
-def test_probe_stream_n_retrieve_metadata(source, default_stream_indexes, params):
+def test_probe_stream_n_retrieve_metadata(
+    source: str,
+    default_stream_indexes: tuple[int, ...] | list[int],
+    params: list[str],
+) -> None:
     """
     Test `probe_stream` and `retrieve_metadata` function.
     """
@@ -130,7 +141,7 @@ def test_probe_stream_n_retrieve_metadata(source, default_stream_indexes, params
             ).probe_stream(default_stream_indexes=default_stream_indexes)
         metadata = sourcer.retrieve_metadata()
         logger.debug("Found Metadata: `{}`".format(metadata))
-        assert all(metadata[x] == True for x in params), "Test Failed!"
+        assert all(metadata[x] is True for x in params), "Test Failed!"
         if (
             source.startswith("http")
             or source.endswith("png")

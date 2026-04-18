@@ -18,29 +18,33 @@ limitations under the License.
 ===============================================
 """
 # import the necessary packages
+from __future__ import annotations
 
-import os
-import pytest
-import shutil
 import logging
-import requests
+import os
+import shutil
 import tempfile
-from .essentials import (
-    is_windows,
-    return_static_ffmpeg,
-    return_testvideo_path,
-    return_generated_frames_path,
-)
-from deffcode.utils import logger_handler
+
+import pytest
+import requests
+
 from deffcode.ffhelper import (
-    get_valid_ffmpeg_path,
+    check_sp_output,
     download_ffmpeg_binaries,
-    validate_ffmpeg,
-    validate_imgseqdir,
+    extract_device_n_demuxer,
+    get_valid_ffmpeg_path,
     is_valid_image_seq,
     is_valid_url,
-    check_sp_output,
-    extract_device_n_demuxer,
+    validate_ffmpeg,
+    validate_imgseqdir,
+)
+from deffcode.utils import logger_handler
+
+from .essentials import (
+    is_windows,
+    return_generated_frames_path,
+    return_static_ffmpeg,
+    return_testvideo_path,
 )
 
 # define test logger
@@ -64,7 +68,7 @@ test_data = [
 
 
 @pytest.mark.parametrize("paths, os_bit", test_data)
-def test_ffmpeg_binaries_download(paths, os_bit):
+def test_ffmpeg_binaries_download(paths: str, os_bit: str) -> None:
     """
     Testing Static FFmpeg auto-download on Windows OS
     """
@@ -85,7 +89,7 @@ def test_ffmpeg_binaries_download(paths, os_bit):
 
 
 @pytest.mark.parametrize("paths", ["wrong_test_path", return_static_ffmpeg()])
-def test_validate_ffmpeg(paths):
+def test_validate_ffmpeg(paths: str) -> None:
     """
     Testing downloaded FFmpeg Static binaries validation on Windows OS
     """
@@ -111,7 +115,9 @@ test_data = [
 
 
 @pytest.mark.parametrize("paths, ffmpeg_download_paths, results", test_data)
-def test_get_valid_ffmpeg_path(paths, ffmpeg_download_paths, results):
+def test_get_valid_ffmpeg_path(
+    paths: str, ffmpeg_download_paths: str, results: bool
+) -> None:
     """
     Testing FFmpeg excutables validation and correction:
     """
@@ -140,7 +146,7 @@ def test_get_valid_ffmpeg_path(paths, ffmpeg_download_paths, results):
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_check_sp_output():
+def test_check_sp_output() -> None:
     """
     Testing check_sp_output method
     """
@@ -155,7 +161,7 @@ def test_check_sp_output():
         ("unknown://invalid.com/", False),
     ],
 )
-def test_is_valid_url(URL, result):
+def test_is_valid_url(URL: str | None, result: bool) -> None:
     """
     Testing is_valid_url method
     """
@@ -178,7 +184,7 @@ def test_is_valid_url(URL, result):
         ),
     ],
 )
-def test_is_valid_image_seq(source, result):
+def test_is_valid_image_seq(source: str | None, result: bool) -> None:
     """
     Testing test_is_valid_image_seq method
     """
@@ -198,7 +204,7 @@ def test_is_valid_image_seq(source, result):
         ("unknown://invalid.com/", False),
     ],
 )
-def test_validate_imgseqdir(path, result):
+def test_validate_imgseqdir(path: str, result: bool) -> None:
     """
     Testing validate_imgseqdir method
     """
@@ -210,7 +216,7 @@ def test_validate_imgseqdir(path, result):
 
 
 @pytest.mark.xfail(raises=ValueError)
-def test_extract_device_n_demuxer():
+def test_extract_device_n_demuxer() -> None:
     """
     Testing extract_device_n_demuxer method
     """
