@@ -104,7 +104,7 @@ def test_source_playback(source, custom_ffmpeg, output):
             # increment number of frames
             frame_num += 1
 
-        assert frame_num >= actual_frame_num, "Test failed"
+        assert frame_num >= actual_frame_num, f"Test failed - Total Frames: {frame_num} vs Actual Frames: {actual_frame_num}"
     except Exception as e:
         if not output:
             logger.exception(str(e))
