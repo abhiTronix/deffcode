@@ -96,6 +96,9 @@ def test_source_playback(source, custom_ffmpeg, output):
         actual_frame_num, actual_frame_shape = actual_frame_count_n_frame_size(source)
         logger.info(f"Actual Frames Number: {actual_frame_num} and Actual Frame Shape: {actual_frame_shape}")
 
+        # Update output if the actual_frame_count_n_frame_size fails to decode stream
+        output = output and (actual_frame_shape is not None)
+        
         # grab RGB24(default) 3D frames from decoder
         for frame in decoder.generateFrame():
             # check shape
