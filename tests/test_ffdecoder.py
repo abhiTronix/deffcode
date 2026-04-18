@@ -50,7 +50,7 @@ logger.setLevel(logging.DEBUG)
     [
         (return_testvideo_path(fmt="av"), return_static_ffmpeg(), True),
         (
-            "https://gitlab.com/abhiTronix/Imbakup/-/raw/master/Images/sample_480p.avi",
+            "https://abhitronix.github.io/html/Big_Buck_Bunny_1080_10s_1MB.mp4",
             return_static_ffmpeg(),
             True,
         ),
