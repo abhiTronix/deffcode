@@ -79,11 +79,11 @@ We'll discuss transcoding using both these libraries briefly in the following re
 
 &thinsp;
 
-## Transcoding video using OpenCV VideoWriter API
+## Transcoding Video using OpenCV VideoWriter API
 
-!!! quote "OpenCV's' [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) class can be used directly with DeFFcode's FFdecoder API to encode video frames into a multimedia video file but it lacks the ability to control output quality, bitrate, compression, and other important features which are only available with VidGear's WriteGear API."
+OpenCV's [`VideoWriter()`](https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html#ad59c61d8881ba2b2da22cff5487465b5) class can be used directly with DeFFcode's FFdecoder API to encode video frames into a multimedia file. However, it lacks fine-grained control over output quality, bitrate, compression, and other advanced parameters—features that are readily available with VidGear's WriteGear API.
 
-In this example we will decode different pixel formats video frames from a given Video file _(say `foo.mp4`)_ in FFdecoder API, and encode them using OpenCV Library's `VideoWriter()` method in real-time. 
+In this example, we will decode video frames with different pixel formats from a given video file *(e.g., `foo.mp4`)* using the FFdecoder API, and then encode them in real time using OpenCV's `VideoWriter()` method.. 
 
 !!! info "OpenCV's `VideoWriter()` class requires a valid Output filename _(e.g. output_foo.avi)_, [FourCC](https://www.fourcc.org/fourcc.php) code, framerate, and resolution as input."
 
@@ -317,14 +317,12 @@ In this example we will decode different pixel formats video frames from a given
 
     !!! tip "Hardware Acceleration"
         If your machine has a dedicated GPU, you can offload encoding to the GPU entirely — for example by passing `"-vcodec": "h264_nvenc"` to WriteGear _(NVIDIA)_ — shifting the heavy lifting off the CPU.
-
-???+ quote "Lossless transcoding  with FFdecoder and WriteGear API"
     
-    VidGear's [**WriteGear API**](https://abhitronix.github.io/vidgear/latest/gears/writegear/introduction/) implements a complete, flexible, and robust wrapper around FFmpeg in [compression mode](https://abhitronix.github.io/vidgear/latest/gears/writegear/compression/overview/) for encoding real-time video frames to a lossless compressed multimedia output file(s)/stream(s). 
+**VidGear's [WriteGear API](https://abhitronix.github.io/vidgear/latest/gears/writegear/introduction/)** provides a flexible and robust wrapper over FFmpeg (compression mode) for encoding real-time video frames into lossless multimedia files or streams.
 
-    DeFFcode's FFdecoder API in conjunction with WriteGear API creates a high-level **High-performance Lossless FFmpeg Transcoding _(Decoding + Encoding)_ Pipeline :fire:** that is able to exploit almost any FFmpeg parameter for achieving anything imaginable with multimedia video data all while allow us to manipulate the real-time video frames with immense flexibility. 
+Combined with **DeFFcode's FFdecoder API**, it enables a high-level **lossless FFmpeg transcoding pipeline (decoding + encoding)** with full control over FFmpeg parameters and real-time frame manipulation.
 
-In this example we will decode different pixel formats video frames from a given Video file _(say `foo.mp4`)_ in FFdecoder API, and encode them into lossless video file with controlled framerate using WriteGear API in real-time. 
+In this example, we will decode video frames with different pixel formats from a given video file *(e.g., `foo.mp4`)* using the FFdecoder API, and then encode them into a lossless video file with a controlled framerate using the WriteGear API in real time.
 
 !!! info "Additional Parameters in WriteGear API"
     
