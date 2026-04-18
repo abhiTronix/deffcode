@@ -95,12 +95,13 @@ def test_source_playback(source, custom_ffmpeg, output):
 
         # gather data
         actual_frame_num, actual_frame_shape = actual_frame_count_n_frame_size(source)
+        logger.info(f"Actual Frames Number: {actual_frame_num} and Actual Frame Shape: {actual_frame_shape}")
 
         # grab RGB24(default) 3D frames from decoder
         for frame in decoder.generateFrame():
             # check shape
             if frame.shape != actual_frame_shape:
-                raise RuntimeError("Test failed")
+                raise RuntimeError(f"Test failed - Frame Shape: {frame.shape} vs Actual Frame Shape: {actual_frame_shape}")
             # increment number of frames
             frame_num += 1
 
