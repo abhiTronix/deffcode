@@ -19,25 +19,29 @@ limitations under the License.
 """
 
 # import the necessary packages
+from __future__ import annotations
 
-import os
-import cv2
 import json
-import pytest
-import tempfile
-import platform
-import numpy as np
 import logging
-from .essentials import (
-    return_static_ffmpeg,
-    return_testvideo_path,
-    return_generated_frames_path,
-    actual_frame_count_n_frame_size,
-    remove_file_safe,
-)
+import os
+import platform
+import tempfile
+from typing import Any
+
+import cv2
+import pytest
 from PIL import Image
+
 from deffcode import FFdecoder
 from deffcode.utils import logger_handler
+
+from .essentials import (
+    actual_frame_count_n_frame_size,
+    remove_file_safe,
+    return_generated_frames_path,
+    return_static_ffmpeg,
+    return_testvideo_path,
+)
 
 # define test logger
 logger = logging.getLogger("Test_FFdecoder")
@@ -63,7 +67,7 @@ logger.setLevel(logging.DEBUG)
         ),
     ],
 )
-def test_source_playback(source, custom_ffmpeg, output):
+def test_source_playback(source: str, custom_ffmpeg: str, output: bool) -> None:
     """
     Paths Source Playback - Test playback of various source paths/urls supported by FFdecoder API
     """
@@ -98,7 +102,7 @@ def test_source_playback(source, custom_ffmpeg, output):
 
         # Update output if the actual_frame_count_n_frame_size fails to decode stream
         output = output and (actual_frame_shape is not None)
-        
+
         # grab RGB24(default) 3D frames from decoder
         for frame in decoder.generateFrame():
             # check shape
@@ -116,20 +120,19 @@ def test_source_playback(source, custom_ffmpeg, output):
             pytest.fail(str(e))
     finally:
         # terminate the decoder
-        not (decoder is None) and decoder.terminate()
+        decoder is not None and decoder.terminate()
 
 
 @pytest.mark.parametrize(
     "pixfmts", ["bgr24", "gray", "rgba", "invalid", "invalid2", "yuv420p", "bgr48be"]
 )
-def test_frame_format(pixfmts):
+def test_frame_format(pixfmts: str) -> None:
     """
     Testing `frame_format` with different pixel formats.
     """
     decoder = None
-    frame_num = 0
     source = return_testvideo_path(fmt="vo")
-    actual_frame_num, actual_frame_shape = actual_frame_count_n_frame_size(source)
+    _actual_frame_num, _actual_frame_shape = actual_frame_count_n_frame_size(source)
     ffparams = {"-pix_fmt": "bgr24"}
     try:
         # formulate the decoder with suitable source(for e.g. foo.mp4)
@@ -156,7 +159,7 @@ def test_frame_format(pixfmts):
                 **ffparams,
             )
             # assign manually pix-format via `metadata` property object {special case}
-            decoder.metadata = dict(output_frames_pixfmt="yuvj422p")
+            decoder.metadata = {"output_frames_pixfmt": "yuvj422p"}
             # formulate decoder
             decoder.formulate()
 
@@ -172,7 +175,7 @@ def test_frame_format(pixfmts):
         pytest.fail(str(e))
     finally:
         # terminate the decoder
-        not (decoder is None) and decoder.terminate()
+        decoder is not None and decoder.terminate()
 
 
 @pytest.mark.parametrize(
@@ -198,21 +201,21 @@ def test_frame_format(pixfmts):
         ),
         (["invalid"], False),
         (
-            dict(
-                mystring="abcd",  # string data
-                myint=1234,  # integers data
-                mylist=[1, "Rohan", ["inner_list"]],  # list data
-                mydict={"anotherstring": "hello"},  # dictionary data
-                myjson=json.loads(
+            {
+                "mystring": "abcd",  # string data
+                "myint": 1234,  # integers data
+                "mylist": [1, "Rohan", ["inner_list"]],  # list data
+                "mydict": {"anotherstring": "hello"},  # dictionary data
+                "myjson": json.loads(
                     '{"name": "John", "age": 30, "city": "New York"}'
                 ),  # json data
-                source_video_resolution=[640, 480],
-            ),
+                "source_video_resolution": [640, 480],
+            },
             True,
         ),
     ],
 )
-def test_metadata(custom_params, checks):
+def test_metadata(custom_params: Any, checks: bool) -> None:
     """
     Testing `metadata` print and updation
     """
@@ -253,7 +256,7 @@ def test_metadata(custom_params, checks):
             pytest.fail(str(e))
     finally:
         # terminate the decoder
-        not (decoder is None) and decoder.terminate()
+        decoder is not None and decoder.terminate()
 
 
 @pytest.mark.parametrize(
@@ -278,14 +281,13 @@ def test_metadata(custom_params, checks):
                 "-framerate": "invalid",
                 "-ffprefixes": "invalid",
                 "-clones": "invalid",
-                "-framerate": "invalid",
                 "-vcodec": None,
             },
             "gray",
         ),
     ],
 )
-def test_seek_n_save(ffparams, pixfmts):
+def test_seek_n_save(ffparams: dict[str, Any], pixfmts: str) -> None:
     """
     Testing `frame_format` with different colorspaces.
     """
@@ -305,7 +307,7 @@ def test_seek_n_save(ffparams, pixfmts):
         frame = next(decoder.generateFrame(), None)
 
         # check if frame is None
-        if not (frame is None) and pixfmts == "rgba":
+        if frame is not None and pixfmts == "rgba":
             # Convert and save our output
             filename = os.path.abspath(
                 os.path.join(
@@ -315,7 +317,7 @@ def test_seek_n_save(ffparams, pixfmts):
             im = Image.fromarray(frame)
             im = im.convert("RGB")
             im.save(filename)
-        elif not (frame is None) and pixfmts == "gray":
+        elif frame is not None and pixfmts == "gray":
             # Convert and save our output
             filename = os.path.abspath(
                 os.path.join(
@@ -331,7 +333,7 @@ def test_seek_n_save(ffparams, pixfmts):
         pytest.fail(str(e))
     finally:
         # terminate the decoder
-        not (decoder is None) and decoder.terminate()
+        decoder is not None and decoder.terminate()
         filename and remove_file_safe(filename)
 
 
@@ -363,7 +365,9 @@ test_data = [
 
 
 @pytest.mark.parametrize("source, ffparams, result", test_data)
-def test_FFdecoder_params(source, ffparams, result):
+def test_FFdecoder_params(
+    source: str, ffparams: dict[str, Any], result: bool
+) -> None:
     """
     Testing FFdecoder API with different parameters and save output
     """
@@ -410,7 +414,7 @@ def test_FFdecoder_params(source, ffparams, result):
             pytest.xfail(str(e))
     finally:
         # terminate the decoder
-        if not (writer is None):
+        if writer is not None:
             writer.release()
             remove_file_safe(f_name)
 
@@ -419,17 +423,17 @@ test_data = [
     (
         "/dev/video0",
         "v4l2",
-        True if platform.system() == "Linux" else False,
+        platform.system() == "Linux",
     ),  # manual source and demuxer
     (
         0,
         None,
-        True if platform.system() == "Linux" else False,
+        platform.system() == "Linux",
     ),  # +ve index and no demuxer
     (
         "-1",
         "auto",
-        True if platform.system() == "Linux" else False,
+        platform.system() == "Linux",
     ),  # -ve index and "auto" demuxer
     ("5", "auto", False),  # out-of-range index and "auto" demuxer
     ("invalid", "auto", False),  # invalid source and "auto" demuxer
@@ -438,7 +442,9 @@ test_data = [
 
 
 @pytest.mark.parametrize("source, source_demuxer, result", test_data)
-def test_camera_capture(source, source_demuxer, result):
+def test_camera_capture(
+    source: str | int, source_demuxer: str | None, result: bool
+) -> None:
     """
     Tests FFdecoder's realtime Webcam and Virtual playback capabilities
     as well as Index based Camera Device Capturing
@@ -453,7 +459,7 @@ def test_camera_capture(source, source_demuxer, result):
             verbose=True,
         ).formulate()
         # capture 5 camera frames
-        for i in range(5):
+        for _i in range(5):
             # grab the bgr24 frame from the decoder
             frame_recv = next(decoder.generateFrame(), None)
             # check if frame is None
@@ -467,7 +473,7 @@ def test_camera_capture(source, source_demuxer, result):
             pytest.xfail(str(e))
     finally:
         # terminate
-        not (decoder is None) and decoder.terminate()
+        decoder is not None and decoder.terminate()
 
 
 test_data = [
@@ -525,7 +531,9 @@ test_data = [
 
 
 @pytest.mark.parametrize("frame_format, ffparams, result", test_data)
-def test_discard_n_filter_params(frame_format, ffparams, result):
+def test_discard_n_filter_params(
+    frame_format: str, ffparams: dict[str, Any], result: bool
+) -> None:
     """
     Tests FFdecoder's discarding FFmpeg parameters and using FFmpeg Filter
     capabilities
@@ -533,7 +541,7 @@ def test_discard_n_filter_params(frame_format, ffparams, result):
     decoder = None
     try:
         # initialize and formulate the decode with suitable source
-        if not frame_format in ["invalid2", "invalid3"]:
+        if frame_format not in ["invalid2", "invalid3"]:
             decoder = FFdecoder(
                 return_testvideo_path(),
                 frame_format=frame_format,
@@ -556,7 +564,7 @@ def test_discard_n_filter_params(frame_format, ffparams, result):
             # formulate decoder
             decoder.formulate()
         # capture 2 camera frames
-        for i in range(2):
+        for _i in range(2):
             # grab the bgr24 frame from the decoder
             frame_recv = next(decoder.generateFrame(), None)
             # check if frame is None
@@ -570,4 +578,4 @@ def test_discard_n_filter_params(frame_format, ffparams, result):
             pytest.xfail(str(e))
     finally:
         # terminate
-        not (decoder is None) and decoder.terminate()
+        decoder is not None and decoder.terminate()

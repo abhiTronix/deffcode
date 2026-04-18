@@ -21,16 +21,20 @@ limitations under the License.
 # Contains all the support functions/modules required by FFdecoder package
 
 # import the necessary packages
-import os, sys
+from __future__ import annotations
+
 import logging
+import os
 from pathlib import Path
+from typing import Any
+
 from colorlog import ColoredFormatter
 
 # import internal packages
 from .version import __version__
 
 
-def logger_handler():
+def logger_handler() -> logging.Handler:
     """
     ## logger_handler
 
@@ -86,7 +90,7 @@ logger.setLevel(logging.DEBUG)
 logger.info("Running DeFFcode Version: {}".format(str(__version__)))
 
 
-def dict2Args(param_dict):
+def dict2Args(param_dict: dict[str, Any]) -> list[str]:
     """
     ## dict2Args
 
@@ -97,8 +101,8 @@ def dict2Args(param_dict):
 
     **Returns:** Arguments list
     """
-    args = []
-    for key in param_dict.keys():
+    args: list[str] = []
+    for key in param_dict:
         if key in ["-clones"] or key.startswith("-core"):
             if isinstance(param_dict[key], list):
                 args.extend(param_dict[key])
@@ -115,7 +119,7 @@ def dict2Args(param_dict):
     return args
 
 
-def delete_file_safe(file_path):
+def delete_file_safe(file_path: str | os.PathLike[str]) -> None:
     """
     ## delete_ext_safe
 
@@ -126,15 +130,12 @@ def delete_file_safe(file_path):
     """
     try:
         dfile = Path(file_path)
-        if sys.version_info >= (3, 8, 0):
-            dfile.unlink(missing_ok=True)
-        else:
-            dfile.exists() and dfile.unlink()
+        dfile.unlink(missing_ok=True)
     except Exception as e:
         logger.exception(str(e))
 
 
-def validate_device_index(index):
+def validate_device_index(index: int | str | Any) -> bool:
     """
     ## validate_device_index
 
@@ -154,9 +155,7 @@ def validate_device_index(index):
         index.replace(" ", "")
         # return true
         return (
-            True
-            if (index.isnumeric() or (index.startswith("-") and index[1:].isnumeric()))
-            else False
+            bool(index.isnumeric() or (index.startswith("-") and index[1:].isnumeric()))
         )
     else:
         # return false otherwise

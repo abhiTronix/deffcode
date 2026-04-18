@@ -18,15 +18,7 @@ limitations under the License.
 ===============================================
 """
 
-# import the necessary packages
 from setuptools import setup
-from distutils.util import convert_path
-
-# parse PKG version
-pkg_version = {}
-ver_path = convert_path("deffcode/version.py")
-with open(ver_path) as ver_file:
-    exec(ver_file.read(), pkg_version)
 
 # apply various patches to README text and prepare
 # valid long_description
@@ -49,59 +41,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
         "(#", "(https://github.com/abhiTronix/deffcode#"
     )
 
-
 setup(
-    name="deffcode",
-    packages=["deffcode"],
-    version=pkg_version["__version__"],
-    description="A cross-platform High-performance & Flexible Real-time Video Frames Decoder in Python.",
-    license="Apache License 2.0",
-    author="Abhishek Thakur",
-    install_requires=[
-        "cython",  # (not really a dependency) just helper for numpy install
-        "numpy",
-        "requests",
-        "colorlog",
-        "tqdm",
-    ],
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author_email="abhi.una12@gmail.com",
-    url="https://abhitronix.github.io/deffcode",
-    keywords=[
-        "FFmpeg",
-        "Decoder",
-        "Realtime",
-        "Framework",
-        "Cross-platform",
-        "Video Processing",
-        "Computer Vision",
-        "Video Decoding",
-    ],
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Operating System :: POSIX",
-        "Operating System :: MacOS :: MacOS X",
-        "Operating System :: Microsoft :: Windows",
-        "Topic :: Multimedia :: Video",
-        "Topic :: Multimedia :: Video :: Conversion",
-        "Topic :: Scientific/Engineering",
-        "Intended Audience :: Developers",
-        "Intended Audience :: Science/Research",
-        "Intended Audience :: Education",
-        "License :: OSI Approved :: Apache Software License",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-    ],
-    python_requires=">=3.8",
-    scripts=[],
-    project_urls={
-        "Bug Reports": "https://github.com/abhiTronix/deffcode/issues",
-        "Funding": "https://ko-fi.com/W7W8WTYO",
-        "Source": "https://github.com/abhiTronix/deffcode",
-        "Documentation": "https://abhitronix.github.io/deffcode",
-        "Changelog": "https://abhitronix.github.io/deffcode/latest/changelog/",
-    },
 )
