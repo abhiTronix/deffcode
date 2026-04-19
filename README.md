@@ -67,6 +67,7 @@ Here are some key features that stand out:
 - Curated list of well-documented recipes ranging from [**Basic**][basic-recipes] to [**Advanced**][advanced-recipes] skill levels.
 - Hands down the easiest [**Index based Camera Device Capturing**][decoding-camera-devices-using-indexes], similar to OpenCV.
 - Easy to code **Real-time [Simple][transcoding-live-simple-filtergraphs] & [Complex][transcoding-live-complex-filtergraphs] Filtergraphs**. _(Yes, You read it correctly "Real-time"!)_
+- Native **[Multi-Input Source Configurations][multi-input-source-configurations]** support for decoding complex topologies.
 - Lightning fast dedicated **GPU-Accelerated Video [Decoding][hardware-accelerated-video-decoding] & [Transcoding][hardware-accelerated-video-transcoding]**.
 - Enables precise FFmpeg [**Key-frame Seeking**][extracting-key-frames-as-png-image] with pinpoint accuracy.
 - Effortless [**Metadata Extraction**][extracting-video-metadata] from all streams available in the source.
@@ -193,6 +194,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [CUDA-accelerated Video Transcoding with OpenCV's VideoWriter API][cuda-accelerated-video-transcoding-with-opencvs-videowriter-api]
 - [CUDA-NVENC-accelerated Video Transcoding with WriteGear API][cuda-nvenc-accelerated-video-transcoding-with-writegear-api]
 - [CUDA-NVENC-accelerated End-to-end Lossless Video Transcoding with WriteGear API][cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api]
+- [Multi-Input Source Configurations][multi-input-source-configurations]
 
 </details>
 
@@ -435,6 +437,7 @@ Advanced Recipes
 [overriding-source-video-metadata-in-ffdecoder-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#overriding-source-video-metadata-in-ffdecoder-api
 [smart-keyframe-only-decoding-for-heavy-ai-inference]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/extract-frame-metadata/#smart-keyframe-only-decoding-for-heavy-ai-inference
 [variable-frame-rate-vfr-synchronization-via-pts_time]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/extract-frame-metadata/#variable-frame-rate-vfr-synchronization-via-pts_time
+[multi-input-source-configurations]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#multi-input-source-configurations
 
 <!--
 CI Apps URLs

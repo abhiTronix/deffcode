@@ -28,9 +28,9 @@ This parameter defines the input source (`-i`) for probing.
 
 !!! danger "Sourcer API checks for _`video bitrate`_ or _`frame-size` and `framerate`_ in video's metadata to ensure given input `source` has usable video stream available. Thereby, it will throw `ValueError` if it fails to find those parameters."
 
-!!! info "Multiple video inputs are not yet supported!"
+!!! info "Multiple video inputs are fully supported! Pass a Python list of source strings to probe multiple media streams simultaneously. The probed dictionaries will be appended to the `sources` metadata list."
 
-**Data-Type:** String.
+**Data-Type:** String or List of Strings.
 
 Its valid input can be one of the following: 
 
@@ -362,7 +362,7 @@ This parameter specifies the demuxer(`-f`) for the input source _(such as `dshow
         sourcer = Sourcer("0", source_demuxer="auto).probe_stream()
         ```
 
-**Data-Type:** String
+**Data-Type:** String or List of Strings (if `source` is a list, you can pass a list of identical length mapping demuxers to corresponding sources).
 
 **Default Value:** Its default value is `None`.
 
@@ -460,6 +460,18 @@ These parameters are discussed below:
     # define suitable parameter
     sourcer_params = {"-ffprefixes": ['-re']} # executes as `ffmpeg -re <rest of command>`
     ```
+
+    !!! info "Multi-input mode: per-source list-of-lists"
+        When [`source`](#source) is a list, `-ffprefixes` must also be a **list of per-input lists** with one entry per source (in the same order). Flat lists are rejected as ambiguous, and a length mismatch raises `ValueError`.
+
+        ```python
+        # source[0] gets `-re`; source[1] gets `-stream_loop -1`
+        sourcer_params = {
+            "-ffprefixes": [["-re"], ["-stream_loop", "-1"]],
+        }
+        ```
+
+        Use an empty inner list (`[]`) for any input that needs no prefix.
 
 &ensp;
 

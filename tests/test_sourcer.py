@@ -77,9 +77,25 @@ logger.setLevel(logging.DEBUG)
             {},
             "invalid_ffmpeg",  # invalid FFmpeg
         ),
+        (
+            [return_testvideo_path(), return_testvideo_path()],
+            {
+                "-ffprefixes": [["-re"], ["-stream_loop", "-1"]],
+            },
+            return_static_ffmpeg(),
+        ),
+        (
+            [return_testvideo_path(), return_testvideo_path()],
+            {
+                "-ffprefixes": "invalid"  # list of lists mismatch
+            },
+            return_static_ffmpeg(),
+        ),
     ],
 )
-def test_source(source: str, sourcer_params: dict[str, Any], custom_ffmpeg: str) -> None:
+def test_source(
+    source: str | list[str], sourcer_params: dict[str, Any], custom_ffmpeg: str
+) -> None:
     """
     Paths Source - Test various source paths/urls supported by Sourcer.
     """
@@ -113,10 +129,15 @@ def test_source(source: str, sourcer_params: dict[str, Any], custom_ffmpeg: str)
             (0, 0),
             ["source_has_image_sequence"],
         ),
+        (
+            [return_testvideo_path(), "mandelbrot=size=1280x720:rate=30"],
+            (0, 0),
+            ["source_has_video", "sources"],  # tests sources list
+        ),
     ],
 )
 def test_probe_stream_n_retrieve_metadata(
-    source: str,
+    source: str | list[str],
     default_stream_indexes: tuple[int, ...] | list[int],
     params: list[str],
 ) -> None:
@@ -124,7 +145,14 @@ def test_probe_stream_n_retrieve_metadata(
     Test `probe_stream` and `retrieve_metadata` function.
     """
     try:
-        source_demuxer = "lavfi" if source == "mandelbrot=size=1280x720:rate=30" else None
+        source_demuxer = None
+        if isinstance(source, list):
+            source_demuxer = [
+                "lavfi" if s == "mandelbrot=size=1280x720:rate=30" else None for s in source
+            ]
+        elif source == "mandelbrot=size=1280x720:rate=30":
+            source_demuxer = "lavfi"
+
         if source == "invalid":
             sourcer = Sourcer(source, custom_ffmpeg=return_static_ffmpeg(), verbose=True)
         else:
@@ -136,12 +164,26 @@ def test_probe_stream_n_retrieve_metadata(
             ).probe_stream(default_stream_indexes=default_stream_indexes)
         metadata = sourcer.retrieve_metadata()
         logger.debug("Found Metadata: `{}`".format(metadata))
-        assert all(metadata[x] is True for x in params), "Test Failed!"
-        if (
+
+        # Test sources exists and is valid
+        if "sources" in params:
+            assert "sources" in metadata and len(metadata["sources"]) == len(source), (
+                "Multi-input Test Failed!"
+            )
+
+        assert all(
+            metadata.get(x, metadata["sources"] if x == "sources" else False) for x in params
+        ), "Test Failed!"
+
+        is_skipped = False
+        if isinstance(source, list) or (
             source.startswith("http")
             or source.endswith("png")
             or source == "mandelbrot=size=1280x720:rate=30"
         ):
+            is_skipped = True
+
+        if is_skipped:
             logger.debug("Skipped check!")
         else:
             assert metadata["approx_video_nframes"] >= actual_frame_count_n_frame_size(source)[0], (
