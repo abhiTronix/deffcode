@@ -42,7 +42,7 @@ dependencies = [
     "colorlog",
     "tqdm",
 ]
-dynamic = ["version", "readme"]
+dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://abhitronix.github.io/deffcode"
