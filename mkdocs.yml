@@ -181,11 +181,6 @@ markdown_extensions:
   - pymdownx.tilde
   - pymdownx.striphtml:
       strip_comments: true
-  - pymdownx.magiclink:
-      normalize_issue_symbols: true
-      repo_url_shorthand: true
-      user: abhiTronix
-      repo: deffcode
 
 exclude_docs: |
   overrides/assets/README.md
