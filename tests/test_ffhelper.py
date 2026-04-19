@@ -28,10 +28,12 @@ import tempfile
 import pytest
 import requests
 
+from deffcode import ffhelper
 from deffcode.ffhelper import (
     check_sp_output,
     download_ffmpeg_binaries,
     extract_device_n_demuxer,
+    get_supported_demuxers,
     get_valid_ffmpeg_path,
     is_valid_image_seq,
     is_valid_url,
@@ -221,3 +223,31 @@ def test_extract_device_n_demuxer() -> None:
     Testing extract_device_n_demuxer method
     """
     extract_device_n_demuxer(return_static_ffmpeg(), machine_OS="invalid", verbose=True)
+
+
+def test_get_supported_demuxers_valid() -> None:
+    """
+    Testing get_supported_demuxers returns a non-empty list when the FFmpeg
+    `-demuxers` output contains the expected `--` separator.
+    """
+    demuxers = get_supported_demuxers(return_static_ffmpeg())
+    assert isinstance(demuxers, list) and len(demuxers) > 0, (
+        "Expected a non-empty list of supported demuxers from a valid FFmpeg binary."
+    )
+
+
+def test_get_supported_demuxers_missing_separator(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Testing get_supported_demuxers safely returns an empty list (instead of
+    raising StopIteration) when the FFmpeg `-demuxers` output is missing
+    the `--` separator.
+    """
+    # simulate malformed FFmpeg output with no `--` separator line
+    malformed_output = b"File formats:\n D. = Demuxing supported\n garbage line\n"
+    monkeypatch.setattr(
+        ffhelper, "check_sp_output", lambda *args, **kwargs: malformed_output
+    )
+    result = get_supported_demuxers("fake_ffmpeg")
+    assert result == [], (
+        "Expected empty list when `--` separator is missing from demuxers output."
+    )

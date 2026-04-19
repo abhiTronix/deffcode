@@ -352,7 +352,15 @@ def get_supported_demuxers(path: str) -> list[str]:
     # extract and clean FFmpeg output
     demuxers = check_sp_output([path, "-hide_banner", "-demuxers"])
     splitted = [x.decode("utf-8").strip() for x in demuxers.split(b"\n")]
-    split_index = next(idx for idx, s in enumerate(splitted) if "--" in s)
+    split_index = next(
+        (idx for idx, s in enumerate(splitted) if "--" in s), None
+    )
+    if split_index is None:
+        logger.warning(
+            "Failed to locate demuxer separator `--` in FFmpeg `-demuxers` output. "
+            "Returning empty list of supported demuxers."
+        )
+        return []
     supported_demuxers = splitted[split_index + 1 : len(splitted) - 1]
     # search all demuxers
     outputs = [re.search(r"\s[a-z0-9_,-]{2,}\s", d) for d in supported_demuxers]
