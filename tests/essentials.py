@@ -48,17 +48,11 @@ def return_static_ffmpeg() -> str:
     """
     path = ""
     if platform.system() == "Windows":
-        path += os.path.join(
-            tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/bin/ffmpeg.exe"
-        )
+        path += os.path.join(tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/bin/ffmpeg.exe")
     elif platform.system() == "Darwin":
-        path += os.path.join(
-            tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/bin/ffmpeg"
-        )
+        path += os.path.join(tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/bin/ffmpeg")
     else:
-        path += os.path.join(
-            tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/ffmpeg"
-        )
+        path += os.path.join(tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/ffmpeg")
     return os.path.abspath(path)
 
 
@@ -83,9 +77,7 @@ def return_testvideo_path(fmt: str = "av") -> str:
         "ao": "BigBuckBunny_4sec_AO.mp4",
     }
     req_fmt = fmt if (fmt in supported_fmts) else "av"
-    path = "{}/Downloads/Test_videos/{}".format(
-        tempfile.gettempdir(), supported_fmts[req_fmt]
-    )
+    path = "{}/Downloads/Test_videos/{}".format(tempfile.gettempdir(), supported_fmts[req_fmt])
     return os.path.abspath(path)
 
 

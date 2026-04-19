@@ -17,6 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ===============================================
 """
+
 # import the necessary packages
 from __future__ import annotations
 
@@ -76,9 +77,7 @@ def test_ffmpeg_binaries_download(paths: str, os_bit: str) -> None:
     """
     file_path = ""
     try:
-        file_path = download_ffmpeg_binaries(
-            path=paths, os_windows=is_windows, os_bit=os_bit
-        )
+        file_path = download_ffmpeg_binaries(path=paths, os_windows=is_windows, os_bit=os_bit)
         if file_path:
             logger.debug("FFmpeg Binary path: {}".format(file_path))
             assert os.path.isfile(file_path), "FFmpeg download failed!"
@@ -117,9 +116,7 @@ test_data = [
 
 
 @pytest.mark.parametrize("paths, ffmpeg_download_paths, results", test_data)
-def test_get_valid_ffmpeg_path(
-    paths: str, ffmpeg_download_paths: str, results: bool
-) -> None:
+def test_get_valid_ffmpeg_path(paths: str, ffmpeg_download_paths: str, results: bool) -> None:
     """
     Testing FFmpeg excutables validation and correction:
     """
@@ -130,13 +127,11 @@ def test_get_valid_ffmpeg_path(
             ffmpeg_download_path=ffmpeg_download_paths,
             verbose=True,
         )
-        if not (
-            paths == "wrong_test_path" or ffmpeg_download_paths == "wrong_test_path"
-        ):
-            assert (
-                bool(output) == results
-            ), "FFmpeg excutables validation and correction Test failed at path: {} and FFmpeg ffmpeg_download_paths: {}".format(
-                paths, ffmpeg_download_paths
+        if not (paths == "wrong_test_path" or ffmpeg_download_paths == "wrong_test_path"):
+            assert bool(output) == results, (
+                "FFmpeg excutables validation and correction Test failed at path: {} and FFmpeg ffmpeg_download_paths: {}".format(
+                    paths, ffmpeg_download_paths
+                )
             )
     except Exception as e:
         if paths == "wrong_test_path" or ffmpeg_download_paths == "wrong_test_path":
@@ -191,9 +186,7 @@ def test_is_valid_image_seq(source: str | None, result: bool) -> None:
     Testing test_is_valid_image_seq method
     """
     try:
-        result_url = is_valid_image_seq(
-            return_static_ffmpeg(), source=source, verbose=True
-        )
+        result_url = is_valid_image_seq(return_static_ffmpeg(), source=source, verbose=True)
         assert result_url == result, "Image sequence validity test Failed!"
     except Exception as e:
         result and pytest.fail(str(e))
@@ -244,10 +237,6 @@ def test_get_supported_demuxers_missing_separator(monkeypatch: pytest.MonkeyPatc
     """
     # simulate malformed FFmpeg output with no `--` separator line
     malformed_output = b"File formats:\n D. = Demuxing supported\n garbage line\n"
-    monkeypatch.setattr(
-        ffhelper, "check_sp_output", lambda *args, **kwargs: malformed_output
-    )
+    monkeypatch.setattr(ffhelper, "check_sp_output", lambda *args, **kwargs: malformed_output)
     result = get_supported_demuxers("fake_ffmpeg")
-    assert result == [], (
-        "Expected empty list when `--` separator is missing from demuxers output."
-    )
+    assert result == [], "Expected empty list when `--` separator is missing from demuxers output."

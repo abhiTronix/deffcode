@@ -37,9 +37,7 @@ with open("README.md", encoding="utf-8") as fh:
     # patch for unicodes
     long_description = long_description.replace("➶", ">>").replace("©", "(c)")
     # patch internal hyperlinks
-    long_description = long_description.replace(
-        "(#", "(https://github.com/abhiTronix/deffcode#"
-    )
+    long_description = long_description.replace("(#", "(https://github.com/abhiTronix/deffcode#")
 
 setup(
     long_description=long_description,

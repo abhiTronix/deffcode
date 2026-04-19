@@ -44,9 +44,7 @@ from .utils import dict2Args, logger_handler
 
 # regex to parse FFmpeg `showinfo` lines emitted on stderr
 # example: "n: 0 pts:0 pts_time:0 ... iskey:1 type:I checksum:..."
-_SHOWINFO_REGEX = re.compile(
-    r"n:\s*(\d+).*?pts_time:\s*([-0-9.]+).*?iskey:(\d).*?type:([IPB?])"
-)
+_SHOWINFO_REGEX = re.compile(r"n:\s*(\d+).*?pts_time:\s*([-0-9.]+).*?iskey:(\d).*?type:([IPB?])")
 
 # define FFdecoder logger
 logger = logging.getLogger("FFdecoder")
@@ -107,9 +105,7 @@ class FFdecoder:
         """
 
         # enable verbose if specified
-        self.__verbose_logs = (
-            verbose if (verbose and isinstance(verbose, bool)) else False
-        )
+        self.__verbose_logs = verbose if (verbose and isinstance(verbose, bool)) else False
 
         # define whether initializing
         self.__initializing = True
@@ -156,8 +152,7 @@ class FFdecoder:
         self.__extra_params = {
             str(k).strip(): (
                 str(v).strip()
-                if v is not None
-                and not isinstance(v, (dict, list, int, float, tuple))
+                if v is not None and not isinstance(v, (dict, list, int, float, tuple))
                 else v
             )
             for k, v in ffparams.items()
@@ -191,9 +186,7 @@ class FFdecoder:
         )
 
         # handle video and audio stream indexes in case of multiple ones.
-        default_stream_indexes = self.__extra_params.pop(
-            "-default_stream_indexes", (0, 0)
-        )
+        default_stream_indexes = self.__extra_params.pop("-default_stream_indexes", (0, 0))
         # reset improper values
         default_stream_indexes = (
             (0, 0)
@@ -215,7 +208,7 @@ class FFdecoder:
                 source_demuxer=source_demuxer,
                 verbose=verbose,
                 custom_ffmpeg=custom_ffmpeg if isinstance(custom_ffmpeg, str) else "",
-                **sourcer_params
+                **sourcer_params,
             )
             .probe_stream(default_stream_indexes=default_stream_indexes)
             .retrieve_metadata(force_retrieve_missing=True)
@@ -259,12 +252,8 @@ class FFdecoder:
         # handle disabling window for ffmpeg subprocess on Windows OS
         # this patch prevents ffmpeg creation window from opening when
         # building exe files
-        ffmpeg_window_disabler_patch = self.__extra_params.pop(
-            "-disable_ffmpeg_window", False
-        )
-        if ffmpeg_window_disabler_patch and isinstance(
-            ffmpeg_window_disabler_patch, bool
-        ):
+        ffmpeg_window_disabler_patch = self.__extra_params.pop("-disable_ffmpeg_window", False)
+        if ffmpeg_window_disabler_patch and isinstance(ffmpeg_window_disabler_patch, bool):
             # check if value is valid
             if self.__machine_OS != "Windows" or self.__verbose_logs:
                 logger.warning(
@@ -300,20 +289,15 @@ class FFdecoder:
             self.__opmode = "vo"
         else:
             # raise if unknown mode
-            raise ValueError(
-                "Unable to find any usable video stream in the given source!"
-            )
+            raise ValueError("Unable to find any usable video stream in the given source!")
         # store as metadata
-        self.__missing_prop["ffdecoder_operational_mode"] = self.__supported_opmodes[
-            self.__opmode
-        ]
+        self.__missing_prop["ffdecoder_operational_mode"] = self.__supported_opmodes[self.__opmode]
 
         # handle user-defined output framerate
         __framerate = self.__extra_params.pop("-framerate", None)
         if (
             isinstance(__framerate, str)
-            and __framerate
-            == "null"  # special mode to discard `-framerate/-r` parameter
+            and __framerate == "null"  # special mode to discard `-framerate/-r` parameter
         ):
             self.__inputframerate = __framerate
         elif isinstance(__framerate, (float, int)):
@@ -332,17 +316,13 @@ class FFdecoder:
         self.__custom_resolution = self.__extra_params.pop("-custom_resolution", None)
         if (
             isinstance(self.__custom_resolution, str)
-            and self.__custom_resolution
-            == "null"  # special mode to discard `-size/-s` parameter
+            and self.__custom_resolution == "null"  # special mode to discard `-size/-s` parameter
         ) or (
             isinstance(self.__custom_resolution, (list, tuple))
-            and len(self.__custom_resolution)
-            == 2  # valid resolution(must be a tuple or list)
+            and len(self.__custom_resolution) == 2  # valid resolution(must be a tuple or list)
         ):
             # log it
-            self.__verbose_logs and not isinstance(
-                self.__custom_resolution, str
-            ) and logger.debug(
+            self.__verbose_logs and not isinstance(self.__custom_resolution, str) and logger.debug(
                 "Setting raw frames size: `{}`.".format(self.__custom_resolution)
             )
         else:
@@ -371,23 +351,17 @@ class FFdecoder:
             supported_vdecodecs = get_supported_vdecoders(self.__ffmpeg)
             default_vdecodec = (
                 self.__sourcer_metadata["source_video_decoder"]
-                if self.__sourcer_metadata["source_video_decoder"]
-                in supported_vdecodecs
+                if self.__sourcer_metadata["source_video_decoder"] in supported_vdecodecs
                 else "unknown"
             )
             if "-c:v" in self.__extra_params:
-                self.__extra_params["-vcodec"] = self.__extra_params.pop(
-                    "-c:v", default_vdecodec
-                )
+                self.__extra_params["-vcodec"] = self.__extra_params.pop("-c:v", default_vdecodec)
             # handle image sequence separately
             if self.__opmode == "imgseq":
                 # -vcodec is discarded by default
                 # (This is correct or maybe -vcodec required in some unknown case) [TODO]
                 self.__extra_params.pop("-vcodec", None)
-            elif (
-                "-vcodec" in self.__extra_params
-                and self.__extra_params["-vcodec"] is None
-            ):
+            elif "-vcodec" in self.__extra_params and self.__extra_params["-vcodec"] is None:
                 # special case when -vcodec is not needed intentionally
                 self.__extra_params.pop("-vcodec", None)
             else:
@@ -395,9 +369,7 @@ class FFdecoder:
                 if "-vcodec" not in self.__extra_params:
                     input_params["-vcodec"] = default_vdecodec
                 else:
-                    input_params["-vcodec"] = self.__extra_params.pop(
-                        "-vcodec", default_vdecodec
-                    )
+                    input_params["-vcodec"] = self.__extra_params.pop("-vcodec", default_vdecodec)
                 if (
                     default_vdecodec != "unknown"
                     and input_params["-vcodec"] not in supported_vdecodecs
@@ -418,9 +390,7 @@ class FFdecoder:
 
             # handle user-defined number of frames.
             if "-vframes" in self.__extra_params:
-                self.__extra_params["-frames:v"] = self.__extra_params.pop(
-                    "-vframes", None
-                )
+                self.__extra_params["-frames:v"] = self.__extra_params.pop("-vframes", None)
             if "-frames:v" in self.__extra_params:
                 value = self.__extra_params.pop("-frames:v", None)
                 if value is not None and value > 0:
@@ -451,10 +421,7 @@ class FFdecoder:
             )
             # assign output raw-frames pixel format
             rawframe_pixfmt = None
-            if (
-                self.__frame_format is not None
-                and self.__frame_format in supported_pixfmts
-            ):
+            if self.__frame_format is not None and self.__frame_format in supported_pixfmts:
                 # check if valid and supported `frame_format` parameter assigned
                 rawframe_pixfmt = self.__frame_format.strip()
                 self.__verbose_logs and logger.info(
@@ -468,9 +435,7 @@ class FFdecoder:
                 and self.__sourcer_metadata["output_frames_pixfmt"] in supported_pixfmts
             ):
                 # assign if valid and supported
-                rawframe_pixfmt = self.__sourcer_metadata[
-                    "output_frames_pixfmt"
-                ].strip()
+                rawframe_pixfmt = self.__sourcer_metadata["output_frames_pixfmt"].strip()
                 self.__verbose_logs and logger.info(
                     "FFmpeg filter values will be used for this pipeline for defining output pixel-format."
                 )
@@ -480,16 +445,16 @@ class FFdecoder:
                 # log it accordingly
                 if self.__frame_format is None:
                     logger.info(
-                        "Using default `{}` pixel-format for this pipeline.".format(
-                            default_pixfmt
-                        )
+                        "Using default `{}` pixel-format for this pipeline.".format(default_pixfmt)
                     )
                 else:
                     logger.warning(
                         "{} Switching to default `{}` pixel-format!".format(
                             (
                                 "Provided FFmpeg does not supports `{}` pixel-format.".format(
-                                    self.__sourcer_metadata.get("output_frames_pixfmt", self.__frame_format)
+                                    self.__sourcer_metadata.get(
+                                        "output_frames_pixfmt", self.__frame_format
+                                    )
                                 )
                                 if self.__frame_format != "null"
                                 else "No usable pixel-format defined."
@@ -500,18 +465,14 @@ class FFdecoder:
 
             # dynamically calculate raw-frame datatype based on pixel-format selected
             (self.__raw_frame_depth, rawframesbpp) = next(
-                (int(x[1]), int(x[2]))
-                for x in self.__ff_pixfmt_metadata
-                if x[0] == rawframe_pixfmt
+                (int(x[1]), int(x[2])) for x in self.__ff_pixfmt_metadata if x[0] == rawframe_pixfmt
             )
             raw_bit_per_component = (
                 rawframesbpp // self.__raw_frame_depth if self.__raw_frame_depth else 0
             )
             if 4 <= raw_bit_per_component <= 8:
                 self.__raw_frame_dtype = np.dtype("u1")
-            elif 8 < raw_bit_per_component <= 16 and rawframe_pixfmt.endswith(
-                ("le", "be")
-            ):
+            elif 8 < raw_bit_per_component <= 16 and rawframe_pixfmt.endswith(("le", "be")):
                 if rawframe_pixfmt.endswith("le"):
                     self.__raw_frame_dtype = np.dtype("<u2")
                 else:
@@ -534,9 +495,7 @@ class FFdecoder:
             self.__raw_frame_pixfmt = rawframe_pixfmt
             # also override as metadata(if available)
             if "output_frames_pixfmt" in self.__sourcer_metadata:
-                self.__sourcer_metadata["output_frames_pixfmt"] = (
-                    self.__raw_frame_pixfmt
-                )
+                self.__sourcer_metadata["output_frames_pixfmt"] = self.__raw_frame_pixfmt
 
             # handle raw-frame resolution
             # notify FFmpeg `-s` parameter cannot be assigned directly
@@ -563,24 +522,18 @@ class FFdecoder:
                 and len(self.__sourcer_metadata["output_frames_resolution"]) == 2
             ):
                 # calculate raw-frame resolution/dimensions based on output.
-                self.__raw_frame_resolution = self.__sourcer_metadata[
-                    "output_frames_resolution"
-                ]
+                self.__raw_frame_resolution = self.__sourcer_metadata["output_frames_resolution"]
             elif (
                 self.__sourcer_metadata["source_video_resolution"]
                 and len(self.__sourcer_metadata["source_video_resolution"]) == 2
             ):
                 # calculate raw-frame resolution/dimensions based on source.
-                self.__raw_frame_resolution = self.__sourcer_metadata[
-                    "source_video_resolution"
-                ]
+                self.__raw_frame_resolution = self.__sourcer_metadata["source_video_resolution"]
             else:
                 # otherwise raise error
                 raise RuntimeError(
                     "Both source and output metadata values found Invalid with {} `-custom_resolution` attribute. Aborting!".format(
-                        "null"
-                        if isinstance(self.__inputframerate, str)
-                        else "undefined"
+                        "null" if isinstance(self.__inputframerate, str) else "undefined"
                     )
                 )
             # special mode to discard `-size/-s` FFmpeg parameter completely
@@ -596,8 +549,7 @@ class FFdecoder:
                 output_params["-s"] = str(dimensions)
             # log if filters or default source is used
             self.__verbose_logs and (
-                self.__custom_resolution is None
-                or isinstance(self.__custom_resolution, str)
+                self.__custom_resolution is None or isinstance(self.__custom_resolution, str)
             ) and logger.info(
                 "{} for this pipeline for defining output resolution.".format(
                     "FFmpeg filter values will be used"
@@ -607,10 +559,7 @@ class FFdecoder:
             )
 
             # dynamically calculate raw-frame framerate based on source (if not assigned by user).
-            if (
-                not isinstance(self.__inputframerate, str)
-                and self.__inputframerate > 0.0
-            ):
+            if not isinstance(self.__inputframerate, str) and self.__inputframerate > 0.0:
                 # assign if assigned by user and not "null"(str)
                 output_params["-framerate"] = str(self.__inputframerate)
                 self.__verbose_logs and logger.info(
@@ -619,8 +568,7 @@ class FFdecoder:
                     )
                 )
             elif (
-                "output_framerate"
-                in self.__sourcer_metadata  # means `fps` filter is defined
+                "output_framerate" in self.__sourcer_metadata  # means `fps` filter is defined
                 and self.__sourcer_metadata["output_framerate"] > 0.0
             ):
                 # special mode to discard `-framerate/-r` FFmpeg parameter completely
@@ -630,9 +578,7 @@ class FFdecoder:
                     )
                 else:
                     # calculate raw-frame framerate based on output
-                    output_params["-framerate"] = str(
-                        self.__sourcer_metadata["output_framerate"]
-                    )
+                    output_params["-framerate"] = str(self.__sourcer_metadata["output_framerate"])
                 self.__verbose_logs and logger.info(
                     "FFmpeg filter values will be used for this pipeline for defining output framerate."
                 )
@@ -654,9 +600,7 @@ class FFdecoder:
                 # otherwise raise error
                 raise RuntimeError(
                     "Both source and output metadata values found Invalid with {} `-framerate` attribute. Aborting!".format(
-                        "null"
-                        if isinstance(self.__inputframerate, str)
-                        else "undefined"
+                        "null" if isinstance(self.__inputframerate, str) else "undefined"
                     )
                 )
 
@@ -675,9 +619,7 @@ class FFdecoder:
                     self.__extract_metadata = False
                 else:
                     existing_vf = output_params.get("-vf", "")
-                    output_params["-vf"] = (
-                        f"{existing_vf},showinfo" if existing_vf else "showinfo"
-                    )
+                    output_params["-vf"] = f"{existing_vf},showinfo" if existing_vf else "showinfo"
 
             # dynamically calculate raw-frame numbers based on source (if not assigned by user).
             # TODO Added support for `-re -stream_loop` and `-loop`
@@ -697,9 +639,7 @@ class FFdecoder:
 
             # log Mode of Operation
             self.__verbose_logs and logger.critical(
-                "Activating {} Mode of Operation.".format(
-                    self.__supported_opmodes[self.__opmode]
-                )
+                "Activating {} Mode of Operation.".format(self.__supported_opmodes[self.__opmode])
             )
 
             # compose the Pipeline using formulated FFmpeg parameters
@@ -716,7 +656,9 @@ class FFdecoder:
         """
         This Internal method to fetch next dataframes(1D arrays) from `subprocess` pipe's standard output(`stdout`) into a Numpy buffer.
         """
-        assert self.__process is not None, "Pipeline is not running! You must call `formulate()` method first."
+        assert self.__process is not None, (
+            "Pipeline is not running! You must call `formulate()` method first."
+        )
 
         # formulated raw frame size and apply YUV pixel formats patch(if applicable)
         raw_frame_size = (
@@ -734,18 +676,12 @@ class FFdecoder:
         try:
             # read bytes frames from buffer
             nparray = np.frombuffer(
-                self.__process.stdout.read(
-                    raw_frame_size * self.__raw_frame_dtype.itemsize
-                ),
+                self.__process.stdout.read(raw_frame_size * self.__raw_frame_dtype.itemsize),
                 dtype=self.__raw_frame_dtype,
             )
         except Exception as e:
             raise RuntimeError("Frame buffering failed with error: {}".format(str(e)))
-        return (
-            nparray
-            if nparray is not None and len(nparray) == raw_frame_size
-            else None
-        )
+        return nparray if nparray is not None and len(nparray) == raw_frame_size else None
 
     def __fetchNextFrame(self) -> np.ndarray | None:
         """
@@ -900,9 +836,7 @@ class FFdecoder:
                 if key == "source":
                     # metadata properties that cannot be altered
                     logger.warning(
-                        "`{}` metadata property value cannot be altered. Discarding!".format(
-                            key
-                        )
+                        "`{}` metadata property value cannot be altered. Discarding!".format(key)
                     )
                 elif key in self.__missing_prop:
                     # missing metadata properties are unavailable and read-only
@@ -910,9 +844,7 @@ class FFdecoder:
                     logger.warning(
                         "`{}` metadata property is read-only".format(key)
                         + (
-                            ". Try updating `{}` property instead!".format(
-                                counterpart_prop[key]
-                            )
+                            ". Try updating `{}` property instead!".format(counterpart_prop[key])
                             if key in counterpart_prop
                             else " and cannot be updated!"
                         )
@@ -922,20 +854,14 @@ class FFdecoder:
                     self.__verbose_logs and logger.info(
                         "Updating `{}`{} metadata property to `{}`.".format(
                             key,
-                            (
-                                " and its counterpart"
-                                if key in counterpart_prop.values()
-                                else ""
-                            ),
+                            (" and its counterpart" if key in counterpart_prop.values() else ""),
                             value[key],
                         )
                     )
                     # update source metadata if valid
                     self.__sourcer_metadata[key] = value[key]
                     # also update missing counterpart property (if available)
-                    counter_key = next(
-                        (k for k, v in counterpart_prop.items() if v == key), ""
-                    )
+                    counter_key = next((k for k, v in counterpart_prop.items() if v == key), "")
                     if counter_key:
                         self.__missing_prop[counter_key] = value[key]
                 else:
@@ -1002,9 +928,7 @@ class FFdecoder:
         # compose the FFmpeg process
         if self.__verbose_logs:
             logger.debug("Executing FFmpeg command: `{}`".format(" ".join(cmd)))
-            self.__process = sp.Popen(
-                cmd, stdin=sp.DEVNULL, stdout=sp.PIPE, stderr=stderr_target
-            )
+            self.__process = sp.Popen(cmd, stdin=sp.DEVNULL, stdout=sp.PIPE, stderr=stderr_target)
         else:
             # In silent mode
             self.__process = sp.Popen(
@@ -1022,9 +946,7 @@ class FFdecoder:
         if self.__extract_metadata:
             self.__metadata_queue = queue.Queue()
             self.__stderr_stop.clear()
-            self.__stderr_thread = threading.Thread(
-                target=self.__read_stderr, daemon=True
-            )
+            self.__stderr_thread = threading.Thread(target=self.__read_stderr, daemon=True)
             self.__stderr_thread.start()
 
     def __read_stderr(self) -> None:

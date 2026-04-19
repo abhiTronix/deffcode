@@ -50,6 +50,7 @@ logger.propagate = False
 logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
 
+
 @pytest.mark.parametrize(
     "source, custom_ffmpeg, output",
     [
@@ -99,7 +100,9 @@ def test_source_playback(source: str, custom_ffmpeg: str, output: bool) -> None:
 
         # gather data
         actual_frame_num, actual_frame_shape = actual_frame_count_n_frame_size(source)
-        logger.info(f"Actual Frames Number: {actual_frame_num} and Actual Frame Shape: {actual_frame_shape}")
+        logger.info(
+            f"Actual Frames Number: {actual_frame_num} and Actual Frame Shape: {actual_frame_shape}"
+        )
 
         # Update output if the actual_frame_count_n_frame_size fails to decode stream
         output = output and (actual_frame_shape is not None)
@@ -108,11 +111,15 @@ def test_source_playback(source: str, custom_ffmpeg: str, output: bool) -> None:
         for frame in decoder.generateFrame():
             # check shape
             if frame.shape != actual_frame_shape:
-                raise RuntimeError(f"Test failed - Frame Shape: {frame.shape} vs Actual Frame Shape: {actual_frame_shape}")
+                raise RuntimeError(
+                    f"Test failed - Frame Shape: {frame.shape} vs Actual Frame Shape: {actual_frame_shape}"
+                )
             # increment number of frames
             frame_num += 1
 
-        assert frame_num >= actual_frame_num, f"Test failed - Total Frames: {frame_num} vs Actual Frames: {actual_frame_num}"
+        assert frame_num >= actual_frame_num, (
+            f"Test failed - Total Frames: {frame_num} vs Actual Frames: {actual_frame_num}"
+        )
     except Exception as e:
         if not output:
             logger.exception(str(e))
@@ -216,8 +223,7 @@ def test_yuv_family_ingest(pixfmt: str, cv_color_code: int) -> None:
         h, w = actual_shape[0], actual_shape[1]
         # YUV/NV ingest with cv_patch yields a 2D buffer with height = h*3/2
         assert frame.shape == (h * 3 // 2, w), (
-            f"Test failed - unexpected YUV buffer shape {frame.shape}, "
-            f"expected {(h * 3 // 2, w)}"
+            f"Test failed - unexpected YUV buffer shape {frame.shape}, expected {(h * 3 // 2, w)}"
         )
 
         # round-trip via OpenCV to confirm planar layout is valid
@@ -265,12 +271,9 @@ def test_extract_luma(pixfmt: str) -> None:
             assert frame is not None, "Test failed - no frame retrieved"
             # luma-only output must be a 2D (H, W) uint8 ndarray
             assert frame.shape == (h, w), (
-                f"Test failed - unexpected luma shape {frame.shape}, "
-                f"expected {(h, w)}"
+                f"Test failed - unexpected luma shape {frame.shape}, expected {(h, w)}"
             )
-            assert frame.dtype == np.uint8, (
-                f"Test failed - unexpected luma dtype {frame.dtype}"
-            )
+            assert frame.dtype == np.uint8, f"Test failed - unexpected luma dtype {frame.dtype}"
             frames_checked += 1
             if frames_checked >= 3:
                 break
@@ -327,9 +330,7 @@ def test_extract_metadata_basic() -> None:
             if frames_checked >= 5:
                 break
         assert frames_checked > 0, "Test failed - generator yielded no frames"
-        assert prev_frame_num == 0 or any(
-            True for _ in [0]
-        ), "sanity: loop must have executed"
+        assert prev_frame_num == 0 or any(True for _ in [0]), "sanity: loop must have executed"
     except Exception as e:
         pytest.fail(str(e))
     finally:
@@ -441,8 +442,7 @@ def test_extract_luma_invalid_type() -> None:
         ).formulate()
         frame = next(decoder.generateFrame(), None)
         assert frame is not None and frame.shape == actual_shape, (
-            f"Test failed - got {None if frame is None else frame.shape}, "
-            f"expected {actual_shape}"
+            f"Test failed - got {None if frame is None else frame.shape}, expected {actual_shape}"
         )
     except Exception as e:
         pytest.fail(str(e))
@@ -518,8 +518,7 @@ def test_metadata(custom_params: Any, checks: bool) -> None:
 
         if checks:
             assert all(
-                json.loads(decoder.metadata)[x] == custom_params[x]
-                for x in custom_params
+                json.loads(decoder.metadata)[x] == custom_params[x] for x in custom_params
             ), "Test failed"
     except Exception as e:
         if not checks:
@@ -582,9 +581,7 @@ def test_seek_n_save(ffparams: dict[str, Any], pixfmts: str) -> None:
         if frame is not None and pixfmts == "rgba":
             # Convert and save our output
             filename = os.path.abspath(
-                os.path.join(
-                    *[tempfile.gettempdir(), "temp_write", "filename_rgba.jpeg"]
-                )
+                os.path.join(*[tempfile.gettempdir(), "temp_write", "filename_rgba.jpeg"])
             )
             im = Image.fromarray(frame)
             im = im.convert("RGB")
@@ -592,9 +589,7 @@ def test_seek_n_save(ffparams: dict[str, Any], pixfmts: str) -> None:
         elif frame is not None and pixfmts == "gray":
             # Convert and save our output
             filename = os.path.abspath(
-                os.path.join(
-                    *[tempfile.gettempdir(), "temp_write", "filename_gray.png"]
-                )
+                os.path.join(*[tempfile.gettempdir(), "temp_write", "filename_gray.png"])
             )
             cv2.imwrite(filename, frame)
         else:
@@ -637,9 +632,7 @@ test_data = [
 
 
 @pytest.mark.parametrize("source, ffparams, result", test_data)
-def test_FFdecoder_params(
-    source: str, ffparams: dict[str, Any], result: bool
-) -> None:
+def test_FFdecoder_params(source: str, ffparams: dict[str, Any], result: bool) -> None:
     """
     Testing FFdecoder API with different parameters and save output
     """
@@ -652,13 +645,10 @@ def test_FFdecoder_params(
             source,
             frame_format="bgr24",
             source_demuxer=(
-                "lavfi"
-                if (isinstance(source, str) and source.startswith("testsrc"))
-                else None
+                "lavfi" if (isinstance(source, str) and source.startswith("testsrc")) else None
             ),
             **ffparams,
         ) as decoder:
-
             # retrieve JSON Metadata and convert it to dict
             metadata_dict = json.loads(decoder.metadata)
 
@@ -672,7 +662,6 @@ def test_FFdecoder_params(
 
             # grab the BGR24 frame from the decoder
             for frame in decoder.generateFrame():
-
                 # check if frame is None
                 if frame is None:
                     break
@@ -714,9 +703,7 @@ test_data = [
 
 
 @pytest.mark.parametrize("source, source_demuxer, result", test_data)
-def test_camera_capture(
-    source: str | int, source_demuxer: str | None, result: bool
-) -> None:
+def test_camera_capture(source: str | int, source_demuxer: str | None, result: bool) -> None:
     """
     Tests FFdecoder's realtime Webcam and Virtual playback capabilities
     as well as Index based Camera Device Capturing
@@ -803,9 +790,7 @@ test_data = [
 
 
 @pytest.mark.parametrize("frame_format, ffparams, result", test_data)
-def test_discard_n_filter_params(
-    frame_format: str, ffparams: dict[str, Any], result: bool
-) -> None:
+def test_discard_n_filter_params(frame_format: str, ffparams: dict[str, Any], result: bool) -> None:
     """
     Tests FFdecoder's discarding FFmpeg parameters and using FFmpeg Filter
     capabilities

@@ -66,9 +66,7 @@ def logger_handler() -> logging.Handler:
             os.path.dirname(file_path), os.W_OK
         ):
             file_path = (
-                os.path.join(file_path, "deffcode.log")
-                if os.path.isdir(file_path)
-                else file_path
+                os.path.join(file_path, "deffcode.log") if os.path.isdir(file_path) else file_path
             )
             handler = logging.FileHandler(file_path, mode="a")
             formatter = logging.Formatter(
@@ -154,9 +152,7 @@ def validate_device_index(index: int | str | Any) -> bool:
         # remove any whitespaces
         index.replace(" ", "")
         # return true
-        return (
-            bool(index.isnumeric() or (index.startswith("-") and index[1:].isnumeric()))
-        )
+        return bool(index.isnumeric() or (index.startswith("-") and index[1:].isnumeric()))
     else:
         # return false otherwise
         return False

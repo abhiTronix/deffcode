@@ -17,6 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ===============================================
 """
+
 # import the necessary packages
 from __future__ import annotations
 
@@ -78,9 +79,7 @@ logger.setLevel(logging.DEBUG)
         ),
     ],
 )
-def test_source(
-    source: str, sourcer_params: dict[str, Any], custom_ffmpeg: str
-) -> None:
+def test_source(source: str, sourcer_params: dict[str, Any], custom_ffmpeg: str) -> None:
     """
     Paths Source - Test various source paths/urls supported by Sourcer.
     """
@@ -125,13 +124,9 @@ def test_probe_stream_n_retrieve_metadata(
     Test `probe_stream` and `retrieve_metadata` function.
     """
     try:
-        source_demuxer = (
-            "lavfi" if source == "mandelbrot=size=1280x720:rate=30" else None
-        )
+        source_demuxer = "lavfi" if source == "mandelbrot=size=1280x720:rate=30" else None
         if source == "invalid":
-            sourcer = Sourcer(
-                source, custom_ffmpeg=return_static_ffmpeg(), verbose=True
-            )
+            sourcer = Sourcer(source, custom_ffmpeg=return_static_ffmpeg(), verbose=True)
         else:
             sourcer = Sourcer(
                 source,
@@ -149,14 +144,12 @@ def test_probe_stream_n_retrieve_metadata(
         ):
             logger.debug("Skipped check!")
         else:
-            assert (
-                metadata["approx_video_nframes"]
-                >= actual_frame_count_n_frame_size(source)[0]
-            ), "Test Failed for frames count!"
+            assert metadata["approx_video_nframes"] >= actual_frame_count_n_frame_size(source)[0], (
+                "Test Failed for frames count!"
+            )
     except Exception as e:
         if isinstance(e, ValueError) or (
-            source in ["invalid", "unknown://invalid.com/"]
-            and isinstance(e, AssertionError)
+            source in ["invalid", "unknown://invalid.com/"] and isinstance(e, AssertionError)
         ):
             pytest.xfail("Test Still Passed!")
         else:
