@@ -85,8 +85,8 @@ class FFdecoder:
 
     def __init__(
         self,
-        source: str | int,
-        source_demuxer: str | None = None,
+        source: str | list[str],
+        source_demuxer: str | list[str] | None = None,
         frame_format: str | None = None,
         custom_ffmpeg: str = "",
         verbose: bool = False,
@@ -109,6 +109,10 @@ class FFdecoder:
 
         # define whether initializing
         self.__initializing = True
+
+        # handle source list mapping
+        self.__is_multi = isinstance(source, list)
+        self.__source_list = source if self.__is_multi else [source]
 
         # define frame pixel-format for decoded frames
         self.__frame_format = (
@@ -175,8 +179,32 @@ class FFdecoder:
             )
             # reset improper values
             self.__ffmpeg_prefixes = []
+        elif self.__is_multi:
+            # multi-input requires per-source list-of-lists with matching length;
+            # reject ambiguous flat lists or length mismatches up front so the
+            # cmd builder never sees a malformed shape.
+            if self.__ffmpeg_prefixes:
+                if not all(isinstance(p, list) for p in self.__ffmpeg_prefixes):
+                    raise ValueError(
+                        "Multi-input `-ffprefixes` must be a list of per-input lists "
+                        "(e.g. `[['-re'], ['-stream_loop', '-1']]`). "
+                        "Flat lists are ambiguous in multi-input mode."
+                    )
+                if len(self.__ffmpeg_prefixes) != len(self.__source_list):
+                    raise ValueError(
+                        "`-ffprefixes` length ({}) must match `source` list length ({})!".format(
+                            len(self.__ffmpeg_prefixes), len(self.__source_list)
+                        )
+                    )
+            sourcer_params["-ffprefixes"] = self.__ffmpeg_prefixes
         else:
-            # also pass valid ffmpeg pre-headers to Sourcer API
+            # single-input keeps the flat-list contract; nested lists are only
+            # meaningful in multi-input mode, so discard them with a warning.
+            if any(isinstance(p, list) for p in self.__ffmpeg_prefixes):
+                logger.warning(
+                    "Nested lists in `-ffprefixes` are only supported for multi-input sources. Discarding!"
+                )
+                self.__ffmpeg_prefixes = []
             sourcer_params["-ffprefixes"] = self.__ffmpeg_prefixes
 
         # pass parameter(if specified) to Sourcer API, specifying where to save the downloaded FFmpeg Static
@@ -343,6 +371,13 @@ class FFdecoder:
         """
         # assign values to class variables on first run
         if self.__initializing:
+            if self.__is_multi and not {"-map", "-filter_complex"}.intersection(
+                self.__extra_params.keys()
+            ):
+                raise ValueError(
+                    "Multi-input setups require `-map` or `-filter_complex` to route the outputs unambiguously."
+                )
+
             # prepare parameter dict
             input_params = OrderedDict()
             output_params = OrderedDict()
@@ -900,20 +935,39 @@ class FFdecoder:
         output_parameters = dict2Args(output_params)
 
         # format command
-        cmd = (
-            [self.__ffmpeg]
-            + (["-hide_banner"] if not self.__verbose_logs else [])
-            + self.__ffmpeg_prefixes
-            + input_parameters
-            + (
+        cmd = [self.__ffmpeg] + (["-hide_banner"] if not self.__verbose_logs else [])
+        if self.__is_multi:
+            for idx, _src in enumerate(self.__source_list):
+                _prefixes = (
+                    self.__ffmpeg_prefixes[idx]
+                    if len(self.__ffmpeg_prefixes) > idx
+                    and isinstance(self.__ffmpeg_prefixes[idx], list)
+                    else []
+                )
+                cmd += _prefixes
+                # apply standard input parameters ONLY to the primary source
+                if idx == 0:
+                    cmd += input_parameters
+                _src_meta = (
+                    self.__sourcer_metadata["sources"][idx]
+                    if "sources" in self.__sourcer_metadata
+                    else {}
+                )
+                if _src_meta.get("source_demuxer"):
+                    cmd += ["-f", _src_meta["source_demuxer"]]
+                cmd += ["-i", _src]
+        else:
+            cmd += self.__ffmpeg_prefixes
+            cmd += input_parameters
+            cmd += (
                 ["-f", self.__sourcer_metadata["source_demuxer"]]
                 if ("source_demuxer" in self.__sourcer_metadata)
                 else []
             )
-            + ["-i", self.__sourcer_metadata["source"]]
-            + output_parameters
-            + ["-f", "rawvideo", "-"]
-        )
+            cmd += ["-i", self.__sourcer_metadata["source"]]
+
+        cmd += output_parameters
+        cmd += ["-f", "rawvideo", "-"]
         # When metadata extraction is enabled we must capture stderr regardless
         # of verbose mode so the background reader thread can parse showinfo
         # lines. Without PIPE the reader would have nothing to read (verbose

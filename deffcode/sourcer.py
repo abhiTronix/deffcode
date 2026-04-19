@@ -27,6 +27,7 @@ import logging
 import os
 import platform
 import re
+import shutil
 from typing import Any
 
 import numpy as np
@@ -76,8 +77,8 @@ class Sourcer:
 
     def __init__(
         self,
-        source: str,
-        source_demuxer: str | None = None,
+        source: str | list[str],
+        source_demuxer: str | list[str] | None = None,
         custom_ffmpeg: str = "",
         verbose: bool = False,
         **sourcer_params: Any,
@@ -117,17 +118,77 @@ class Sourcer:
             # reset improper values
             self.__forcevalidatesource = False
 
+        # sanitize externally accessible parameters and setup list mapping
+        self.__is_multi = isinstance(source, list)
+        self.__source_list = source if self.__is_multi else [source]
+
+        # validate source list early so downstream errors stay coherent
+        if self.__is_multi and not self.__source_list:
+            raise ValueError("Input `source` list is empty!")
+
         # handle user defined ffmpeg pre-headers(parameters such as `-re`) parameters (must be a list)
-        self.__ffmpeg_prefixes = self.__sourcer_params.pop("-ffprefixes", [])
-        if not isinstance(self.__ffmpeg_prefixes, list):
+        _prefixes = self.__sourcer_params.pop("-ffprefixes", [])
+        if not isinstance(_prefixes, list):
             # log it
             logger.warning(
                 "Discarding invalid `-ffprefixes` value of wrong type `{}`!".format(
-                    type(self.__ffmpeg_prefixes).__name__
+                    type(_prefixes).__name__
                 )
             )
             # reset improper values
-            self.__ffmpeg_prefixes = []
+            _prefixes = []
+
+        if self.__is_multi:
+            # multi-input requires per-source list-of-lists with matching length
+            # to keep prefix routing unambiguous; flat lists are rejected.
+            if _prefixes:
+                if not all(isinstance(p, list) for p in _prefixes):
+                    raise ValueError(
+                        "Multi-input `-ffprefixes` must be a list of per-input lists "
+                        "(e.g. `[['-re'], ['-stream_loop', '-1']]`). "
+                        "Flat lists are ambiguous in multi-input mode."
+                    )
+                if len(_prefixes) != len(self.__source_list):
+                    raise ValueError(
+                        "`-ffprefixes` length ({}) must match `source` list length ({})!".format(
+                            len(_prefixes), len(self.__source_list)
+                        )
+                    )
+                self.__ffmpeg_prefixes_list = _prefixes
+                self.__ffmpeg_prefixes = _prefixes[0]
+            else:
+                self.__ffmpeg_prefixes_list = [[] for _ in self.__source_list]
+                self.__ffmpeg_prefixes = []
+        else:
+            # single-input keeps the original flat-list contract; nested lists are
+            # only meaningful in multi-input mode, so reject them with a warning.
+            if any(isinstance(p, list) for p in _prefixes):
+                logger.warning(
+                    "Nested lists in `-ffprefixes` are only supported for multi-input sources. Discarding!"
+                )
+                _prefixes = []
+            self.__ffmpeg_prefixes = _prefixes
+            self.__ffmpeg_prefixes_list = [_prefixes]
+
+        # handle source_demuxer list mapping
+        if self.__is_multi:
+            if isinstance(source_demuxer, list):
+                if len(source_demuxer) != len(self.__source_list):
+                    raise ValueError(
+                        "`source_demuxer` length ({}) must match `source` list length ({})!".format(
+                            len(source_demuxer), len(self.__source_list)
+                        )
+                    )
+                self.__source_demuxer_list = source_demuxer
+            else:
+                self.__source_demuxer_list = [source_demuxer] * len(self.__source_list)
+        else:
+            self.__source_demuxer_list = [source_demuxer]
+
+        # initialize per-source metadata buffer so retrieve_metadata can be
+        # called safely (e.g. via the recursive primary probe in probe_stream)
+        # without polluting the result with stale `sources` keys.
+        self.__multi_source_metadata: list[Any] = []
 
         # handle where to save the downloaded FFmpeg Static assets on Windows(if specified)
         __ffmpeg_download_path = self.__sourcer_params.pop("-ffmpeg_download_path", "")
@@ -155,6 +216,12 @@ class Sourcer:
             )
 
         # sanitize externally accessible parameters and assign them
+        # Use primary index 0 for fallback properties validation
+        if not self.__source_list:
+            raise ValueError("Input `source` parameter is empty!")
+        source = self.__source_list[0]
+        source_demuxer = self.__source_demuxer_list[0]
+
         # handles source demuxer
         if source is None:
             # first check if source value is empty
@@ -321,6 +388,41 @@ class Sourcer:
         # signal metadata has been probed
         self.__metadata_probed = True
 
+        if self.__is_multi:
+            # collect per-source metadata for the `sources` key. The primary
+            # source's flat metadata is captured first via retrieve_metadata;
+            # the guard inside retrieve_metadata (checks for non-empty
+            # __multi_source_metadata) prevents `sources: []` self-pollution.
+            self.__multi_source_metadata.append(self.retrieve_metadata(force_retrieve_missing=True))
+            for idx in range(1, len(self.__source_list)):
+                _src = self.__source_list[idx]
+                _demux = self.__source_demuxer_list[idx]
+                _prefixes = self.__ffmpeg_prefixes_list[idx]
+                _params = self.__sourcer_params.copy()
+                _params["-ffprefixes"] = _prefixes
+                # spawn an independent single-source Sourcer per extra input;
+                # this reuses the resolved ffmpeg path and isolates per-source
+                # parsing state (which probe_stream otherwise clobbers).
+                # Resolve to an absolute path: on Unix `self.__ffmpeg` may be
+                # the bare command "ffmpeg" found via PATH, which the nested
+                # `get_valid_ffmpeg_path()` would reject as "not a file".
+                _custom_ffmpeg = (
+                    self.__ffmpeg
+                    if self.__ffmpeg and os.path.isfile(self.__ffmpeg)
+                    else (shutil.which(self.__ffmpeg) or "")
+                )
+                _s = Sourcer(
+                    _src,
+                    source_demuxer=_demux,
+                    custom_ffmpeg=_custom_ffmpeg,
+                    verbose=self.__verbose_logs,
+                    **_params,
+                )
+                _s.probe_stream(default_stream_indexes)
+                self.__multi_source_metadata.append(
+                    _s.retrieve_metadata(force_retrieve_missing=True)
+                )
+
         # return reference to the instance object.
         return self
 
@@ -409,6 +511,18 @@ class Sourcer:
                     "output_orientation": self.__default_video_orientation,
                 }
             )
+
+        # Only emit the `sources` key after per-source metadata is populated.
+        # probe_stream() calls retrieve_metadata() once for the primary input
+        # *before* populating __multi_source_metadata; without this guard the
+        # primary's per-source dict would carry a stray empty `sources: []`
+        # field that pollutes metadata["sources"][0].
+        if self.__is_multi and self.__multi_source_metadata:
+            metadata["sources"] = [m[0] for m in self.__multi_source_metadata]
+            force_retrieve_missing and metadata_missing.update(
+                {"sources": [m[1] for m in self.__multi_source_metadata]}
+            )
+
         # log it
         self.__verbose_logs and logger.debug("Metadata Extraction completed successfully!")
         # parse as JSON string(`json.dumps`), if defined
