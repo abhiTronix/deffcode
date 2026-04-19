@@ -33,7 +33,7 @@ DeFFcode is well-tested and supported on the following systems(but not limited t
 
 * Any :material-linux: Linux distro released in 2016 or later
 * :fontawesome-brands-windows: Windows 7 or later
-* :material-apple: MacOS 10.12.6 (Sierra) or later
+* :material-apple: macOS 10.12.6 (Sierra) or later
 
 &thinsp;
 
@@ -78,14 +78,14 @@ When installing DeFFcode, [**FFmpeg**][ffmpeg] is the only prerequisites you nee
             * Download the script, from https://bootstrap.pypa.io/get-pip.py.
             * Open a terminal/command prompt, `cd` to the folder containing the `get-pip.py` file and run:
 
-            === "Linux/MacOS"
+            === "Linux :material-linux:/macOS :material-apple:"
 
                 ```sh
                 python get-pip.py
                 
                 ```
 
-            === "Windows"
+            === "Windows :material-microsoft-windows:"
 
                 ```sh
                 py get-pip.py
