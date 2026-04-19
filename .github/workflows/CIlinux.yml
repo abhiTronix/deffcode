@@ -61,10 +61,10 @@ jobs:
       - name: Install Pip Dependencies
         run: |
           python -m pip install -U pip wheel numpy cython
-          python -m install -U .
-          python -m install -U opencv-python-headless 
-          python -m install -U vidgear[core]
-          python -m install -U ruff six codecov pytest pytest-cov
+          python -m pip install -U .
+          python -m pip install -U opencv-python-headless 
+          python -m pip install -U vidgear[core]
+          python -m pip install -U ruff six codecov pytest pytest-cov
         if: success()
       - name: Run prepare_dataset Bash script
         run: bash scripts/bash/prepare_dataset.sh
