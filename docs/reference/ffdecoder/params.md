@@ -729,6 +729,50 @@ These parameters are discussed below:
 
 &ensp;
 
+* **`-extract_luma`** _(bool)_ : This attribute can be enabled(`True`) to directly extract the **Luma (Y) plane** as a 2D grayscale `(H, W)` ndarray from YUV/NV pixel-format streams _(such as `yuv420p`, `yuv422p`, `yuv444p`, `nv12`, `nv21` etc.)_. This is the **fastest path to grayscale** available in FFdecoder — the Y plane sits uncompressed at the top of every YUV/NV bytestream, so no colorspace conversion runs either in FFmpeg or in Python; the decoder just slices it out. It can be used as follows:
+
+    !!! warning "As of now, this flag is only applied when `frame_format` resolves to a pixel-format starting with `yuv` or `nv`. For other pixel-formats, the flag is ignored and the default reshape path is used."
+
+    !!! tip "Pair with [Performance Mode ➶](../../../recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats) via `frame_format=\"yuv420p\"` for the fastest RAW-to-grayscale pipeline. Takes precedence over `-enforce_cv_patch` when both are enabled."
+
+    ```python
+    # define suitable parameter
+    ffparams = {"-extract_luma": True} # direct Y-plane (grayscale) extraction
+    ```
+
+&ensp;
+
+* **`-extract_metadata`** _(bool)_: This attribute can be enabled(`True`) to activate **asynchronous per-frame metadata extraction** via FFmpeg's [`showinfo`](https://ffmpeg.org/ffmpeg-filters.html#showinfo) filter. When enabled, the [`generateFrame()`](../../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.generateFrame) generator yields `(frame, metadata)` tuples instead of plain ndarrays, where `metadata` is a dict with the following keys:
+
+    - **`frame_num`** _(int)_: monotonic frame index as emitted by FFmpeg.
+    - **`pts_time`** _(float)_: presentation timestamp in seconds — the exact millisecond the frame is meant to appear, crucial for VFR (Variable-Frame-Rate) sources.
+    - **`is_keyframe`** _(bool)_: `True` if the frame is a keyframe (I-frame).
+    - **`frame_type`** _(str)_: one of `"I"` _(keyframe)_, `"P"` _(predictive)_, `"B"` _(bi-predictive)_, or `"?"` _(unknown)_.
+
+    A background daemon thread parses `showinfo` lines off FFmpeg's stderr and feeds them into a thread-safe queue, so the main `stdout` frame pipe is never throttled. It can be used as follows:
+
+    !!! warning "This flag is **incompatible with `-filter_complex`** (graph-label routing is ambiguous). If both are supplied, a warning is logged and `-extract_metadata` is disabled for that pipeline. A pre-existing `-vf` filter **is preserved** — `showinfo` is comma-chained onto it automatically."
+
+    !!! tip "Enables **Smart Keyframe Extraction**: for workflows like perceptual hashing, scene-change detection, or heavy AI-model inference (YOLO, ResNet, etc.) that only need I-frames, you can skip P/B frames entirely and reduce downstream compute by 10–50×, depending on the source's GOP size."
+
+    ```python
+    # define suitable parameter
+    ffparams = {"-extract_metadata": True} # yields (frame, meta) tuples
+    ```
+
+    Example: skip every non-keyframe for heavy AI inference.
+
+    ```python
+    decoder = FFdecoder("input.mp4", **{"-extract_metadata": True}).formulate()
+
+    for frame, meta in decoder.generateFrame():
+        if not meta["is_keyframe"]:
+            continue
+        results = heavy_ai_model.predict(frame)  # runs on ~1-2 frames per second
+    ```
+
+&ensp;
+
 * **`-disable_ffmpeg_window`** _(bool)_: This attribute can be used to prevent the FFmpeg command line window from appearing when using the FFdecoder API on Windows. This is especially useful when creating an `.exe` file for your Python script with logging disabled(`verbose=False`), as it stops the FFmpeg window from popping up even in windowed or no-console mode. Its usage is as follows:
 
     !!! warning "The `-disable_ffmpeg_window` flag is only available on :fontawesome-brands-windows: Windows OS with logging disabled."

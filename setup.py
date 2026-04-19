@@ -22,7 +22,7 @@ from setuptools import setup
 
 # apply various patches to README text and prepare
 # valid long_description
-with open("README.md", "r", encoding="utf-8") as fh:
+with open("README.md", encoding="utf-8") as fh:
     long_description = fh.read()
     # patch to remove github README specific text
     long_description = (

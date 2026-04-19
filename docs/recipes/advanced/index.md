@@ -82,6 +82,9 @@ The following challenging recipes will take your skills to the next level and wi
 - [x] **[:material-cog-refresh: Updating Video Metadata](../advanced/update-metadata/#updating-video-metadata)**
     - [Added new attributes to metadata in FFdecoder API](../advanced/update-metadata/#added-new-attributes-to-metadata-in-ffdecoder-api)
     - [Overriding source video metadata in FFdecoder API](../advanced/update-metadata/#overriding-source-video-metadata-in-ffdecoder-api)
+- [x] **[:material-timer-sync: Per-Frame Metadata Extraction](../advanced/extract-frame-metadata/#per-frame-metadata-extraction)**
+    - [Smart Keyframe-only decoding for heavy AI inference](../advanced/extract-frame-metadata/#smart-keyframe-only-decoding-for-heavy-ai-inference)
+    - [Variable-Frame-Rate (VFR) synchronization via `pts_time`](../advanced/extract-frame-metadata/#variable-frame-rate-vfr-synchronization-via-pts_time)
 
 
 &thinsp;

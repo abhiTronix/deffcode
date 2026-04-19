@@ -23,13 +23,22 @@ from __future__ import annotations
 
 import logging
 import platform
+import queue
+import re
 import subprocess as sp
+import threading
 from collections import OrderedDict
 from collections.abc import Generator
 from types import TracebackType
 from typing import Any
 
 import numpy as np
+
+# regex to parse FFmpeg `showinfo` lines emitted on stderr
+# example: "n: 0 pts:0 pts_time:0 ... iskey:1 type:I checksum:..."
+_SHOWINFO_REGEX = re.compile(
+    r"n:\s*(\d+).*?pts_time:\s*([-0-9.]+).*?iskey:(\d).*?type:([IPB?])"
+)
 
 from .ffhelper import (
     get_supported_pixfmts,
@@ -223,6 +232,29 @@ class FFdecoder:
             self.__cv_patch = False
             self.__verbose_logs and logger.critical(
                 "Enforcing OpenCV compatibility patch for YUV/NV video frames."
+            )
+
+        # handle Direct Luma (Grayscale) Extraction patch for YUV/NV streams
+        self.__extract_luma = self.__extra_params.pop("-extract_luma", False)
+        if not (isinstance(self.__extract_luma, bool)):
+            self.__extract_luma = False
+        if self.__extract_luma:
+            self.__verbose_logs and logger.critical(
+                "Enforcing Direct Luma (Grayscale) Extraction for YUV/NV video frames."
+            )
+
+        # handle asynchronous per-frame metadata extraction via `showinfo` filter
+        # when enabled, `generateFrame()` yields (frame, meta_dict) tuples
+        self.__extract_metadata = self.__extra_params.pop("-extract_metadata", False)
+        if not isinstance(self.__extract_metadata, bool):
+            self.__extract_metadata = False
+        # metadata queue and reader thread state (populated by __launch_FFdecoderline)
+        self.__metadata_queue: queue.Queue[dict[str, Any]] | None = None
+        self.__stderr_thread: threading.Thread | None = None
+        self.__stderr_stop = threading.Event()
+        if self.__extract_metadata:
+            self.__verbose_logs and logger.critical(
+                "Enabling asynchronous `showinfo` per-frame metadata extraction."
             )
 
         # handle disabling window for ffmpeg subprocess on Windows OS
@@ -632,6 +664,22 @@ class FFdecoder:
             # add rest to output parameters
             output_params.update(self.__extra_params)
 
+            # chain the `showinfo` filter onto the pipeline when per-frame
+            # metadata extraction is enabled. A pre-existing `-vf` is preserved
+            # via comma-concatenation; `-filter_complex` is not supported here
+            # because graph-label routing is ambiguous.
+            if self.__extract_metadata:
+                if "-filter_complex" in output_params:
+                    logger.warning(
+                        "`-extract_metadata` is incompatible with `-filter_complex`. Disabling metadata extraction."
+                    )
+                    self.__extract_metadata = False
+                else:
+                    existing_vf = output_params.get("-vf", "")
+                    output_params["-vf"] = (
+                        f"{existing_vf},showinfo" if existing_vf else "showinfo"
+                    )
+
             # dynamically calculate raw-frame numbers based on source (if not assigned by user).
             # TODO Added support for `-re -stream_loop` and `-loop`
             if "-frames:v" in input_params:
@@ -674,7 +722,8 @@ class FFdecoder:
         # formulated raw frame size and apply YUV pixel formats patch(if applicable)
         raw_frame_size = (
             (self.__raw_frame_resolution[0] * (self.__raw_frame_resolution[1] * 3 // 2))
-            if self.__raw_frame_pixfmt.startswith(("yuv", "nv")) and self.__cv_patch
+            if self.__raw_frame_pixfmt.startswith(("yuv", "nv"))
+            and (self.__cv_patch or self.__extract_luma)
             else (
                 self.__raw_frame_depth
                 * self.__raw_frame_resolution[0]
@@ -708,6 +757,16 @@ class FFdecoder:
         # check if empty
         if frame is None:
             return frame
+        elif self.__extract_luma and self.__raw_frame_pixfmt.startswith(("yuv", "nv")):
+            # Extract pure Luma (Y channel) - sits uncompressed at the top of the YUV bytestream
+            # Slice the first W*H bytes and reshape to 2D
+            luma_size = self.__raw_frame_resolution[1] * self.__raw_frame_resolution[0]
+            frame = frame[:luma_size].reshape(
+                (
+                    self.__raw_frame_resolution[1],
+                    self.__raw_frame_resolution[0],
+                )
+            )
         elif self.__raw_frame_pixfmt.startswith("gray"):
             # reconstruct exclusive `gray` frames
             frame = frame.reshape(
@@ -739,6 +798,10 @@ class FFdecoder:
         """
         This method returns a [Generator function](https://wiki.python.org/moin/Generators)
         _(also an Iterator using `next()`)_ of video frames, grabbed continuously from the buffer.
+
+        When the `-extract_metadata` parameter is enabled the generator yields
+        `(frame, metadata)` tuples, where `metadata` is a dict with keys
+        `frame_num`, `pts_time`, `is_keyframe`, and `frame_type`.
         """
         if self.__raw_frame_num is None or not self.__raw_frame_num:
             while not self.__terminate_stream:  # infinite raw frames
@@ -746,14 +809,31 @@ class FFdecoder:
                 if frame is None:
                     self.__terminate_stream = True
                     break
-                yield frame
+                yield self.__attach_metadata(frame)
         else:
             for _ in range(self.__raw_frame_num):  # finite raw frames
                 frame = self.__fetchNextFrame()
                 if frame is None:
                     self.__terminate_stream = True
                     break
-                yield frame
+                yield self.__attach_metadata(frame)
+
+    def __attach_metadata(self, frame: np.ndarray):
+        """
+        Internal: zip the just-decoded frame with the next queued metadata
+        dict when `-extract_metadata` is enabled. Uses a bounded timeout so a
+        mis-emitting filter chain can never deadlock the consumer.
+        """
+        if not self.__extract_metadata:
+            return frame
+        try:
+            meta = self.__metadata_queue.get(timeout=10.0)
+        except queue.Empty:
+            logger.warning(
+                "Timed-out waiting for `showinfo` metadata. Yielding frame with empty metadata."
+            )
+            meta = None
+        return (frame, meta)
 
     def __enter__(self) -> FFdecoder:
         """
@@ -909,12 +989,22 @@ class FFdecoder:
             + output_parameters
             + ["-f", "rawvideo", "-"]
         )
+        # When metadata extraction is enabled we must capture stderr regardless
+        # of verbose mode so the background reader thread can parse showinfo
+        # lines. Without PIPE the reader would have nothing to read (verbose
+        # inherits parent stderr; silent discards it).
+        if self.__extract_metadata:
+            stderr_target = sp.PIPE
+        elif self.__verbose_logs:
+            stderr_target = None
+        else:
+            stderr_target = sp.DEVNULL
+
         # compose the FFmpeg process
         if self.__verbose_logs:
             logger.debug("Executing FFmpeg command: `{}`".format(" ".join(cmd)))
-            # In debugging mode
             self.__process = sp.Popen(
-                cmd, stdin=sp.DEVNULL, stdout=sp.PIPE, stderr=None
+                cmd, stdin=sp.DEVNULL, stdout=sp.PIPE, stderr=stderr_target
             )
         else:
             # In silent mode
@@ -922,11 +1012,51 @@ class FFdecoder:
                 cmd,
                 stdin=sp.DEVNULL,
                 stdout=sp.PIPE,
-                stderr=sp.DEVNULL,
+                stderr=stderr_target,
                 creationflags=(  # this prevents ffmpeg creation window from opening when building exe files on Windows
                     sp.DETACHED_PROCESS if self.__ffmpeg_window_disabler_patch else 0
                 ),
             )
+
+        # spin up the stderr reader thread that parses `showinfo` lines and
+        # feeds per-frame metadata dicts into the queue consumed by generateFrame()
+        if self.__extract_metadata:
+            self.__metadata_queue = queue.Queue()
+            self.__stderr_stop.clear()
+            self.__stderr_thread = threading.Thread(
+                target=self.__read_stderr, daemon=True
+            )
+            self.__stderr_thread.start()
+
+    def __read_stderr(self) -> None:
+        """
+        Internal: background daemon that parses FFmpeg `showinfo` lines off
+        stderr and pushes per-frame metadata dicts onto `__metadata_queue`.
+        Exits when FFmpeg closes stderr or when `__stderr_stop` is signalled.
+        """
+        assert self.__process is not None and self.__process.stderr is not None
+        stderr = self.__process.stderr
+        try:
+            for line in iter(stderr.readline, b""):
+                if self.__stderr_stop.is_set():
+                    break
+                decoded = line.decode("utf-8", errors="ignore")
+                match = _SHOWINFO_REGEX.search(decoded)
+                if not match:
+                    continue
+                meta = {
+                    "frame_num": int(match.group(1)),
+                    "pts_time": float(match.group(2)),
+                    "is_keyframe": bool(int(match.group(3))),
+                    "frame_type": match.group(4),
+                }
+                self.__metadata_queue.put(meta)
+        except (ValueError, OSError):
+            # stderr pipe closed mid-readline during termination
+            pass
+        finally:
+            # sentinel so consumers unblock on EOF
+            self.__metadata_queue.put(None)
 
     def terminate(self) -> None:
         """
@@ -936,6 +1066,7 @@ class FFdecoder:
         # signal we are closing
         self.__verbose_logs and logger.debug("Terminating FFdecoder Pipeline...")
         self.__terminate_stream = True
+        self.__stderr_stop.set()
         # check if no process was initiated at first place
         if self.__process is None or self.__process.poll() is not None:
             logger.info("Pipeline already terminated.")
@@ -945,9 +1076,15 @@ class FFdecoder:
         self.__process.stdin and self.__process.stdin.close()
         # close `stdout` output
         self.__process.stdout and self.__process.stdout.close()
+        # close `stderr` so the background reader thread's blocking readline() unblocks
+        self.__process.stderr and self.__process.stderr.close()
         # terminate/kill process if still processing
         self.__process.poll() is None and self.__process.terminate()
         # wait if not exiting
         self.__process.wait()
+        # join the stderr reader thread so it does not outlive the pipeline
+        if self.__stderr_thread is not None and self.__stderr_thread.is_alive():
+            self.__stderr_thread.join(timeout=2.0)
+        self.__stderr_thread = None
         self.__process = None
         logger.info("Pipeline terminated successfully.")
