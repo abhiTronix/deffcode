@@ -74,6 +74,12 @@ The following challenging recipes will take your skills to the next level and wi
     - [CUDA-accelerated Video Transcoding with OpenCV's VideoWriter API](../advanced/transcode-hw-acceleration/#cuda-accelerated-video-transcoding-with-opencvs-videowriter-api)
     - [CUDA-NVENC-accelerated Video Transcoding with WriteGear API](../advanced/transcode-hw-acceleration/#cuda-nvenc-accelerated-video-transcoding-with-writegear-api)
     - [CUDA-NVENC-accelerated End-to-end Lossless Video Transcoding with WriteGear API](../advanced/transcode-hw-acceleration/#cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api)
+- [x] **[:material-play-box-multiple: Multi-Input Source Configurations](../advanced/multi_input/#multi-input-source-configurations)**
+    - [Decoding multiple inputs as side-by-side composite](../advanced/multi_input/#decoding-multiple-inputs-as-side-by-side-composite)
+    - [Decoding multiple RTSP streams in parallel](../advanced/multi_input/#decoding-multiple-rtsp-streams-in-parallel)
+    - [Decoding Picture-in-Picture overlay with per-input configuration](../advanced/multi_input/#decoding-picture-in-picture-overlay-with-per-input-configuration)
+    - [Decoding mixed sources with different demuxers](../advanced/multi_input/#decoding-mixed-sources-with-different-demuxers)
+    - [Probing multiple inputs with Sourcer API](../advanced/multi_input/#probing-multiple-inputs-with-sourcer-api)
 
 <div class="spacer"></div>
 

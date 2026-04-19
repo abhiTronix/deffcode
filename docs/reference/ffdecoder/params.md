@@ -29,9 +29,9 @@ This parameter defines the input source (`-i`) for decoding real-time frames.
 
 !!! danger "FFdecoder API checks for _`video bitrate`_ or _`frame-size` and `framerate`_ in video's metadata to ensure given input `source` has usable video stream available. Thereby, it will throw `ValueError` if it fails to find those parameters."
 
-!!! info "Multiple video inputs are not yet supported!"
+!!! info "Multiple video inputs are fully supported! Pass a Python list of source strings to natively process multiple media streams simultaneously. A `-filter_complex` or `-map` parameter is required."
 
-**Data-Type:** String.
+**Data-Type:** String or List of Strings.
 
 Its valid input can be one of the following: 
 
@@ -471,7 +471,7 @@ This parameter specifies the demuxer(`-f`) for the input source _(such as `dshow
     !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-camera-devices)"
 
 
-**Data-Type:** String
+**Data-Type:** String or List of Strings (if `source` is a list, you can pass a list of identical length mapping demuxers to corresponding sources).
 
 **Default Value:** Its default value is `None`.
 
@@ -682,6 +682,19 @@ These parameters are discussed below:
     # define suitable parameter
     ffparams = {"-ffprefixes": ['-re']} # executes as `ffmpeg -re <rest of command>`
     ```
+
+    !!! info "Multi-input mode: per-source list-of-lists"
+        When [`source`](#source) is a list, `-ffprefixes` must be a **list of per-input lists** with one entry per source (in the same order). Flat lists are rejected as ambiguous, and a length mismatch raises `ValueError`.
+
+        ```python
+        # source[0] gets `-re`; source[1] gets `-stream_loop -1`
+        ffparams = {
+            "-ffprefixes": [["-re"], ["-stream_loop", "-1"]],
+            "-filter_complex": "hstack=inputs=2",  # required for multi-input
+        }
+        ```
+
+        Use an empty inner list (`[]`) for any input that needs no prefix. See the [Multi-Input Source Configurations recipe ➶](../../../recipes/advanced/multi_input/#multi-input-source-configurations) for full examples.
 
 &ensp;
 

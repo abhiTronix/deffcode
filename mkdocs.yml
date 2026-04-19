@@ -212,6 +212,7 @@ nav:
           - Extracting video metadata: recipes/basic/extract-video-metadata.md
       - Advanced Recipes:
           - Overview: recipes/advanced/index.md
+          - Multi-Input Source Configurations: recipes/advanced/multi_input.md
           - Decoding Live Virtual Sources: recipes/advanced/decode-live-virtual-sources.md
           - Decoding Live Feed Devices: recipes/advanced/decode-live-feed-devices.md
           - Hardware-Accelerated Video Decoding: recipes/advanced/decode-hw-acceleration.md

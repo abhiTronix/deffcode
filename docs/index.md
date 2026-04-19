@@ -45,6 +45,7 @@ Here are some key features that stand out:
 - [x] Curated list of well-documented recipes ranging from [**Basic**](recipes/basic/) to [**Advanced**](recipes/advanced/) skill levels.
 - [x] Hands down the easiest [**Index based Camera Device Capturing**](recipes/basic/decode-camera-devices), similar to OpenCV.
 - [x] Memory efficient **Live [Simple](recipes/basic/transcode-live-frames-simplegraphs/#transcoding-live-simple-filtergraphs) & [Complex](recipes/advanced/transcode-live-frames-complexgraphs/#transcoding-live-complex-filtergraphs) Filtergraphs**. _(Yes, You read it correctly "Live"!)_
+- [x] Native **[Multi-Input Source Configurations](recipes/advanced/multi_input/#multi-input-source-configurations)** support for decoding complex topologies.
 - [x] Lightning fast dedicated **:fontawesome-solid-microchip: GPU-Accelerated Video [Decoding](recipes/advanced/decode-hw-acceleration/#hardware-accelerated-video-decoding) & [Transcoding](recipes/advanced/transcode-hw-acceleration/#hardware-accelerated-video-transcoding)**.
 - [x] Enables precise FFmpeg [**Frame Seeking**](recipes/basic/save-keyframe-image/#extracting-key-frames-as-png-image) with pinpoint accuracy.
 - [x] Effortless [**Metadata Extraction**](recipes/basic/extract-video-metadata/#extracting-video-metadata) from all streams available in the source.
