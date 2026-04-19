@@ -64,15 +64,16 @@ jobs:
           sudo pip install -U .
           sudo pip install -U opencv-python-headless 
           sudo pip install -U vidgear[core]
-          sudo pip install -U flake8 six codecov pytest pytest-cov
+          sudo pip install -U ruff six codecov pytest pytest-cov
         if: success()
       - name: Run prepare_dataset Bash script
         run: bash scripts/bash/prepare_dataset.sh
         shell: bash
-      - name: Run pytest and flake8
+      - name: Run pytest and ruff
         run: |
           timeout 1200 sudo python -m pytest -sv --cov=deffcode --cov-report=xml --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "EXIT_CODE=$code" >>$GITHUB_ENV; fi
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          ruff check .
+          ruff format --check .
         if: success()
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

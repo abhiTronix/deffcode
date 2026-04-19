@@ -20,38 +20,68 @@ limitations under the License.
 
 # Submitting an Issue Guidelines
 
-If you've found a new bug or you've come up with some new feature which can improve the quality of the DeFFcode, then related issues are welcomed! But, Before you do, please read the following guidelines:
+If you've discovered a bug or have an idea that could improve **DeFFcode**, we’d love to hear from you. Before opening an issue, please review the guidelines below—they help us triage faster and resolve issues more efficiently.
 
-??? question "First Issue on GitHub?" 
+## :material-rocket-launch: Before You Start
+
+??? question "First issue on GitHub?"
+
+    You can learn how to create one from GitHub’s official guide on [creating an issue](https://help.github.com/en/github/managing-your-work-on-github/creating-an-issue).
+
+!!! info
+
+    Issues can usually be resolved much faster when they include clear reproduction steps, environment details, and a small demo.
     
-    You can easily learn about it from [creating an issue](https://help.github.com/en/github/managing-your-work-on-github/creating-an-issue) wiki.
+    If you're short on time, feel free to submit a brief report—but please note that incomplete reports may take longer to investigate.
 
-!!! Info 
+&thinsp;
 
-    Please note that your issue will be fixed much faster if you spend about half an hour preparing it, including the exact reproduction steps and a demo. If you're in a hurry or don't feel confident, it's fine to report issues with less details, but this makes it less likely they'll get fixed soon.
+## :material-tab-search: Search the Documentation and Existing Issues
 
-### Search the Docs and Previous Issues
+Before opening a new issue, please check the following first:
 
-  * Remember to first search GitHub for a [open or closed issue](https://github.com/abhiTronix/deffcode/issues?q=is%3Aissue) that relates to your submission or already been reported. You may find related information and the discussion might inform you of workarounds that may help to resolve the issue. 
-  * For quick questions, please refrain from opening an issue, as you can reach us on [Gitter](https://gitter.im/deffcode-python/community) community channel.
-  * Also, go comprehensively through our dedicated [FAQ & Troubleshooting section](../../help/get_help/#frequently-asked-questions).
+- [x] Search for an existing [open or closed issue](https://github.com/abhiTronix/deffcode/issues?q=is%3Aissue) that matches your problem.
+- [x] Review the [FAQ & Troubleshooting section](../../help/get_help/#frequently-asked-questions).
+- [x] For quick questions, use our [Gitter community](https://gitter.im/deffcode-python/community) instead of opening an issue.
 
-### Gather Required Information
+You may find that your question has already been answered or that a workaround already exists.
 
-* All DeFFcode APIs provides a `verbose` boolean flag in parameters, to log debugged output to terminal. Kindly turn this parameter `True` in the respective API for getting debug output, and paste it with your Issue. 
-* In order to reproduce bugs we will systematically ask you to provide a minimal reproduction code for your report. 
-* Check and paste, exact DeFFcode version by running command `#!python python -c "import deffcode; print(deffcode.__version__)"`.
+&thinsp;
 
-### Follow the Issue Template
+## :material-folder-edit: Gather Required Information
 
-* Please format your issue by choosing the appropriate template. 
-* Any improper/insufficient reports will be marked **Invalid ⛔**, and if we don't hear back from you we may close the issue.
+Please include the following information with your report whenever possible:
 
-### Raise the Issue
+- [x] Enable the `verbose=True` flag in the relevant API to collect debug logs.
+- [x] Provide a **minimal reproducible example** that demonstrates the issue.
+- [x] Include the installed DeFFcode version using command: `#!sh python -c "import deffcode; print(deffcode.__version__)"` and also:
+    * Python version
+    * Operating system
+    * FFmpeg version (`ffmpeg -version`)
 
-* Add a brief but descriptive title for your issue.
-* Keep the issue phrasing in context of the problem.
-* Attach source-code/screenshots if you have one.
-* Finally, raise it by choosing the appropriate Issue Template: [**Bug report 🐞**](https://github.com/abhiTronix/deffcode/issues/new?assignees=abhiTronix&labels=Bug+%3Alady_beetle%3A%2CNeeds+Triage+%3Amonocle_face%3A&template=bug_report.yaml&title=%5BBug%5D%3A+), [Idea 💡](https://github.com/abhiTronix/deffcode/issues/new?assignees=&labels=Idea+%3Abulb%3A&template=idea.yaml&title=%5BIdea%5D%3A+), [Question ❔](https://github.com/abhiTronix/deffcode/issues/new?assignees=&labels=Question+%3Agrey_question%3A&template=question.yaml&title=%5BQuestion%5D%3A+).
+&thinsp;
 
-&nbsp; 
+## :octicons-repo-template-24: Follow the Issue Template
+
+- [x] Select the correct issue template before submitting.
+- [x] Complete all relevant sections in the template.
+- [x] Reports with insufficient information may be marked **Invalid ⛔**
+- [x] If no follow-up details are provided, the issue may be closed.
+
+&thinsp;
+
+## :fontawesome-solid-fist-raised: Raise the Issue
+
+Before submitting:
+
+- [x] Write a short but descriptive title
+- [x] Keep the report focused on one issue
+- [x] Attach relevant logs, screenshots, or source code when available
+
+Choose the appropriate template below:
+
+* [**Bug Report 🐞**](https://github.com/abhiTronix/deffcode/issues/new?assignees=abhiTronix&labels=Bug+%3Alady_beetle%3A%2CNeeds+Triage+%3Amonocle_face%3A&template=bug_report.yaml&title=%5BBug%5D%3A+)
+* [**Feature Idea 💡**](https://github.com/abhiTronix/deffcode/issues/new?assignees=&labels=Idea+%3Abulb%3A&template=idea.yaml&title=%5BIdea%5D%3A+)
+* [**Question ❔**](https://github.com/abhiTronix/deffcode/issues/new?assignees=&labels=Question+%3Agrey_question%3A&template=question.yaml&title=%5BQuestion%5D%3A+)
+  
+&thinsp;
