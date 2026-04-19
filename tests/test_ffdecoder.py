@@ -179,6 +179,58 @@ def test_frame_format(pixfmts: str) -> None:
 
 
 @pytest.mark.parametrize(
+    "pixfmt, cv_color_code",
+    [
+        ("yuv420p", cv2.COLOR_YUV2BGR_I420),
+        ("nv12", cv2.COLOR_YUV2BGR_NV12),
+        ("nv21", cv2.COLOR_YUV2BGR_NV21),
+    ],
+)
+def test_yuv_family_ingest(pixfmt: str, cv_color_code: int) -> None:
+    """
+    Validates the YUV/NV ingest path from Issue #15: FFdecoder must deliver a
+    compact 3:2 planar buffer for `yuv`/`nv` pixel-formats under
+    `-enforce_cv_patch`, and that buffer must round-trip to BGR via OpenCV.
+    """
+    decoder = None
+    source = return_testvideo_path(fmt="vo")
+    _, actual_shape = actual_frame_count_n_frame_size(source)
+    try:
+        decoder = FFdecoder(
+            source,
+            frame_format=pixfmt,
+            custom_ffmpeg=return_static_ffmpeg(),
+            verbose=True,
+            **{"-enforce_cv_patch": True},
+        ).formulate()
+
+        # pixel-format may fall back to rgb24 if the local FFmpeg build lacks it
+        metadata = json.loads(decoder.metadata)
+        if metadata.get("output_frames_pixfmt") != pixfmt:
+            pytest.skip(f"FFmpeg build does not advertise `{pixfmt}` pixel-format")
+
+        frame = next(decoder.generateFrame(), None)
+        assert frame is not None, "Test failed - no frame retrieved"
+
+        h, w = actual_shape[0], actual_shape[1]
+        # YUV/NV ingest with cv_patch yields a 2D buffer with height = h*3/2
+        assert frame.shape == (h * 3 // 2, w), (
+            f"Test failed - unexpected YUV buffer shape {frame.shape}, "
+            f"expected {(h * 3 // 2, w)}"
+        )
+
+        # round-trip via OpenCV to confirm planar layout is valid
+        bgr = cv2.cvtColor(frame, cv_color_code)
+        assert bgr.shape == (h, w, 3), (
+            f"Test failed - unexpected BGR shape after conversion {bgr.shape}"
+        )
+    except Exception as e:
+        pytest.fail(str(e))
+    finally:
+        decoder is not None and decoder.terminate()
+
+
+@pytest.mark.parametrize(
     "custom_params, checks",
     [
         (
