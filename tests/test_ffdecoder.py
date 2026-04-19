@@ -628,11 +628,23 @@ test_data = [
         },
         True,
     ),
+    (
+        [return_testvideo_path(), return_testvideo_path()],
+        {"-filter_complex": "hstack=inputs=2"},
+        True,
+    ),
+    (
+        [return_testvideo_path(), return_testvideo_path()],
+        {
+            "-extract_metadata": True
+        },  # Should fail with ValueError because of missing map/filter_complex
+        False,
+    ),
 ]
 
 
 @pytest.mark.parametrize("source, ffparams, result", test_data)
-def test_FFdecoder_params(source: str, ffparams: dict[str, Any], result: bool) -> None:
+def test_FFdecoder_params(source: str | list[str], ffparams: dict[str, Any], result: bool) -> None:
     """
     Testing FFdecoder API with different parameters and save output
     """
