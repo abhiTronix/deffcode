@@ -225,6 +225,15 @@ class FFdecoder:
                 "Enforcing OpenCV compatibility patch for YUV/NV video frames."
             )
 
+        # handle Direct Luma (Grayscale) Extraction patch for YUV/NV streams
+        self.__extract_luma = self.__extra_params.pop("-extract_luma", False)
+        if not (isinstance(self.__extract_luma, bool)):
+            self.__extract_luma = False
+        if self.__extract_luma:
+            self.__verbose_logs and logger.critical(
+                "Enforcing Direct Luma (Grayscale) Extraction for YUV/NV video frames."
+            )
+
         # handle disabling window for ffmpeg subprocess on Windows OS
         # this patch prevents ffmpeg creation window from opening when
         # building exe files
@@ -674,7 +683,8 @@ class FFdecoder:
         # formulated raw frame size and apply YUV pixel formats patch(if applicable)
         raw_frame_size = (
             (self.__raw_frame_resolution[0] * (self.__raw_frame_resolution[1] * 3 // 2))
-            if self.__raw_frame_pixfmt.startswith(("yuv", "nv")) and self.__cv_patch
+            if self.__raw_frame_pixfmt.startswith(("yuv", "nv"))
+            and (self.__cv_patch or self.__extract_luma)
             else (
                 self.__raw_frame_depth
                 * self.__raw_frame_resolution[0]
@@ -708,6 +718,16 @@ class FFdecoder:
         # check if empty
         if frame is None:
             return frame
+        elif self.__extract_luma and self.__raw_frame_pixfmt.startswith(("yuv", "nv")):
+            # Extract pure Luma (Y channel) - sits uncompressed at the top of the YUV bytestream
+            # Slice the first W*H bytes and reshape to 2D
+            luma_size = self.__raw_frame_resolution[1] * self.__raw_frame_resolution[0]
+            frame = frame[:luma_size].reshape(
+                (
+                    self.__raw_frame_resolution[1],
+                    self.__raw_frame_resolution[0],
+                )
+            )
         elif self.__raw_frame_pixfmt.startswith("gray"):
             # reconstruct exclusive `gray` frames
             frame = frame.reshape(

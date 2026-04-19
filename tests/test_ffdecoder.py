@@ -29,6 +29,7 @@ import tempfile
 from typing import Any
 
 import cv2
+import numpy as np
 import pytest
 from PIL import Image
 
@@ -223,6 +224,82 @@ def test_yuv_family_ingest(pixfmt: str, cv_color_code: int) -> None:
         bgr = cv2.cvtColor(frame, cv_color_code)
         assert bgr.shape == (h, w, 3), (
             f"Test failed - unexpected BGR shape after conversion {bgr.shape}"
+        )
+    except Exception as e:
+        pytest.fail(str(e))
+    finally:
+        decoder is not None and decoder.terminate()
+
+
+@pytest.mark.parametrize(
+    "pixfmt",
+    ["yuv420p", "nv12", "nv21"],
+)
+def test_extract_luma(pixfmt: str) -> None:
+    """
+    Validates the `-extract_luma` fast-path: for YUV/NV pixel-formats the
+    decoder must slice the pure Y-plane out of the bytestream and hand back a
+    2D grayscale (H, W) ndarray, without requiring `-enforce_cv_patch`.
+    """
+    decoder = None
+    source = return_testvideo_path(fmt="vo")
+    _, actual_shape = actual_frame_count_n_frame_size(source)
+    try:
+        decoder = FFdecoder(
+            source,
+            frame_format=pixfmt,
+            custom_ffmpeg=return_static_ffmpeg(),
+            verbose=True,
+            **{"-extract_luma": True},
+        ).formulate()
+
+        # skip if FFmpeg build does not advertise the requested pixel-format
+        metadata = json.loads(decoder.metadata)
+        if metadata.get("output_frames_pixfmt") != pixfmt:
+            pytest.skip(f"FFmpeg build does not advertise `{pixfmt}` pixel-format")
+
+        h, w = actual_shape[0], actual_shape[1]
+        frames_checked = 0
+        # iterate a few frames to confirm pipe stays aligned across reads
+        for frame in decoder.generateFrame():
+            assert frame is not None, "Test failed - no frame retrieved"
+            # luma-only output must be a 2D (H, W) uint8 ndarray
+            assert frame.shape == (h, w), (
+                f"Test failed - unexpected luma shape {frame.shape}, "
+                f"expected {(h, w)}"
+            )
+            assert frame.dtype == np.uint8, (
+                f"Test failed - unexpected luma dtype {frame.dtype}"
+            )
+            frames_checked += 1
+            if frames_checked >= 3:
+                break
+        assert frames_checked > 0, "Test failed - generator yielded no frames"
+    except Exception as e:
+        pytest.fail(str(e))
+    finally:
+        decoder is not None and decoder.terminate()
+
+
+def test_extract_luma_invalid_type() -> None:
+    """
+    Non-bool `-extract_luma` values must be discarded silently and the decoder
+    should fall back to the default reshape path.
+    """
+    decoder = None
+    source = return_testvideo_path(fmt="vo")
+    _, actual_shape = actual_frame_count_n_frame_size(source)
+    try:
+        decoder = FFdecoder(
+            source,
+            frame_format="bgr24",
+            custom_ffmpeg=return_static_ffmpeg(),
+            **{"-extract_luma": "yes"},  # invalid, must be coerced to False
+        ).formulate()
+        frame = next(decoder.generateFrame(), None)
+        assert frame is not None and frame.shape == actual_shape, (
+            f"Test failed - got {None if frame is None else frame.shape}, "
+            f"expected {actual_shape}"
         )
     except Exception as e:
         pytest.fail(str(e))
