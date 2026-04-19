@@ -201,6 +201,8 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 
 - [Added new attributes to metadata in FFdecoder API][added-new-attributes-to-metadata-in-ffdecoder-api]
 - [Overriding source video metadata in FFdecoder API][overriding-source-video-metadata-in-ffdecoder-api]
+- [Smart Keyframe-only decoding for heavy AI inference][smart-keyframe-only-decoding-for-heavy-ai-inference]
+- [Variable-Frame-Rate (VFR) synchronization via pts_time][variable-frame-rate-vfr-synchronization-via-pts_time]
 
 </details>
 
@@ -431,6 +433,8 @@ Advanced Recipes
 [cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api
 [added-new-attributes-to-metadata-in-ffdecoder-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#added-new-attributes-to-metadata-in-ffdecoder-api
 [overriding-source-video-metadata-in-ffdecoder-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#overriding-source-video-metadata-in-ffdecoder-api
+[smart-keyframe-only-decoding-for-heavy-ai-inference]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/extract-frame-metadata/#smart-keyframe-only-decoding-for-heavy-ai-inference
+[variable-frame-rate-vfr-synchronization-via-pts_time]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/extract-frame-metadata/#variable-frame-rate-vfr-synchronization-via-pts_time
 
 <!--
 CI Apps URLs
