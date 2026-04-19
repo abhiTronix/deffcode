@@ -50,7 +50,7 @@ Here are some key features that stand out:
 - [x] Effortless [**Metadata Extraction**](recipes/basic/extract-video-metadata/#extracting-video-metadata) from all streams available in the source.
 - [x] Maintains the standard easy to learn [**OpenCV-Python**](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) coding syntax.
 - [x] Out-of-the-box support for all prominent Computer Vision libraries.
-- [x] Cross-platform, runs on Python 3.7+, and easy to install. 
+- [x] Cross-platform, runs on Python 3.10+, and easy to install. 
 
 ??? question "Still missing a key feature in DeFFcode?"
 

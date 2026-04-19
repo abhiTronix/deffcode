@@ -72,7 +72,7 @@ Here are some key features that stand out:
 - Effortless [**Metadata Extraction**][extracting-video-metadata] from all streams available in the source.
 - Maintains the standard easy to learn [**OpenCV-Python**](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) coding syntax.
 - Out-of-the-box support for all prominent Computer Vision libraries.
-- Cross-platform, runs on Python 3.7+, and easy to install.
+- Cross-platform, runs on Python 3.10+, and easy to install.
 
 <!--
 - [x] Lossless Transcoding support with [WriteGear](https://abhitronix.github.io/deffcode/latest/gears/writegear/introduction/). #TODO
