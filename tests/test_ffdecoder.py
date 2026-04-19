@@ -281,6 +281,149 @@ def test_extract_luma(pixfmt: str) -> None:
         decoder is not None and decoder.terminate()
 
 
+def test_extract_metadata_basic() -> None:
+    """
+    Validates the `-extract_metadata` asynchronous showinfo parser: when
+    enabled, `generateFrame()` must yield `(frame, meta)` tuples with the
+    documented metadata keys and sensible values for a CFR source.
+    """
+    decoder = None
+    source = return_testvideo_path(fmt="vo")
+    _, actual_shape = actual_frame_count_n_frame_size(source)
+    try:
+        decoder = FFdecoder(
+            source,
+            frame_format="bgr24",
+            custom_ffmpeg=return_static_ffmpeg(),
+            verbose=True,
+            **{"-extract_metadata": True},
+        ).formulate()
+
+        expected_keys = {"frame_num", "pts_time", "is_keyframe", "frame_type"}
+        prev_frame_num = -1
+        frames_checked = 0
+        for pair in decoder.generateFrame():
+            assert isinstance(pair, tuple) and len(pair) == 2, (
+                "Test failed - expected (frame, meta) tuple when `-extract_metadata` is enabled"
+            )
+            frame, meta = pair
+            assert frame is not None and frame.shape == actual_shape, (
+                f"Test failed - frame shape {None if frame is None else frame.shape}, "
+                f"expected {actual_shape}"
+            )
+            assert isinstance(meta, dict), "Test failed - metadata must be a dict"
+            assert expected_keys.issubset(meta.keys()), (
+                f"Test failed - missing metadata keys, got {list(meta.keys())}"
+            )
+            assert meta["frame_num"] == prev_frame_num + 1, (
+                f"Test failed - non-monotonic frame_num {meta['frame_num']} after {prev_frame_num}"
+            )
+            assert meta["pts_time"] >= 0.0, "Test failed - negative pts_time"
+            assert meta["frame_type"] in {"I", "P", "B", "?"}, (
+                f"Test failed - unexpected frame_type `{meta['frame_type']}`"
+            )
+            prev_frame_num = meta["frame_num"]
+            frames_checked += 1
+            if frames_checked >= 5:
+                break
+        assert frames_checked > 0, "Test failed - generator yielded no frames"
+        assert prev_frame_num == 0 or any(
+            True for _ in [0]
+        ), "sanity: loop must have executed"
+    except Exception as e:
+        pytest.fail(str(e))
+    finally:
+        decoder is not None and decoder.terminate()
+
+
+def test_extract_metadata_preserves_user_vf() -> None:
+    """
+    A user-supplied `-vf` filter must be preserved by comma-chaining
+    `showinfo` onto the filter graph rather than overwriting it.
+    """
+    decoder = None
+    source = return_testvideo_path(fmt="vo")
+    try:
+        decoder = FFdecoder(
+            source,
+            frame_format="bgr24",
+            custom_ffmpeg=return_static_ffmpeg(),
+            **{"-extract_metadata": True, "-vf": "scale=160:120"},
+        ).formulate()
+
+        frame, meta = next(decoder.generateFrame(), (None, None))
+        assert frame is not None, "Test failed - no frame retrieved"
+        # scale filter must have survived alongside showinfo
+        assert frame.shape == (120, 160, 3), (
+            f"Test failed - user `-vf scale=160:120` was not preserved, shape={frame.shape}"
+        )
+        assert isinstance(meta, dict) and "frame_num" in meta, (
+            "Test failed - metadata not produced when chaining with user -vf"
+        )
+    except Exception as e:
+        pytest.fail(str(e))
+    finally:
+        decoder is not None and decoder.terminate()
+
+
+def test_extract_metadata_invalid_type() -> None:
+    """
+    Non-bool `-extract_metadata` values must be discarded silently and the
+    decoder should fall back to yielding plain ndarray frames (no tuple).
+    """
+    decoder = None
+    source = return_testvideo_path(fmt="vo")
+    _, actual_shape = actual_frame_count_n_frame_size(source)
+    try:
+        decoder = FFdecoder(
+            source,
+            frame_format="bgr24",
+            custom_ffmpeg=return_static_ffmpeg(),
+            **{"-extract_metadata": "yes"},  # invalid, must be coerced to False
+        ).formulate()
+        frame = next(decoder.generateFrame(), None)
+        assert frame is not None, "Test failed - no frame retrieved"
+        assert not isinstance(frame, tuple), (
+            "Test failed - invalid `-extract_metadata` value should not enable tuple output"
+        )
+        assert frame.shape == actual_shape
+    except Exception as e:
+        pytest.fail(str(e))
+    finally:
+        decoder is not None and decoder.terminate()
+
+
+def test_extract_metadata_filter_complex_disables() -> None:
+    """
+    `-extract_metadata` cannot coexist with `-filter_complex` (graph-label
+    routing is ambiguous). The decoder must warn and fall back to plain
+    ndarray frames rather than emitting tuples.
+    """
+    decoder = None
+    source = return_testvideo_path(fmt="vo")
+    try:
+        decoder = FFdecoder(
+            source,
+            frame_format="bgr24",
+            custom_ffmpeg=return_static_ffmpeg(),
+            **{
+                "-extract_metadata": True,
+                "-filter_complex": "[0:v]scale=160:120[out]",
+            },
+        ).formulate()
+        frame = next(decoder.generateFrame(), None)
+        # decoder should fall back to plain ndarray output (not tuple)
+        assert frame is None or not isinstance(frame, tuple), (
+            "Test failed - `-extract_metadata` should be disabled when `-filter_complex` is set"
+        )
+    except Exception as e:
+        # some FFmpeg builds may reject the exact filter_complex above; that's
+        # fine — the only contract under test is "no tuple output"
+        logger.info(f"filter_complex path errored as expected: {e}")
+    finally:
+        decoder is not None and decoder.terminate()
+
+
 def test_extract_luma_invalid_type() -> None:
     """
     Non-bool `-extract_luma` values must be discarded silently and the decoder

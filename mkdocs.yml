@@ -224,6 +224,7 @@ nav:
           - Transcoding Video Art with Filtergraphs: recipes/advanced/transcode-art-filtergraphs.md
           - Hardware-Accelerated Video Transcoding: recipes/advanced/transcode-hw-acceleration.md
           - Updating Video Metadata: recipes/advanced/update-metadata.md
+          - Per-Frame Metadata Extraction: recipes/advanced/extract-frame-metadata.md
   - API References:
       - deffcode.FFdecoder:
           - API: reference/ffdecoder/index.md
