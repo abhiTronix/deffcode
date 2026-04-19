@@ -34,20 +34,19 @@ from typing import Any
 
 import numpy as np
 
-# regex to parse FFmpeg `showinfo` lines emitted on stderr
-# example: "n: 0 pts:0 pts_time:0 ... iskey:1 type:I checksum:..."
-_SHOWINFO_REGEX = re.compile(
-    r"n:\s*(\d+).*?pts_time:\s*([-0-9.]+).*?iskey:(\d).*?type:([IPB?])"
-)
-
+# import utils packages
 from .ffhelper import (
     get_supported_pixfmts,
     get_supported_vdecoders,
 )
 from .sourcer import Sourcer
-
-# import utils packages
 from .utils import dict2Args, logger_handler
+
+# regex to parse FFmpeg `showinfo` lines emitted on stderr
+# example: "n: 0 pts:0 pts_time:0 ... iskey:1 type:I checksum:..."
+_SHOWINFO_REGEX = re.compile(
+    r"n:\s*(\d+).*?pts_time:\s*([-0-9.]+).*?iskey:(\d).*?type:([IPB?])"
+)
 
 # define FFdecoder logger
 logger = logging.getLogger("FFdecoder")
