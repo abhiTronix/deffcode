@@ -212,13 +212,13 @@ nav:
           - Extracting video metadata: recipes/basic/extract-video-metadata.md
       - Advanced Recipes:
           - Overview: recipes/advanced/index.md
-          - Multi-Input Source Configurations: recipes/advanced/multi_input.md
           - Decoding Live Virtual Sources: recipes/advanced/decode-live-virtual-sources.md
           - Decoding Live Feed Devices: recipes/advanced/decode-live-feed-devices.md
           - Hardware-Accelerated Video Decoding: recipes/advanced/decode-hw-acceleration.md
           - Transcoding Live Complex Filtergraphs: recipes/advanced/transcode-live-frames-complexgraphs.md
           - Transcoding Video Art with Filtergraphs: recipes/advanced/transcode-art-filtergraphs.md
           - Hardware-Accelerated Video Transcoding: recipes/advanced/transcode-hw-acceleration.md
+          - Multi-Input Source Configurations: recipes/advanced/multi_input.md
           - Updating Video Metadata: recipes/advanced/update-metadata.md
           - Per-Frame Metadata Extraction: recipes/advanced/extract-frame-metadata.md
   - API References:
