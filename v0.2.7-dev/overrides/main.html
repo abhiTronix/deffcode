@@ -18,12 +18,15 @@
 {% endblock %}
 {% block announce %}
 <!-- Add announcement here, including arbitrary HTML -->
-{% set announcement_link = config.site_url ~
-'/recipes/basic/decode-camera-devices/#decoding-camera-devices-using-indexes' %}
+{% set announcement_link_1 = config.site_url ~
+'/recipes/advanced/multi_input/' %}
+{% set announcement_link_2 = config.site_url ~
+'recipes/advanced/extract-frame-metadata/' %}
+{% set announcement_link_3 = config.site_url ~
+'/recipes/basic/decode-video-files/#__tabbed_3_2' %}
 
-<b>Hey, Index based Camera Device Capture support has been added in <code>v0.2.4</code>. Checkout these <a
-    href="{{ announcement_link }}">new recipes <span class="twemoji"> {% include ".icons/material/pot-steam-outline.svg"
-      %} </span> ➶</a></b>
+
+<b><span class="twemoji"> {% include ".icons/material/rocket-launch.svg" %} </span> <code>v0.2.7</code> is out! <a href="{{ announcement_link_1 }}">Decode multiple input streams in parallel ➶</a>, <a href="{{ announcement_link_2 }}">grab per-frame metadata async ➶</a>, and <a href="{{ announcement_link_3 }}">fly through YUV with <code>-extract_luma</code> ➶</a></b>
 {% endblock %}
 {% block outdated %}
 You're not viewing the latest version.
