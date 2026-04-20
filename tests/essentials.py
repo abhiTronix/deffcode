@@ -19,12 +19,17 @@ limitations under the License.
 """
 
 # import the necessary packages
+from __future__ import annotations
 
-import os, cv2
-import tempfile
 import logging
+import os
 import platform
+import tempfile
+from typing import Any
+
+import cv2
 from vidgear.gears import WriteGear
+
 from deffcode.utils import logger_handler
 
 # define test logger
@@ -34,30 +39,24 @@ logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
 
 # define machine os
-is_windows = True if os.name == "nt" else False
+is_windows: bool = os.name == "nt"
 
 
-def return_static_ffmpeg():
+def return_static_ffmpeg() -> str:
     """
     returns system specific FFmpeg static path
     """
     path = ""
     if platform.system() == "Windows":
-        path += os.path.join(
-            tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/bin/ffmpeg.exe"
-        )
+        path += os.path.join(tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/bin/ffmpeg.exe")
     elif platform.system() == "Darwin":
-        path += os.path.join(
-            tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/bin/ffmpeg"
-        )
+        path += os.path.join(tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/bin/ffmpeg")
     else:
-        path += os.path.join(
-            tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/ffmpeg"
-        )
+        path += os.path.join(tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/ffmpeg")
     return os.path.abspath(path)
 
 
-def remove_file_safe(path):
+def remove_file_safe(path: str) -> None:
     """
     Remove file safely
     """
@@ -68,7 +67,7 @@ def remove_file_safe(path):
         logger.exception(e)
 
 
-def return_testvideo_path(fmt="av"):
+def return_testvideo_path(fmt: str = "av") -> str:
     """
     returns Test video path
     """
@@ -78,13 +77,11 @@ def return_testvideo_path(fmt="av"):
         "ao": "BigBuckBunny_4sec_AO.mp4",
     }
     req_fmt = fmt if (fmt in supported_fmts) else "av"
-    path = "{}/Downloads/Test_videos/{}".format(
-        tempfile.gettempdir(), supported_fmts[req_fmt]
-    )
+    path = "{}/Downloads/Test_videos/{}".format(tempfile.gettempdir(), supported_fmts[req_fmt])
     return os.path.abspath(path)
 
 
-def return_generated_frames_path(path):
+def return_generated_frames_path(path: str) -> str:
     """
     returns Test video path
     """
@@ -107,13 +104,13 @@ def return_generated_frames_path(path):
     return frames_path
 
 
-def actual_frame_count_n_frame_size(path):
+def actual_frame_count_n_frame_size(path: str) -> tuple[int, Any]:
     """
     simply counts the total frames in a given video
     """
     stream = cv2.VideoCapture(path)
-    num_cv = 0
-    shape = None
+    num_cv: int = 0
+    shape: Any = None
     while True:
         (grabbed, frame) = stream.read()
         if not grabbed:

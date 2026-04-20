@@ -273,9 +273,60 @@ In this example we will decode live **Grayscale** and **YUV** video frames from 
     decoder.terminate()
     ```
 
+=== "Decode Grayscale via YUV (fastest)"
+
+    !!! success ":zap: Fastest RAW-to-Grayscale via `-extract_luma`"
+
+        Every YUV/NV bytestream stores the **Luma (Y) plane** uncompressed at the top of each frame. The exclusive [`-extract_luma`](../../reference/ffdecoder/params/#b-exclusive-parameters) boolean attribute makes FFdecoder slice that Y-plane directly and hand back a 2D `(H, W)` grayscale ndarray — **no colorspace conversion in FFmpeg, no `cv2.cvtColor` in Python**. This is strictly faster than `frame_format="gray"`, which still asks FFmpeg to do a `yuv→gray` conversion on every frame.
+
+        Combined with the reduced pipe-bytes of YUV 4:2:0 ingest, this is the fastest grayscale pipeline the API can produce.
+
+    ```python
+    # import the necessary packages
+    from deffcode import FFdecoder
+    import cv2
+
+    # enable direct Luma (Y-plane) extraction
+    ffparams = {"-extract_luma": True}
+
+    # initialize the decoder with a YUV pixel-format
+    decoder = FFdecoder(
+        "input_foo.mp4", frame_format="yuv420p", verbose=True, **ffparams
+    ).formulate()
+
+    # grab the 2D (H, W) grayscale frames from the decoder
+    for gray in decoder.generateFrame():
+
+        # check if frame is None
+        if gray is None:
+            break
+
+        # {do something with the gray frame here}
+
+        # Show output window
+        cv2.imshow("Gray Output", gray)
+
+        # check for 'q' key if pressed
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord("q"):
+            break
+
+    # close output window
+    cv2.destroyAllWindows()
+
+    # terminate the decoder
+    decoder.terminate()
+    ```
+
 === "Decode YUV frames"
 
     !!! quote "With FFdecoder API, frames extracted with YUV pixel formats _(`yuv420p`, `yuv444p`, `nv12`, `nv21` etc.)_ are generally incompatible with OpenCV APIs. But you can make them easily compatible by using exclusive [`-enforce_cv_patch`](../../reference/ffdecoder/params/#b-exclusive-parameters) boolean attribute of its `ffparam` dictionary parameter."
+
+    !!! success "Performance Mode — :zap: Faster Decoding via YUV420p"
+
+        Ingesting frames as 12-bit **YUV 4:2:0** instead of 24-bit **RGB/BGR** halves the bytes moving through the FFmpeg pipe, so the subprocess pipeline spends less time blocked on I/O. In community benchmarks on 1080p MP4 _(see [issue #15](https://github.com/abhiTronix/deffcode/issues/15))_, RAW ingest jumped from **~96 FPS (RGB24)** to **~213 FPS (YUV420p)**, and **~155 FPS** when converted to BGR inside Python via OpenCV — a **25–33% gain** over the RGB path for the majority of common video sources _(which are already YUV420 on disk)_.
+
+        Use this mode when you're throughput-bound on decoding and can afford a single `cv2.cvtColor` call per frame. Skip it for scientific workloads where the implicit chroma subsampling of YUV 4:2:0 is unacceptable.
 
     Let's try decoding YUV420p pixel-format frames in following python code:
 

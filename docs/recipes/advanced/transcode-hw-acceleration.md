@@ -31,25 +31,41 @@ limitations under the License.
 
 > DeFFcode's FFdecoder API in conjunction with VidGear's WriteGear API is able to exploit almost any FFmpeg parameter for achieving anything imaginable with multimedia video data all while **allowing us to process real-time video frames** with immense flexibility. Both these APIs are capable of utilizing the potential of GPU backed fully-accelerated **Hardware based video Decoding(FFdecoder API with hardware decoder) and Encoding (WriteGear API with hardware encoder)**, thus dramatically improving the transcoding performance. At same time, FFdecoder API Hardware-decoded frames are **fully compatible with OpenCV's VideoWriter API** for producing  high-quality output video in real-time. 
 
-??? danger "Limitation: Bottleneck in Hardware-Accelerated Video Transcoding performance with Real-time Frame processing"
+??? danger "Limitation: Performance Bottleneck in Hardware-Accelerated Video Transcoding with Real-Time Frame Processing"
 
-    As we know, using the `–hwaccel cuda -hwaccel_output_format cuda` flags in FFmpeg pipeline will keep video frames in GPU memory, and this ensures that the memory transfers (system memory to video memory and vice versa) are eliminated, and that transcoding is performed with the highest possible performance on the available GPU hardware.
-
-    <figure markdown>
-      ![HW Acceleration](../../../assets/images/hw_accel.png){ width="350" }
-      <figcaption>General Memory Flow with Hardware Acceleration</figcaption>
-    </figure>
-    
-    But unfortunately, for processing real-time frames in our python script with FFdecoder and WriteGear APIs, we're bound to sacrifice this performance gain by explicitly copying raw decoded frames between System and GPU memory _(via the PCIe bus)_, thereby creating self-made latency in transfer time and increasing PCIe bandwidth occupancy due to overheads in communication over the bus. Moreover, given PCIe bandwidth limits, copying uncompressed image data would quickly saturate the PCIe bus. 
+    When using FFmpeg with `-hwaccel cuda -hwaccel_output_format cuda`, decoded frames remain in GPU memory. This avoids costly memory transfers between system (CPU) memory and GPU memory, enabling near-optimal transcoding performance on supported hardware.
 
     <figure markdown>
-      ![HW Acceleration Limitation](../../../assets/images/hw_accel_limitation.png){ width="350" }
-      <figcaption>Memory Flow with Hardware Acceleration <br>and Real-time Processing</figcaption>
+    ![HW Acceleration](../../assets/images/hw_accel.png){ width="350" }
+    <figcaption>Memory Flow with Hardware Acceleration</figcaption>
     </figure>
 
-    On the bright side, however, GPU enabled Hardware based encoding/decoding is inherently faster and more efficient _(do not use much CPU resources when frames in GPU)_ thus freeing up the CPU for other tasks, as compared to Software based encoding/decoding that is known to be completely CPU intensive. Plus scaling, de-interlacing, filtering, etc. tasks will be way faster and efficient than usual using these Hardware based decoders/encoders as oppose to Software ones.
+    However, when integrating real-time frame processing in Python using FFdecoder and WriteGear APIs, this advantage is partially lost. To operate on individual frames within Python, decoded frames must be transferred from GPU memory back to system memory.
 
-    !!! summary "As you can see the pros definitely outweigh the cons and you're getting to process video frames in the real-time with immense speed and flexibility, which is impossible to do otherwise."
+    This introduces a critical bottleneck:
+
+    - **Explicit GPU ↔ CPU memory transfers** over the PCIe bus  
+    - **Increased latency** due to data movement overhead  
+    - **Higher PCIe bandwidth utilization**, especially with uncompressed frame data  
+    - **Potential bus saturation**, limiting overall throughput  
+
+    As a result, the pipeline incurs additional overhead that directly impacts real-time performance.
+
+    <figure markdown>
+    ![HW Acceleration Limitation](../../assets/images/hw_accel_limitation.png){ width="350" }
+    <figcaption>Memory Flow with Hardware Acceleration and Real-Time Processing</figcaption>
+    </figure>
+
+    That said, hardware-accelerated encoding and decoding still provide significant advantages:
+
+    - **Lower CPU utilization**, as most processing remains on the GPU  
+    - **Faster execution** compared to CPU-based (software) pipelines  
+    - **Efficient video operations**, including scaling, deinterlacing, and filtering  
+    - **Better overall system resource distribution**, freeing CPU for parallel workloads  
+
+    In contrast, software-based transcoding is entirely CPU-bound and typically less efficient for high-throughput or real-time scenarios.
+
+    !!! summary "While GPU–CPU memory transfers introduce unavoidable overhead in real-time processing pipelines, hardware acceleration still delivers substantial performance and efficiency gains—making it the preferred approach for most modern video workflows."
 
 We'll discuss its Hardware-Accelerated Video Transcoding capabilities using these APIs briefly in the following recipes:
 

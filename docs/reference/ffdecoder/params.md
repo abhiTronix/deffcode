@@ -29,9 +29,9 @@ This parameter defines the input source (`-i`) for decoding real-time frames.
 
 !!! danger "FFdecoder API checks for _`video bitrate`_ or _`frame-size` and `framerate`_ in video's metadata to ensure given input `source` has usable video stream available. Thereby, it will throw `ValueError` if it fails to find those parameters."
 
-!!! info "Multiple video inputs are not yet supported!"
+!!! info "Multiple video inputs are fully supported! Pass a Python list of source strings to natively process multiple media streams simultaneously. A `-filter_complex` or `-map` parameter is required."
 
-**Data-Type:** String.
+**Data-Type:** String or List of Strings.
 
 Its valid input can be one of the following: 
 
@@ -471,7 +471,7 @@ This parameter specifies the demuxer(`-f`) for the input source _(such as `dshow
     !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-camera-devices)"
 
 
-**Data-Type:** String
+**Data-Type:** String or List of Strings (if `source` is a list, you can pass a list of identical length mapping demuxers to corresponding sources).
 
 **Default Value:** Its default value is `None`.
 
@@ -527,7 +527,7 @@ This parameter can be used to manually assigns the system _file-path/directory_ 
 
     ??? question "How to change FFmpeg Static Binaries download directory?"
 
-        You can use `-ffmpeg_download_path` _(via. [`-custom_sourcer_params`](#exclusive-parameters))_ exclusive parameter in FFdecoder API to set the custom directory for downloading FFmpeg Static Binaries during the [Auto-Installation](../../../installation/ffmpeg_install/#a-auto-installation) step on Windows Machines. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows in FFdecoder API:
+        You can use `-ffmpeg_download_path` _(via. [`-custom_sourcer_params`](#b-exclusive-parameters))_ exclusive parameter in FFdecoder API to set the custom directory for downloading FFmpeg Static Binaries during the [Auto-Installation](../../../installation/ffmpeg_install/#a-auto-installation) step on Windows Machines. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows in FFdecoder API:
 
         ```python
         # # define suitable parameter to download at "C:/User/foo/foo1"
@@ -683,6 +683,19 @@ These parameters are discussed below:
     ffparams = {"-ffprefixes": ['-re']} # executes as `ffmpeg -re <rest of command>`
     ```
 
+    !!! info "Multi-input mode: per-source list-of-lists"
+        When [`source`](#source) is a list, `-ffprefixes` must be a **list of per-input lists** with one entry per source (in the same order). Flat lists are rejected as ambiguous, and a length mismatch raises `ValueError`.
+
+        ```python
+        # source[0] gets `-re`; source[1] gets `-stream_loop -1`
+        ffparams = {
+            "-ffprefixes": [["-re"], ["-stream_loop", "-1"]],
+            "-filter_complex": "hstack=inputs=2",  # required for multi-input
+        }
+        ```
+
+        Use an empty inner list (`[]`) for any input that needs no prefix. See the [Multi-Input Source Configurations recipe ➶](../../../recipes/advanced/multi_input/#multi-input-source-configurations) for full examples.
+
 &ensp;
 
 * **`-clones`** _(list)_:  This attribute sets the special FFmpeg parameters after that are repeated more than once or occurs in a specific order _(that cannot be altered)_ in the FFmpeg command. Its value can be of datatype **`list`** only and its usage is as follows: 
@@ -698,7 +711,7 @@ These parameters are discussed below:
 
 &ensp;
 
-* **`-custom_sourcer_params`** _(dict)_ :  This attribute assigns all [**Exclusive Parameter**](../../sourcer/params/#exclusive-parameters) meant for Sourcer API's `sourcer_params` dictionary parameter directly through FFdecoder API. Its usage is as follows: 
+* **`-custom_sourcer_params`** _(dict)_ :  This attribute assigns all [**Exclusive Parameter**](../../sourcer/params/#b-exclusive-parameters) meant for Sourcer API's `sourcer_params` dictionary parameter directly through FFdecoder API. Its usage is as follows: 
     
     ```python
     # define suitable parameter meant for `sourcer_params`
@@ -726,6 +739,50 @@ These parameters are discussed below:
     ```
 
     !!! example "YUV pixel-formats usage recipe :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats)"
+
+&ensp;
+
+* **`-extract_luma`** _(bool)_ : This attribute can be enabled(`True`) to directly extract the **Luma (Y) plane** as a 2D grayscale `(H, W)` ndarray from YUV/NV pixel-format streams _(such as `yuv420p`, `yuv422p`, `yuv444p`, `nv12`, `nv21` etc.)_. This is the **fastest path to grayscale** available in FFdecoder — the Y plane sits uncompressed at the top of every YUV/NV bytestream, so no colorspace conversion runs either in FFmpeg or in Python; the decoder just slices it out. It can be used as follows:
+
+    !!! warning "As of now, this flag is only applied when `frame_format` resolves to a pixel-format starting with `yuv` or `nv`. For other pixel-formats, the flag is ignored and the default reshape path is used."
+
+    !!! tip "Pair with [Performance Mode ➶](../../../recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats) via `frame_format=\"yuv420p\"` for the fastest RAW-to-grayscale pipeline. Takes precedence over `-enforce_cv_patch` when both are enabled."
+
+    ```python
+    # define suitable parameter
+    ffparams = {"-extract_luma": True} # direct Y-plane (grayscale) extraction
+    ```
+
+&ensp;
+
+* **`-extract_metadata`** _(bool)_: This attribute can be enabled(`True`) to activate **asynchronous per-frame metadata extraction** via FFmpeg's [`showinfo`](https://ffmpeg.org/ffmpeg-filters.html#showinfo) filter. When enabled, the [`generateFrame()`](../../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.generateFrame) generator yields `(frame, metadata)` tuples instead of plain ndarrays, where `metadata` is a dict with the following keys:
+
+    - **`frame_num`** _(int)_: monotonic frame index as emitted by FFmpeg.
+    - **`pts_time`** _(float)_: presentation timestamp in seconds — the exact millisecond the frame is meant to appear, crucial for VFR (Variable-Frame-Rate) sources.
+    - **`is_keyframe`** _(bool)_: `True` if the frame is a keyframe (I-frame).
+    - **`frame_type`** _(str)_: one of `"I"` _(keyframe)_, `"P"` _(predictive)_, `"B"` _(bi-predictive)_, or `"?"` _(unknown)_.
+
+    A background daemon thread parses `showinfo` lines off FFmpeg's stderr and feeds them into a thread-safe queue, so the main `stdout` frame pipe is never throttled. It can be used as follows:
+
+    !!! warning "This flag is **incompatible with `-filter_complex`** (graph-label routing is ambiguous). If both are supplied, a warning is logged and `-extract_metadata` is disabled for that pipeline. A pre-existing `-vf` filter **is preserved** — `showinfo` is comma-chained onto it automatically."
+
+    !!! tip "Enables **Smart Keyframe Extraction**: for workflows like perceptual hashing, scene-change detection, or heavy AI-model inference (YOLO, ResNet, etc.) that only need I-frames, you can skip P/B frames entirely and reduce downstream compute by 10–50×, depending on the source's GOP size."
+
+    ```python
+    # define suitable parameter
+    ffparams = {"-extract_metadata": True} # yields (frame, meta) tuples
+    ```
+
+    Example: skip every non-keyframe for heavy AI inference.
+
+    ```python
+    decoder = FFdecoder("input.mp4", **{"-extract_metadata": True}).formulate()
+
+    for frame, meta in decoder.generateFrame():
+        if not meta["is_keyframe"]:
+            continue
+        results = heavy_ai_model.predict(frame)  # runs on ~1-2 frames per second
+    ```
 
 &ensp;
 

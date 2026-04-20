@@ -36,6 +36,7 @@ theme:
   language: en
   features:
     - announce.dismiss
+    - navigation.prune
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.indexes
@@ -83,20 +84,24 @@ theme:
 # Plugins
 plugins:
   - search
-  - git-revision-date-localized
+  - git-revision-date-localized:
+      enable_creation_date: true
+      fallback_to_build_date: true
   - minify:
       minify_html: true
   - mkdocstrings:
       handlers:
         python:
           options:
-            show_root_heading: false
-            show_root_toc_entry: false
-            show_source: true
-            heading_level: 3
-  - exclude:
-      glob:
-        - overrides/assets/README.md
+            filters:
+              - "!^_"
+              - "^__init__$"
+              - "^__call__$"
+            extra:
+              show_root_heading: false
+              show_root_toc_entry: false
+              show_source: true
+              heading_level: 3
 
 # Customization
 extra:
@@ -139,7 +144,8 @@ markdown_extensions:
       permalink_title: Anchor link to this section for reference
   - codehilite:
       guess_lang: false
-  - pymdownx.arithmatex
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
@@ -163,7 +169,11 @@ markdown_extensions:
   - pymdownx.smartsymbols
   - pymdownx.snippets:
       check_paths: true
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.tasklist:
@@ -171,7 +181,9 @@ markdown_extensions:
   - pymdownx.tilde
   - pymdownx.striphtml:
       strip_comments: true
-  - pymdownx.magiclink
+
+exclude_docs: |
+  overrides/assets/README.md
 
 # Page tree
 nav:
@@ -187,7 +199,7 @@ nav:
           - Pull Request(PR) Guidelines: contribution/PR.md
       - Changelog: changelog.md
       - License: license.md
-  - Recipies:
+  - Recipes:
       - Basic Recipes:
           - Overview: recipes/basic/index.md
           - Decoding Video Files: recipes/basic/decode-video-files.md
@@ -198,7 +210,7 @@ nav:
           - Transcoding Live Simple Filtergraphs: recipes/basic/transcode-live-frames-simplegraphs.md
           - Saving Key-frames as Image: recipes/basic/save-keyframe-image.md
           - Extracting video metadata: recipes/basic/extract-video-metadata.md
-      - Advanced Recipies:
+      - Advanced Recipes:
           - Overview: recipes/advanced/index.md
           - Decoding Live Virtual Sources: recipes/advanced/decode-live-virtual-sources.md
           - Decoding Live Feed Devices: recipes/advanced/decode-live-feed-devices.md
@@ -206,7 +218,9 @@ nav:
           - Transcoding Live Complex Filtergraphs: recipes/advanced/transcode-live-frames-complexgraphs.md
           - Transcoding Video Art with Filtergraphs: recipes/advanced/transcode-art-filtergraphs.md
           - Hardware-Accelerated Video Transcoding: recipes/advanced/transcode-hw-acceleration.md
+          - Multi-Input Source Configurations: recipes/advanced/multi_input.md
           - Updating Video Metadata: recipes/advanced/update-metadata.md
+          - Per-Frame Metadata Extraction: recipes/advanced/extract-frame-metadata.md
   - API References:
       - deffcode.FFdecoder:
           - API: reference/ffdecoder/index.md

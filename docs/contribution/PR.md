@@ -18,169 +18,190 @@ limitations under the License.
 ===============================================
 -->
 
-# Submitting Pull Request(PR) Guidelines:
+# Submitting Pull Request (PR) Guidelines
 
+These guidelines outline how to submit a high-quality Pull Request (PR) to **DeFFcode**.
 
-The following guidelines tells you how to submit a valid PR for DeFFcode:
+## :material-rocket-launch: Before You Start
 
-!!! question "Working on your first Pull Request for DeFFcode?" 
+??? question "First time contributing to DeFFcode?"
 
-    * You can learn about "**How to contribute to an Open Source Project on GitHub**" from [this doc ➶](https://opensource.guide/how-to-contribute/)
-    * If you're stuck at something, please join our [Gitter community channel](https://gitter.im/DeFFcode/community). We will help you get started!
+    - Learn how open-source contributions work from [this guide ➶](https://opensource.guide/how-to-contribute/)
+    - Need help? Join our [Gitter community](https://gitter.im/DeFFcode/community) and we’ll assist you
 
-&nbsp; 
+&thinsp;
 
-## Clone branch for PR
+## :material-source-branch-plus: Create a Working Branch
 
-You can clone your [**Forked**](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) remote git to local and create your PR working branch as a sub-branch of latest [`master`](https://github.com/abhiTronix/deffcode/tree/master) branch as follows:
+Start by cloning your fork and creating a feature branch from the latest `master`:
 
-!!! alert "Make sure the [`master`](https://github.com/abhiTronix/deffcode/tree/master) branch of your Forked repository is up-to-date with DeFFcode, before starting working on a Pull Request."
+!!! danger "Keep your fork up to date"
+
+    Ensure your fork’s `master` branch is synced with the upstream repository before starting.
 
 ```sh
-# clone your forked repository(change with your username) and get inside
-git clone https://github.com/{YOUR USERNAME}/DeFFcode.git && cd DeFFcode
+# Clone your fork (replace with your username)
+git clone https://github.com/{YOUR_USERNAME}/DeFFcode.git
+cd DeFFcode
 
-# pull any recent updates
+# Sync latest changes
 git pull
 
-# Now create your new branch with suitable name(such as "subbranch_of_master")
-git checkout -b subbranch_of_master
+# Create a new branch
+git checkout -b feature/your-branch-name
 ```
 
-Now after working with this newly created branch for your Pull Request, you can commit and push or merge it locally or remotely as usual.
+Work on this branch and push changes as usual.
 
-&nbsp; 
+&thinsp;
 
-&nbsp; 
+## :octicons-checklist-24: PR Submission Checklist
 
-## PR Submission Checklist
+### 1. Open an Issue First
 
-There are some important checks you need to perform while submitting your Pull Request(s) for DeFFcode library:
+* Start by creating an issue using the [proposal template](https://github.com/abhiTronix/deffcode/issues/new?labels=issue%3A+proposal&template=proposal.md)
+* This helps align your work with project goals and avoids duplicate effort
 
-- [x] **Submit a Related Issue:**
-  
-  * The first thing you do is submit an issue with a [proposal template](https://github.com/abhiTronix/deffcode/issues/new?labels=issue%3A+proposal&template=proposal.md) for your work first and then work on your Pull Request.
+### 2. Open a Draft PR Early
 
+* Create a **draft PR** from the beginning of your work
+* Add:
+    * A clear and descriptive title
+    * Summary of what the PR fixes/adds/improves
+    * Screenshots or outputs (if applicable)
+* For bug fixes:
+    * Include a **failing test case** that your fix resolves
+* Ensure all CI checks pass
+* Mark as **Ready for Review** once complete
 
-- [x] **Submit a Draft Pull Request:**
+### 3. Test, Format & Lint Locally
 
-  * Submit the [draft pull request](https://github.blog/2019-02-14-introducing-draft-pull-requests/) from the first day of your development.
-  * Add a brief but descriptive title for your PR.
-  * Explain what the PR adds, fixes, or improves.
-  * In case of bug fixes, add a new unit test case that would fail against your bug fix.
-  * Provide output or screenshots, if you can.
-  * Make sure your pull request passed all the CI checks _(triggers automatically on pushing commits against `master` branch)_. If it's somehow failing, then ask the maintainer for a review.
-  * Click "**ready for review**" when finished.
+* Run tests and ensure everything passes
+* Format and lint your code before committing
+* See [Testing & Linting](#testing-formatting-linting) section below
 
-- [x] **Test, Format & lint code locally:**
+### 4. Write Clear Commit Messages
 
-  * Make sure to test, format, and lint the modified code locally before every commit. The details are discussed [below ➶](#formatting-linting)
+* Keep messages concise and meaningful
+* Link issues using keywords like `#!sh resolves #123`
+* Use `git commit --amend` to refine commits when needed
 
-- [x] **Make sensible commit messages:**
+### 5. Perform Integrity Checks
 
-  * If your pull request fixes a separate issue number, remember to include `"resolves #issue_number"` in the commit message. Learn more about it [here ➶](https://help.github.com/articles/closing-issues-using-keywords/).
-  * Keep the commit message concisely as much as possible at every submit. You can make a supplement to the previous commit with `git commit --amend` command.
+!!! warning "Duplicate PRs will be rejected"
 
-- [x] **Perform Integrity Checks:** 
+* Check for existing related PRs/issues
+* Ensure your changes align with DeFFcode’s design and goals
+* By contributing, you agree your code will be licensed under the [Apache 2.0 License ➶](https://github.com/abhiTronix/deffcode/blob/master/LICENSE)
 
-    !!! warning "Any duplicate pull request will be Rejected!"
+### 6. Link Your Issue
 
-  * Search GitHub if there's a similar open or closed PR that relates to your submission.
-  * Check if your purpose code matches the overall direction of the DeFFcode APIs and improves it.
-  * Retain copyright for your contributions, but also agree to license them for usage by the project and author(s) under the [**Apache 2.0 license ➶**](https://github.com/abhiTronix/deffcode/blob/master/LICENSE).
+!!! tip
 
-- [x] **Link your Issues:**
+    Learn more about linking PRs to issues [here ➶](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue)
 
-    !!! tip "For more information on Linking a pull request to an issue, See [this doc➶](https://docs.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue)"
+* Link your PR to the relevant issue
+* This helps track progress and avoid duplication
 
-  * Finally, when you're confident enough, make your pull request public. 
-  * You can link an issue to a pull request manually or using a supported keyword in the pull request description. It helps collaborators see that someone is working on the issue. For more information, see [this doc➶](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue)
+&thinsp;
 
-&nbsp; 
+## :material-test-tube: Testing, Formatting & Linting
 
-&nbsp; 
-
-## Testing, Formatting & Linting
-
-All Pull Request(s) must be tested, formatted & linted against our library standards as discussed below:
+All PRs must pass testing and code quality checks.
 
 ### Requirements
 
-Testing DeFFcode requires additional test dependencies and dataset, which can be handled manually as follows:
+!!! info "Python 3.10+ required"
 
-- [x] **Install additional python libraries:**
-  
-    You can easily install these dependencies via pip:
+Install dependencies:
 
-    ```sh
-    # Install opencv(only if not installed previously)
-    $ pip install opencv-python
+```sh
+# Install OpenCV (if not already installed)
+pip install opencv-python
 
-    # install rest of dependencies
-    $ pip install --upgrade flake8 black pytest vidgear[core]
-    ```
+# Install remaining dependencies
+pip install --upgrade ruff pytest vidgear[core]
+```
 
-- [x] **Download Tests Dataset:** 
+### Test Dataset Setup
 
-    To perform tests, you also need to download additional dataset *(to your temp dir)* by running [`prepare_dataset.sh`](https://github.com/abhiTronix/deffcode/blob/master/scripts/bash/prepare_dataset.sh)  bash script as follows:
+Download required test data:
 
-    === "On Linux/MacOS"
-
-        ```sh
-        $ chmod +x scripts/bash/prepare_dataset.sh
-        $ ./scripts/bash/prepare_dataset.sh
-        ```
-
-    === "On Windows"
-
-        ```sh
-        $ sh scripts/bash/prepare_dataset.sh
-        ```
-
-### Running Tests
-
-All tests can be run with [`pytest`](https://docs.pytest.org/en/stable/)(*in DeFFcode's root folder*) as follows:
-
-   ```sh
-   $ pytest -sv  #-sv for verbose output.
-   ```
-
-### Formatting & Linting
-
-For formatting and linting, following libraries are used:
-
-- [x] **Flake8:** You must run [`flake8`](https://flake8.pycqa.org/en/latest/manpage.html) linting for checking the code base against the coding style (PEP8), programming errors and other cyclomatic complexity:
+=== "Linux :material-linux:/macOS :material-apple:"
 
     ```sh
-    $ flake8 {source_file_or_directory} --count --select=E9,F63,F7,F82 --show-source --statistics
+    chmod +x scripts/bash/prepare_dataset.sh
+    ./scripts/bash/prepare_dataset.sh
     ```
 
-- [x] **Black:**  DeFFcode follows [`black`](https://github.com/psf/black) formatting to make code review faster by producing the smallest diffs possible. You must run it with sensible defaults as follows: 
+=== "Windows :material-microsoft-windows:"
 
     ```sh
-    $ black {source_file_or_directory}
+    sh scripts/bash/prepare_dataset.sh
     ```
 
-&nbsp; 
+### Run Tests
 
-&nbsp; 
+From the project root:
 
-## Frequently Asked Questions
+```sh
+pytest -sv
+```
+
+&thinsp;
+
+### Formatting & Linting (Ruff)
+
+DeFFcode uses **[Ruff](https://docs.astral.sh/ruff/)** for both linting and formatting.
+
+#### Lint Code
+
+```sh
+# Check for issues
+ruff check {path}
+
+# Auto-fix issues
+ruff check --fix {path}
+```
+
+#### Format Code
+
+```sh
+# Apply formatting
+ruff format {path}
+
+# Check formatting only
+ruff format --check {path}
+```
+
+!!! tip "These checks run in CI—running them locally saves time during review."
 
 
-**Q1. Why do my changes taking so long to be Reviewed and/or Merged?**
+&thinsp;
 
-!!! success "Submission Aftermaths"
+## :material-chat-question: Frequently Asked Questions
 
-    * After your PR is merged, you can safely delete your branch and pull the changes from the main (upstream) repository.
-    * The changes will remain in `dev` branch until next DeFFcode version is released, then it will be merged into `master` branch.
-    * After a successful Merge, your newer contributions will be given priority over others. 
+### Q1. Why is my PR taking time to be reviewed?
 
-Pull requests will be reviewed by the maintainers and the rationale behind the maintainer’s decision to accept or deny the changes will be posted in the pull request. Please wait for our code review and approval, possibly enhancing your change on request.
+!!! success "After your PR is merged"
+
+    * You can delete your branch safely
+    * Changes are first merged into `dev`, then into `master` during release
+    * Active contributors may receive faster reviews over time
+
+PRs are reviewed by maintainers based on priority and availability. You may be asked to make changes before approval.
 
 
-**Q2. Would you accept a huge Pull Request with Lots of Changes?**
+### Q2. Can I submit a large PR?
 
-First, make sure that the changes are somewhat related. Otherwise, please create separate pull requests. Anyway, before submitting a huge change, it's probably a good idea to [open an issue](../../contribution/issue) in the DeFFcode Github repository to ask the maintainers if they agree with your proposed changes. Otherwise, they could refuse your proposal after you put all that hard work into making the changes. We definitely don't want you to waste your time!
+* Yes—but ensure changes are **focused and related**
+* For major changes:
+    - [x] Open an issue first for discussion
+    - [x] Large, unrelated changes should be split into smaller PRs
 
-&nbsp; 
+This helps speed up review and increases the chances of acceptance.
+
+
+Thanks for contributing to **DeFFcode** 🚀
+
+&thinsp;

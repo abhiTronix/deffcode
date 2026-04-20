@@ -17,14 +17,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ===============================================
 """
-# import the necessary packages
 
-import pytest
+# import the necessary packages
+from __future__ import annotations
+
 import logging
 import os
 import tempfile
 from os.path import expanduser
-from deffcode.utils import dict2Args, logger_handler, delete_file_safe
+from typing import Any
+
+import pytest
+
+from deffcode.utils import delete_file_safe, dict2Args, logger_handler
 
 # define test logger
 logger = logging.getLogger("Test_Utilities")
@@ -40,14 +45,14 @@ test_data = [
 
 
 @pytest.mark.parametrize("log_filepath, handler_type", test_data)
-def test_loggerhandler(log_filepath, handler_type):
+def test_loggerhandler(log_filepath: Any, handler_type: logging.Handler) -> None:
     """
     Testing dict2Args utils function.
     """
     if log_filepath:
         os.environ["DEFFCODE_LOGFILE"] = log_filepath
     try:
-        assert type(logger_handler()) == type(handler_type), "Test failed"
+        assert type(logger_handler()) is type(handler_type), "Test failed"
     except AssertionError:
         pytest.fail("Logger handler test failed!")
     finally:
@@ -75,7 +80,7 @@ test_data = [
 
 
 @pytest.mark.parametrize("dictionary", test_data)
-def test_dict2Args(dictionary):
+def test_dict2Args(dictionary: dict[str, Any]) -> None:
     """
     Testing dict2Args utils function.
     """
@@ -93,7 +98,7 @@ test_data = [
 
 
 @pytest.mark.parametrize("file_path, result", test_data)
-def test_delete_file_safe(file_path, result):
+def test_delete_file_safe(file_path: str, result: bool) -> None:
     """
     Testing delete_file_safe method
     """

@@ -17,18 +17,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ===============================================
 """
+
 # import the necessary packages
+from __future__ import annotations
+
+import logging
+from typing import Any
 
 import pytest
-import logging
+
+from deffcode import Sourcer
+from deffcode.utils import logger_handler
+
 from .essentials import (
+    actual_frame_count_n_frame_size,
+    return_generated_frames_path,
     return_static_ffmpeg,
     return_testvideo_path,
-    return_generated_frames_path,
-    actual_frame_count_n_frame_size,
 )
-from deffcode.utils import logger_handler
-from deffcode import Sourcer
 
 # define test logger
 logger = logging.getLogger("Test_Sourcer")
@@ -71,9 +77,25 @@ logger.setLevel(logging.DEBUG)
             {},
             "invalid_ffmpeg",  # invalid FFmpeg
         ),
+        (
+            [return_testvideo_path(), return_testvideo_path()],
+            {
+                "-ffprefixes": [["-re"], ["-stream_loop", "-1"]],
+            },
+            return_static_ffmpeg(),
+        ),
+        (
+            [return_testvideo_path(), return_testvideo_path()],
+            {
+                "-ffprefixes": "invalid"  # list of lists mismatch
+            },
+            return_static_ffmpeg(),
+        ),
     ],
 )
-def test_source(source, sourcer_params, custom_ffmpeg):
+def test_source(
+    source: str | list[str], sourcer_params: dict[str, Any], custom_ffmpeg: str
+) -> None:
     """
     Paths Source - Test various source paths/urls supported by Sourcer.
     """
@@ -107,20 +129,32 @@ def test_source(source, sourcer_params, custom_ffmpeg):
             (0, 0),
             ["source_has_image_sequence"],
         ),
+        (
+            [return_testvideo_path(), "mandelbrot=size=1280x720:rate=30"],
+            (0, 0),
+            ["source_has_video", "sources"],  # tests sources list
+        ),
     ],
 )
-def test_probe_stream_n_retrieve_metadata(source, default_stream_indexes, params):
+def test_probe_stream_n_retrieve_metadata(
+    source: str | list[str],
+    default_stream_indexes: tuple[int, ...] | list[int],
+    params: list[str],
+) -> None:
     """
     Test `probe_stream` and `retrieve_metadata` function.
     """
     try:
-        source_demuxer = (
-            "lavfi" if source == "mandelbrot=size=1280x720:rate=30" else None
-        )
+        source_demuxer = None
+        if isinstance(source, list):
+            source_demuxer = [
+                "lavfi" if s == "mandelbrot=size=1280x720:rate=30" else None for s in source
+            ]
+        elif source == "mandelbrot=size=1280x720:rate=30":
+            source_demuxer = "lavfi"
+
         if source == "invalid":
-            sourcer = Sourcer(
-                source, custom_ffmpeg=return_static_ffmpeg(), verbose=True
-            )
+            sourcer = Sourcer(source, custom_ffmpeg=return_static_ffmpeg(), verbose=True)
         else:
             sourcer = Sourcer(
                 source,
@@ -130,22 +164,34 @@ def test_probe_stream_n_retrieve_metadata(source, default_stream_indexes, params
             ).probe_stream(default_stream_indexes=default_stream_indexes)
         metadata = sourcer.retrieve_metadata()
         logger.debug("Found Metadata: `{}`".format(metadata))
-        assert all(metadata[x] == True for x in params), "Test Failed!"
-        if (
+
+        # Test sources exists and is valid
+        if "sources" in params:
+            assert "sources" in metadata and len(metadata["sources"]) == len(source), (
+                "Multi-input Test Failed!"
+            )
+
+        assert all(
+            metadata.get(x, metadata["sources"] if x == "sources" else False) for x in params
+        ), "Test Failed!"
+
+        is_skipped = False
+        if isinstance(source, list) or (
             source.startswith("http")
             or source.endswith("png")
             or source == "mandelbrot=size=1280x720:rate=30"
         ):
+            is_skipped = True
+
+        if is_skipped:
             logger.debug("Skipped check!")
         else:
-            assert (
-                metadata["approx_video_nframes"]
-                >= actual_frame_count_n_frame_size(source)[0]
-            ), "Test Failed for frames count!"
+            assert metadata["approx_video_nframes"] >= actual_frame_count_n_frame_size(source)[0], (
+                "Test Failed for frames count!"
+            )
     except Exception as e:
         if isinstance(e, ValueError) or (
-            source in ["invalid", "unknown://invalid.com/"]
-            and isinstance(e, AssertionError)
+            source in ["invalid", "unknown://invalid.com/"] and isinstance(e, AssertionError)
         ):
             pytest.xfail("Test Still Passed!")
         else:

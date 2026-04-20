@@ -23,7 +23,7 @@ limitations under the License.
 ![DeFFcode](assets/images/deffcode.png#only-light){ loading=lazy }
 ![DeFFcode](assets/images/deffcode-dark.png#only-dark){ loading=lazy }
 
-<center>A cross-platform **:fontawesome-solid-gauge-high: High-performance Video Frames Decoder** that flexibly executes FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, <br>lightning fast video frames with robust error-handling <br>in just a few lines of python code :fontawesome-solid-fire-flame-curved:</center>
+> A cross-platform **:fontawesome-solid-gauge-high: High-performance Video Frames Decoder** that flexibly executes FFmpeg pipeline inside a subprocess pipe for generating real-time, low-overhead, lightning fast video frames with robust error-handling in just a few lines of python code :fontawesome-solid-fire-flame-curved: 
 
 <div class="spacer"></div>
 
@@ -45,12 +45,13 @@ Here are some key features that stand out:
 - [x] Curated list of well-documented recipes ranging from [**Basic**](recipes/basic/) to [**Advanced**](recipes/advanced/) skill levels.
 - [x] Hands down the easiest [**Index based Camera Device Capturing**](recipes/basic/decode-camera-devices), similar to OpenCV.
 - [x] Memory efficient **Live [Simple](recipes/basic/transcode-live-frames-simplegraphs/#transcoding-live-simple-filtergraphs) & [Complex](recipes/advanced/transcode-live-frames-complexgraphs/#transcoding-live-complex-filtergraphs) Filtergraphs**. _(Yes, You read it correctly "Live"!)_
+- [x] Native **[Multi-Input Source Configurations](recipes/advanced/multi_input/#multi-input-source-configurations)** support for decoding complex topologies.
 - [x] Lightning fast dedicated **:fontawesome-solid-microchip: GPU-Accelerated Video [Decoding](recipes/advanced/decode-hw-acceleration/#hardware-accelerated-video-decoding) & [Transcoding](recipes/advanced/transcode-hw-acceleration/#hardware-accelerated-video-transcoding)**.
 - [x] Enables precise FFmpeg [**Frame Seeking**](recipes/basic/save-keyframe-image/#extracting-key-frames-as-png-image) with pinpoint accuracy.
 - [x] Effortless [**Metadata Extraction**](recipes/basic/extract-video-metadata/#extracting-video-metadata) from all streams available in the source.
 - [x] Maintains the standard easy to learn [**OpenCV-Python**](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) coding syntax.
 - [x] Out-of-the-box support for all prominent Computer Vision libraries.
-- [x] Cross-platform, runs on Python 3.7+, and easy to install. 
+- [x] Cross-platform, runs on Python 3.10+, and easy to install. 
 
 ??? question "Still missing a key feature in DeFFcode?"
 
@@ -197,18 +198,18 @@ It is something I am doing with my own free time. But so much more needs to be d
 
 Here is a Bibtex entry you can use to cite this project in a publication:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7523792.svg)](https://doi.org/10.5281/zenodo.7523792)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12689394.svg)](https://doi.org/10.5281/zenodo.12689394)
 
 ```BibTeX
 @software{deffcode,
   author       = {Abhishek Thakur},
-  title        = {abhiTronix/deffcode: v0.2.5},
-  month        = jan,
-  year         = 2023,
+  title        = {abhiTronix/deffcode: v0.2.6},
+  month        = jul,
+  year         = 2024,
   publisher    = {Zenodo},
-  version      = {v0.2.5},
-  doi          = {10.5281/zenodo.7523792},
-  url          = {https://doi.org/10.5281/zenodo.7523792}
+  version      = {v0.2.6},
+  doi          = {10.5281/zenodo.12689394},
+  url          = {https://doi.org/10.5281/zenodo.12689394},
 }
 ```
 

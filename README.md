@@ -67,12 +67,13 @@ Here are some key features that stand out:
 - Curated list of well-documented recipes ranging from [**Basic**][basic-recipes] to [**Advanced**][advanced-recipes] skill levels.
 - Hands down the easiest [**Index based Camera Device Capturing**][decoding-camera-devices-using-indexes], similar to OpenCV.
 - Easy to code **Real-time [Simple][transcoding-live-simple-filtergraphs] & [Complex][transcoding-live-complex-filtergraphs] Filtergraphs**. _(Yes, You read it correctly "Real-time"!)_
+- Native **[Multi-Input Source Configurations][multi-input-source-configurations]** support for decoding complex topologies.
 - Lightning fast dedicated **GPU-Accelerated Video [Decoding][hardware-accelerated-video-decoding] & [Transcoding][hardware-accelerated-video-transcoding]**.
 - Enables precise FFmpeg [**Key-frame Seeking**][extracting-key-frames-as-png-image] with pinpoint accuracy.
 - Effortless [**Metadata Extraction**][extracting-video-metadata] from all streams available in the source.
 - Maintains the standard easy to learn [**OpenCV-Python**](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) coding syntax.
 - Out-of-the-box support for all prominent Computer Vision libraries.
-- Cross-platform, runs on Python 3.7+, and easy to install.
+- Cross-platform, runs on Python 3.10+, and easy to install.
 
 <!--
 - [x] Lossless Transcoding support with [WriteGear](https://abhitronix.github.io/deffcode/latest/gears/writegear/introduction/). #TODO
@@ -193,6 +194,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [CUDA-accelerated Video Transcoding with OpenCV's VideoWriter API][cuda-accelerated-video-transcoding-with-opencvs-videowriter-api]
 - [CUDA-NVENC-accelerated Video Transcoding with WriteGear API][cuda-nvenc-accelerated-video-transcoding-with-writegear-api]
 - [CUDA-NVENC-accelerated End-to-end Lossless Video Transcoding with WriteGear API][cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api]
+- [Multi-Input Source Configurations][multi-input-source-configurations]
 
 </details>
 
@@ -201,6 +203,8 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 
 - [Added new attributes to metadata in FFdecoder API][added-new-attributes-to-metadata-in-ffdecoder-api]
 - [Overriding source video metadata in FFdecoder API][overriding-source-video-metadata-in-ffdecoder-api]
+- [Smart Keyframe-only decoding for heavy AI inference][smart-keyframe-only-decoding-for-heavy-ai-inference]
+- [Variable-Frame-Rate (VFR) synchronization via pts_time][variable-frame-rate-vfr-synchronization-via-pts_time]
 
 </details>
 
@@ -310,18 +314,18 @@ It is something I am doing with my own free time. But so much more needs to be d
 
 Here is a Bibtex entry you can use to cite this project in a publication:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7523792.svg)](https://doi.org/10.5281/zenodo.7523792)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12689394.svg)](https://doi.org/10.5281/zenodo.12689394)
 
 ```BibTeX
 @software{deffcode,
   author       = {Abhishek Thakur},
-  title        = {abhiTronix/deffcode: v0.2.5},
-  month        = jan,
-  year         = 2023,
+  title        = {abhiTronix/deffcode: v0.2.6},
+  month        = jul,
+  year         = 2024,
   publisher    = {Zenodo},
-  version      = {v0.2.5},
-  doi          = {10.5281/zenodo.7523792},
-  url          = {https://doi.org/10.5281/zenodo.7523792}
+  version      = {v0.2.6},
+  doi          = {10.5281/zenodo.12689394},
+  url          = {https://doi.org/10.5281/zenodo.12689394},
 }
 ```
 
@@ -431,6 +435,9 @@ Advanced Recipes
 [cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api
 [added-new-attributes-to-metadata-in-ffdecoder-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#added-new-attributes-to-metadata-in-ffdecoder-api
 [overriding-source-video-metadata-in-ffdecoder-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#overriding-source-video-metadata-in-ffdecoder-api
+[smart-keyframe-only-decoding-for-heavy-ai-inference]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/extract-frame-metadata/#smart-keyframe-only-decoding-for-heavy-ai-inference
+[variable-frame-rate-vfr-synchronization-via-pts_time]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/extract-frame-metadata/#variable-frame-rate-vfr-synchronization-via-pts_time
+[multi-input-source-configurations]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#multi-input-source-configurations
 
 <!--
 CI Apps URLs

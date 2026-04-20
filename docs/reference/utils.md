@@ -36,3 +36,7 @@ limitations under the License.
 ::: deffcode.utils.delete_file_safe
 
 &nbsp;
+
+::: deffcode.utils.validate_device_index
+
+&nbsp;

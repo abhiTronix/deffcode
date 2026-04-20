@@ -17,30 +17,37 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ===============================================
 """
-# import the necessary packages
 
-import os
-import pytest
-import shutil
+# import the necessary packages
+from __future__ import annotations
+
 import logging
-import requests
+import os
+import shutil
 import tempfile
-from .essentials import (
-    is_windows,
-    return_static_ffmpeg,
-    return_testvideo_path,
-    return_generated_frames_path,
-)
-from deffcode.utils import logger_handler
+
+import pytest
+import requests
+
+from deffcode import ffhelper
 from deffcode.ffhelper import (
-    get_valid_ffmpeg_path,
+    check_sp_output,
     download_ffmpeg_binaries,
-    validate_ffmpeg,
-    validate_imgseqdir,
+    extract_device_n_demuxer,
+    get_supported_demuxers,
+    get_valid_ffmpeg_path,
     is_valid_image_seq,
     is_valid_url,
-    check_sp_output,
-    extract_device_n_demuxer,
+    validate_ffmpeg,
+    validate_imgseqdir,
+)
+from deffcode.utils import logger_handler
+
+from .essentials import (
+    is_windows,
+    return_generated_frames_path,
+    return_static_ffmpeg,
+    return_testvideo_path,
 )
 
 # define test logger
@@ -64,15 +71,13 @@ test_data = [
 
 
 @pytest.mark.parametrize("paths, os_bit", test_data)
-def test_ffmpeg_binaries_download(paths, os_bit):
+def test_ffmpeg_binaries_download(paths: str, os_bit: str) -> None:
     """
     Testing Static FFmpeg auto-download on Windows OS
     """
     file_path = ""
     try:
-        file_path = download_ffmpeg_binaries(
-            path=paths, os_windows=is_windows, os_bit=os_bit
-        )
+        file_path = download_ffmpeg_binaries(path=paths, os_windows=is_windows, os_bit=os_bit)
         if file_path:
             logger.debug("FFmpeg Binary path: {}".format(file_path))
             assert os.path.isfile(file_path), "FFmpeg download failed!"
@@ -85,7 +90,7 @@ def test_ffmpeg_binaries_download(paths, os_bit):
 
 
 @pytest.mark.parametrize("paths", ["wrong_test_path", return_static_ffmpeg()])
-def test_validate_ffmpeg(paths):
+def test_validate_ffmpeg(paths: str) -> None:
     """
     Testing downloaded FFmpeg Static binaries validation on Windows OS
     """
@@ -111,7 +116,7 @@ test_data = [
 
 
 @pytest.mark.parametrize("paths, ffmpeg_download_paths, results", test_data)
-def test_get_valid_ffmpeg_path(paths, ffmpeg_download_paths, results):
+def test_get_valid_ffmpeg_path(paths: str, ffmpeg_download_paths: str, results: bool) -> None:
     """
     Testing FFmpeg excutables validation and correction:
     """
@@ -122,13 +127,11 @@ def test_get_valid_ffmpeg_path(paths, ffmpeg_download_paths, results):
             ffmpeg_download_path=ffmpeg_download_paths,
             verbose=True,
         )
-        if not (
-            paths == "wrong_test_path" or ffmpeg_download_paths == "wrong_test_path"
-        ):
-            assert (
-                bool(output) == results
-            ), "FFmpeg excutables validation and correction Test failed at path: {} and FFmpeg ffmpeg_download_paths: {}".format(
-                paths, ffmpeg_download_paths
+        if not (paths == "wrong_test_path" or ffmpeg_download_paths == "wrong_test_path"):
+            assert bool(output) == results, (
+                "FFmpeg excutables validation and correction Test failed at path: {} and FFmpeg ffmpeg_download_paths: {}".format(
+                    paths, ffmpeg_download_paths
+                )
             )
     except Exception as e:
         if paths == "wrong_test_path" or ffmpeg_download_paths == "wrong_test_path":
@@ -140,7 +143,7 @@ def test_get_valid_ffmpeg_path(paths, ffmpeg_download_paths, results):
 
 
 @pytest.mark.xfail(raises=Exception)
-def test_check_sp_output():
+def test_check_sp_output() -> None:
     """
     Testing check_sp_output method
     """
@@ -155,7 +158,7 @@ def test_check_sp_output():
         ("unknown://invalid.com/", False),
     ],
 )
-def test_is_valid_url(URL, result):
+def test_is_valid_url(URL: str | None, result: bool) -> None:
     """
     Testing is_valid_url method
     """
@@ -178,14 +181,12 @@ def test_is_valid_url(URL, result):
         ),
     ],
 )
-def test_is_valid_image_seq(source, result):
+def test_is_valid_image_seq(source: str | None, result: bool) -> None:
     """
     Testing test_is_valid_image_seq method
     """
     try:
-        result_url = is_valid_image_seq(
-            return_static_ffmpeg(), source=source, verbose=True
-        )
+        result_url = is_valid_image_seq(return_static_ffmpeg(), source=source, verbose=True)
         assert result_url == result, "Image sequence validity test Failed!"
     except Exception as e:
         result and pytest.fail(str(e))
@@ -198,7 +199,7 @@ def test_is_valid_image_seq(source, result):
         ("unknown://invalid.com/", False),
     ],
 )
-def test_validate_imgseqdir(path, result):
+def test_validate_imgseqdir(path: str, result: bool) -> None:
     """
     Testing validate_imgseqdir method
     """
@@ -210,8 +211,32 @@ def test_validate_imgseqdir(path, result):
 
 
 @pytest.mark.xfail(raises=ValueError)
-def test_extract_device_n_demuxer():
+def test_extract_device_n_demuxer() -> None:
     """
     Testing extract_device_n_demuxer method
     """
     extract_device_n_demuxer(return_static_ffmpeg(), machine_OS="invalid", verbose=True)
+
+
+def test_get_supported_demuxers_valid() -> None:
+    """
+    Testing get_supported_demuxers returns a non-empty list when the FFmpeg
+    `-demuxers` output contains the expected `--` separator.
+    """
+    demuxers = get_supported_demuxers(return_static_ffmpeg())
+    assert isinstance(demuxers, list) and len(demuxers) > 0, (
+        "Expected a non-empty list of supported demuxers from a valid FFmpeg binary."
+    )
+
+
+def test_get_supported_demuxers_missing_separator(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Testing get_supported_demuxers safely returns an empty list (instead of
+    raising StopIteration) when the FFmpeg `-demuxers` output is missing
+    the `--` separator.
+    """
+    # simulate malformed FFmpeg output with no `--` separator line
+    malformed_output = b"File formats:\n D. = Demuxing supported\n garbage line\n"
+    monkeypatch.setattr(ffhelper, "check_sp_output", lambda *args, **kwargs: malformed_output)
+    result = get_supported_demuxers("fake_ffmpeg")
+    assert result == [], "Expected empty list when `--` separator is missing from demuxers output."

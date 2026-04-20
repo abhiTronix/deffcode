@@ -29,7 +29,39 @@ limitations under the License.
 
 ## Supported Systems
 
-DeFFcode is well-tested and supported on the following systems(but not limited to), with [python 3.7+](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installing/#do-i-need-to-install-pip) installed:
+DeFFcode is well-tested and supported on the following systems(but not limited to):
+
+* Any :material-linux: Linux distro released in 2016 or later
+* :fontawesome-brands-windows: Windows 7 or later
+* :material-apple: macOS 10.12.6 (Sierra) or later
+
+&thinsp;
+
+## Supported Python legacies
+
+:fontawesome-brands-python: [**Python 3.10+**](https://www.python.org/downloads/) are only supported legacies for installing DeFFcode `v0.2.7` and above.
+
+&thinsp;
+
+## Prerequisites
+
+==:warning: **DeFFcode APIs requires FFmpeg binaries to be installed for all of its core functionality.**==
+
+### FFmpeg 
+
+When installing DeFFcode, [**FFmpeg**][ffmpeg] is the only prerequisites you need to configure/install manually. **You could easily do it by referring [**FFmpeg Installation doc**](../installation/ffmpeg_install/)**.
+
+&nbsp;
+
+## Installation
+
+### A. Installation using pip (Recommended)
+
+
+> _Best option for easily getting stable DeFFcode installed._
+
+
+**Installation is as simple as:**
 
 ??? alert ":fontawesome-brands-python: Upgrade your `pip`"
 
@@ -46,14 +78,14 @@ DeFFcode is well-tested and supported on the following systems(but not limited t
             * Download the script, from https://bootstrap.pypa.io/get-pip.py.
             * Open a terminal/command prompt, `cd` to the folder containing the `get-pip.py` file and run:
 
-            === "Linux/MacOS"
+            === "Linux :material-linux:/macOS :material-apple:"
 
                 ```sh
                 python get-pip.py
                 
                 ```
 
-            === "Windows"
+            === "Windows :material-microsoft-windows:"
 
                 ```sh
                 py get-pip.py
@@ -94,38 +126,6 @@ DeFFcode is well-tested and supported on the following systems(but not limited t
             
             ```
 
-* Any :material-linux: Linux distro released in 2016 or later
-* :fontawesome-brands-windows: Windows 7 or later
-* :material-apple: MacOS 10.12.6 (Sierra) or later
-
-&thinsp;
-
-## Supported Python legacies
-
-:fontawesome-brands-python: [**Python 3.7+**](https://www.python.org/downloads/) are only supported legacies for installing DeFFcode `v0.1.0` and above.
-
-&thinsp;
-
-## Prerequisites
-
-==:warning: **DeFFcode APIs requires FFmpeg binaries to be installed for all of its core functionality.**==
-
-### FFmpeg 
-
-When installing DeFFcode, [**FFmpeg**][ffmpeg] is the only prerequisites you need to configure/install manually. **You could easily do it by referring [**FFmpeg Installation doc**](../installation/ffmpeg_install/)**.
-
-&nbsp;
-
-## Installation
-
-### A. Installation using pip (Recommended)
-
-
-> _Best option for easily getting stable DeFFcode installed._
-
-
-**Installation is as simple as:**
-
 ??? warning ":fontawesome-brands-windows: Windows Installation"
 
     If you are using Windows, some of the commands given below, may not work out-of-the-box.
@@ -165,7 +165,54 @@ pip install deffcode-0.2.0-py3-none-any.whl
 
 &thinsp;
 
-### B. Installation from Source
+### B. Installation using Poetry
+
+> _Best option for managing DeFFcode as a dependency in a [Poetry](https://python-poetry.org/)-managed project._
+
+DeFFcode's [`pyproject.toml`](https://github.com/abhiTronix/deffcode/blob/master/pyproject.toml) is PEP 517/621 compliant, so it can be consumed directly by [Poetry](https://python-poetry.org/docs/#installation).
+
+??? info "Don't have Poetry installed?"
+
+    Follow the [official Poetry installation guide](https://python-poetry.org/docs/#installation) before proceeding. You can verify your install with:
+
+    ```sh
+    poetry --version
+    ```
+
+**Add DeFFcode to an existing Poetry project:**
+
+```sh
+# Add latest stable release as a project dependency
+poetry add deffcode
+```
+
+**Or, install directly from source in a Poetry-managed environment:**
+
+```sh
+# clone the repository and get inside
+git clone https://github.com/abhiTronix/deffcode.git && cd deffcode
+
+# Install it into Poetry's virtualenv
+poetry install
+```
+
+??? tip "Running commands inside Poetry's virtualenv"
+
+    Use `poetry run` to execute DeFFcode-powered scripts without activating the shell:
+
+    ```sh
+    poetry run python your_script.py
+    ```
+
+    Or spawn a shell inside the virtualenv:
+
+    ```sh
+    poetry shell
+    ```
+
+&thinsp;
+
+### C. Installation from Source
 
 >  Best option for trying latest patches(maybe experimental), forking for Pull Requests, or automatically installing all prerequisites(with a few exceptions). 
 
@@ -220,7 +267,7 @@ git clone https://github.com/abhiTronix/deffcode.git && cd deffcode
 pip install -U .
 ```
 
-&nbsp;
+&thinsp;
 
 [^1]: :warning: The `ensurepip` module is missing/disabled on Ubuntu. Use `pip` method only.
 

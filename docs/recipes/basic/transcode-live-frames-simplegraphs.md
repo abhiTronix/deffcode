@@ -28,7 +28,7 @@ limitations under the License.
 
     They can be processed by simply inserting an additional step between decoding and encoding of video frames:
 
-    ![Simple filtergraphs](../../../assets/images/simplefiltergraphs.png){ loading=lazy }
+    ![Simple filtergraphs](../../assets/images/simplefiltergraphs.png){ loading=lazy }
 
     Simple filtergraphs are configured with the per-stream `-filter` option _(with `-vf` for video)_. 
 
@@ -74,7 +74,7 @@ We'll discuss the transcoding of live simple filtergraphs in the following recip
 ## Transcoding Trimmed and Reversed video
 
 <figure markdown>
-  ![Big Buck Bunny Reversed](../../../assets/gifs/bigbuckbunny_reversed.gif)
+  ![Big Buck Bunny Reversed](../../assets/gifs/bigbuckbunny_reversed.gif)
   <figcaption>Big Buck Bunny Reversed</figcaption>
 </figure>
 
@@ -140,7 +140,7 @@ writer.release()
 ## Transcoding Cropped video
 
 <figure markdown>
-  ![Big Buck Bunny Cropped](../../../assets/gifs/bigbuckbunny_cropped.gif)
+  ![Big Buck Bunny Cropped](../../assets/gifs/bigbuckbunny_cropped.gif)
   <figcaption>Big Buck Bunny Cropped</figcaption>
 </figure>
 
@@ -206,7 +206,7 @@ writer.release()
 !!! quote "FFmpeg features **Rotate** Filter that is used to rotate videos by an arbitrary angle (expressed in radians)."
 
 <figure markdown>
-  ![Big Buck Bunny Rotated](../../../assets/gifs/bigbuckbunny_rotate.gif)
+  ![Big Buck Bunny Rotated](../../assets/gifs/bigbuckbunny_rotate.gif)
   <figcaption>Big Buck Bunny Rotated (with <code>rotate</code> filter)</figcaption>
 </figure>
 
@@ -270,7 +270,7 @@ writer.release()
 !!! quote "FFmpeg also features **Transpose** Filter that is used to rotate videos by 90 degrees clockwise and counter-clockwise direction as well as flip them vertically and horizontally."
 
 <figure markdown>
-  ![Big Buck Bunny Rotated](../../../assets/gifs/bigbuckbunny_transpose.gif)
+  ![Big Buck Bunny Rotated](../../assets/gifs/bigbuckbunny_transpose.gif)
   <figcaption>Big Buck Bunny Rotated (with <code>transpose</code> filter)</figcaption>
 </figure>
 
@@ -331,7 +331,7 @@ writer.release()
 ## Transcoding Horizontally flipped and Scaled video
 
 <figure markdown>
-  ![Big Buck Bunny Horizontally flipped and Scaled](../../../assets/gifs/bigbuckbunny_hflip_scaled.gif)
+  ![Big Buck Bunny Horizontally flipped and Scaled](../../assets/gifs/bigbuckbunny_hflip_scaled.gif)
   <figcaption>Big Buck Bunny Horizontally flipped and Scaled</figcaption>
 </figure>
 

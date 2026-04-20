@@ -19,24 +19,30 @@ limitations under the License.
 """
 
 # import required libraries
-import re
-import os
+from __future__ import annotations
+
 import copy
 import json
 import logging
+import os
 import platform
+import re
+import shutil
+from typing import Any
+
 import numpy as np
 
-# import utils packages
-from .utils import logger_handler, validate_device_index, dict2Args
 from .ffhelper import (
     check_sp_output,
-    get_supported_demuxers,
-    is_valid_url,
-    is_valid_image_seq,
-    get_valid_ffmpeg_path,
     extract_device_n_demuxer,
+    get_supported_demuxers,
+    get_valid_ffmpeg_path,
+    is_valid_image_seq,
+    is_valid_url,
 )
+
+# import utils packages
+from .utils import dict2Args, logger_handler, validate_device_index
 
 # define logger
 logger = logging.getLogger("Sourcer")
@@ -71,12 +77,12 @@ class Sourcer:
 
     def __init__(
         self,
-        source,
-        source_demuxer=None,
-        custom_ffmpeg="",
-        verbose=False,
-        **sourcer_params,
-    ):
+        source: str | list[str],
+        source_demuxer: str | list[str] | None = None,
+        custom_ffmpeg: str = "",
+        verbose: bool = False,
+        **sourcer_params: Any,
+    ) -> None:
         """
         This constructor method initializes the object state and attributes of the Sourcer Class.
 
@@ -101,32 +107,88 @@ class Sourcer:
         # sanitize sourcer_params
         self.__sourcer_params = {
             str(k).strip(): (
-                str(v).strip()
-                if not isinstance(v, (dict, list, int, float, tuple))
-                else v
+                str(v).strip() if not isinstance(v, (dict, list, int, float, tuple)) else v
             )
             for k, v in sourcer_params.items()
         }
 
         # handle whether to force validate source
-        self.__forcevalidatesource = self.__sourcer_params.pop(
-            "-force_validate_source", False
-        )
+        self.__forcevalidatesource = self.__sourcer_params.pop("-force_validate_source", False)
         if not isinstance(self.__forcevalidatesource, bool):
             # reset improper values
             self.__forcevalidatesource = False
 
+        # sanitize externally accessible parameters and setup list mapping
+        self.__is_multi = isinstance(source, list)
+        self.__source_list = source if self.__is_multi else [source]
+
+        # validate source list early so downstream errors stay coherent
+        if self.__is_multi and not self.__source_list:
+            raise ValueError("Input `source` list is empty!")
+
         # handle user defined ffmpeg pre-headers(parameters such as `-re`) parameters (must be a list)
-        self.__ffmpeg_prefixes = self.__sourcer_params.pop("-ffprefixes", [])
-        if not isinstance(self.__ffmpeg_prefixes, list):
+        _prefixes = self.__sourcer_params.pop("-ffprefixes", [])
+        if not isinstance(_prefixes, list):
             # log it
             logger.warning(
                 "Discarding invalid `-ffprefixes` value of wrong type `{}`!".format(
-                    type(self.__ffmpeg_prefixes).__name__
+                    type(_prefixes).__name__
                 )
             )
             # reset improper values
-            self.__ffmpeg_prefixes = []
+            _prefixes = []
+
+        if self.__is_multi:
+            # multi-input requires per-source list-of-lists with matching length
+            # to keep prefix routing unambiguous; flat lists are rejected.
+            if _prefixes:
+                if not all(isinstance(p, list) for p in _prefixes):
+                    raise ValueError(
+                        "Multi-input `-ffprefixes` must be a list of per-input lists "
+                        "(e.g. `[['-re'], ['-stream_loop', '-1']]`). "
+                        "Flat lists are ambiguous in multi-input mode."
+                    )
+                if len(_prefixes) != len(self.__source_list):
+                    raise ValueError(
+                        "`-ffprefixes` length ({}) must match `source` list length ({})!".format(
+                            len(_prefixes), len(self.__source_list)
+                        )
+                    )
+                self.__ffmpeg_prefixes_list = _prefixes
+                self.__ffmpeg_prefixes = _prefixes[0]
+            else:
+                self.__ffmpeg_prefixes_list = [[] for _ in self.__source_list]
+                self.__ffmpeg_prefixes = []
+        else:
+            # single-input keeps the original flat-list contract; nested lists are
+            # only meaningful in multi-input mode, so reject them with a warning.
+            if any(isinstance(p, list) for p in _prefixes):
+                logger.warning(
+                    "Nested lists in `-ffprefixes` are only supported for multi-input sources. Discarding!"
+                )
+                _prefixes = []
+            self.__ffmpeg_prefixes = _prefixes
+            self.__ffmpeg_prefixes_list = [_prefixes]
+
+        # handle source_demuxer list mapping
+        if self.__is_multi:
+            if isinstance(source_demuxer, list):
+                if len(source_demuxer) != len(self.__source_list):
+                    raise ValueError(
+                        "`source_demuxer` length ({}) must match `source` list length ({})!".format(
+                            len(source_demuxer), len(self.__source_list)
+                        )
+                    )
+                self.__source_demuxer_list = source_demuxer
+            else:
+                self.__source_demuxer_list = [source_demuxer] * len(self.__source_list)
+        else:
+            self.__source_demuxer_list = [source_demuxer]
+
+        # initialize per-source metadata buffer so retrieve_metadata can be
+        # called safely (e.g. via the recursive primary probe in probe_stream)
+        # without polluting the result with stale `sources` keys.
+        self.__multi_source_metadata: list[Any] = []
 
         # handle where to save the downloaded FFmpeg Static assets on Windows(if specified)
         __ffmpeg_download_path = self.__sourcer_params.pop("-ffmpeg_download_path", "")
@@ -137,7 +199,7 @@ class Sourcer:
         # validate the FFmpeg assets and return location (also downloads static assets on windows)
         self.__ffmpeg = get_valid_ffmpeg_path(
             str(custom_ffmpeg),
-            True if self.__machine_OS == "Windows" else False,
+            self.__machine_OS == "Windows",
             ffmpeg_download_path=__ffmpeg_download_path,
             verbose=self.__verbose_logs,
         )
@@ -154,6 +216,12 @@ class Sourcer:
             )
 
         # sanitize externally accessible parameters and assign them
+        # Use primary index 0 for fallback properties validation
+        if not self.__source_list:
+            raise ValueError("Input `source` parameter is empty!")
+        source = self.__source_list[0]
+        source_demuxer = self.__source_demuxer_list[0]
+
         # handles source demuxer
         if source is None:
             # first check if source value is empty
@@ -163,17 +231,17 @@ class Sourcer:
             # assign if valid demuxer value
             self.__source_demuxer = source_demuxer.strip().lower()
             # assign if valid demuxer value
-            assert self.__source_demuxer != "auto" or validate_device_index(
-                source
-            ), "Invalid `source_demuxer='auto'` value detected with source: `{}`. Aborting!".format(
-                source
+            assert self.__source_demuxer != "auto" or validate_device_index(source), (
+                "Invalid `source_demuxer='auto'` value detected with source: `{}`. Aborting!".format(
+                    source
+                )
             )
         else:
             # otherwise find valid default source demuxer value
             # enforce "auto" if valid index device
             self.__source_demuxer = "auto" if validate_device_index(source) else None
             # log if not valid index device and invalid type
-            self.__verbose_logs and not self.__source_demuxer in [
+            self.__verbose_logs and self.__source_demuxer not in [
                 "auto",
                 None,
             ] and logger.warning(
@@ -197,7 +265,7 @@ class Sourcer:
 
         # handles all extracted devices names/paths list
         # when source_demuxer = "auto"
-        self.__extracted_devices_list = []
+        self.__extracted_devices_list: list[Any] = []
 
         # various source stream params
         self.__default_video_resolution = ""  # handles stream resolution
@@ -226,7 +294,7 @@ class Sourcer:
         # check whether metadata probed or not?
         self.__metadata_probed = False
 
-    def probe_stream(self, default_stream_indexes=(0, 0)):
+    def probe_stream(self, default_stream_indexes: list[int] | tuple[int, int] = (0, 0)) -> Sourcer:
         """
         This method Parses/Probes FFmpeg `subprocess` pipe's Standard Output for given input source and Populates the information in private class variables.
 
@@ -244,9 +312,7 @@ class Sourcer:
         self.__ffsp_output = self.__validate_source(
             self.__source,
             source_demuxer=self.__source_demuxer,
-            forced_validate=(
-                self.__forcevalidatesource if self.__source_demuxer is None else True
-            ),
+            forced_validate=(self.__forcevalidatesource if self.__source_demuxer is None else True),
         )
         # parse resolution and framerate
         video_rfparams = self.__extract_resolution_framerate(
@@ -258,7 +324,7 @@ class Sourcer:
             self.__default_video_orientation = video_rfparams["orientation"]
 
         # parse output parameters through filters (if available)
-        if not (self.__metadata_output is None):
+        if self.__metadata_output is not None:
             # parse output resolution and framerate
             out_video_rfparams = self.__extract_resolution_framerate(
                 default_stream=default_stream_indexes[0], extract_output=True
@@ -322,23 +388,60 @@ class Sourcer:
         # signal metadata has been probed
         self.__metadata_probed = True
 
+        if self.__is_multi:
+            # collect per-source metadata for the `sources` key. The primary
+            # source's flat metadata is captured first via retrieve_metadata;
+            # the guard inside retrieve_metadata (checks for non-empty
+            # __multi_source_metadata) prevents `sources: []` self-pollution.
+            self.__multi_source_metadata.append(self.retrieve_metadata(force_retrieve_missing=True))
+            for idx in range(1, len(self.__source_list)):
+                _src = self.__source_list[idx]
+                _demux = self.__source_demuxer_list[idx]
+                _prefixes = self.__ffmpeg_prefixes_list[idx]
+                _params = self.__sourcer_params.copy()
+                _params["-ffprefixes"] = _prefixes
+                # spawn an independent single-source Sourcer per extra input;
+                # this reuses the resolved ffmpeg path and isolates per-source
+                # parsing state (which probe_stream otherwise clobbers).
+                # Resolve to an absolute path: on Unix `self.__ffmpeg` may be
+                # the bare command "ffmpeg" found via PATH, which the nested
+                # `get_valid_ffmpeg_path()` would reject as "not a file".
+                _custom_ffmpeg = (
+                    self.__ffmpeg
+                    if self.__ffmpeg and os.path.isfile(self.__ffmpeg)
+                    else (shutil.which(self.__ffmpeg) or "")
+                )
+                _s = Sourcer(
+                    _src,
+                    source_demuxer=_demux,
+                    custom_ffmpeg=_custom_ffmpeg,
+                    verbose=self.__verbose_logs,
+                    **_params,
+                )
+                _s.probe_stream(default_stream_indexes)
+                self.__multi_source_metadata.append(
+                    _s.retrieve_metadata(force_retrieve_missing=True)
+                )
+
         # return reference to the instance object.
         return self
 
-    def retrieve_metadata(self, pretty_json=False, force_retrieve_missing=False):
+    def retrieve_metadata(
+        self, pretty_json: bool = False, force_retrieve_missing: bool = False
+    ) -> dict[str, Any] | str | tuple[dict[str, Any] | str, dict[str, Any] | str]:
         """
         This method returns Parsed/Probed Metadata of the given source.
 
         Parameters:
             pretty_json (bool): whether to return metadata as JSON string(if `True`) or Dictionary(if `False`) type?
-            force_retrieve_output (bool): whether to also return metadata missing in current Pipeline. This method returns `(metadata, metadata_missing)` tuple if `force_retrieve_output=True` instead of `metadata`.
+            force_retrieve_missing (bool): whether to also return metadata missing in current Pipeline. This method returns `(metadata, metadata_missing)` tuple if `force_retrieve_missing=True` instead of `metadata`.
 
         **Returns:** `metadata` or `(metadata, metadata_missing)`, formatted as JSON string or python dictionary.
         """
         # check if metadata has been probed or not
-        assert (
-            self.__metadata_probed
-        ), "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
+        assert self.__metadata_probed, (
+            "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
+        )
         # log it
         self.__verbose_logs and logger.debug("Extracting Metadata...")
         # create metadata dictionary from information populated in private class variables
@@ -386,7 +489,7 @@ class Sourcer:
             }
         )
         # add output metadata properties (if available)
-        if not (self.__metadata_output is None):
+        if self.__metadata_output is not None:
             metadata.update(
                 {
                     "output_frames_resolution": self.__output_frames_resolution,
@@ -408,10 +511,20 @@ class Sourcer:
                     "output_orientation": self.__default_video_orientation,
                 }
             )
+
+        # Only emit the `sources` key after per-source metadata is populated.
+        # probe_stream() calls retrieve_metadata() once for the primary input
+        # *before* populating __multi_source_metadata; without this guard the
+        # primary's per-source dict would carry a stray empty `sources: []`
+        # field that pollutes metadata["sources"][0].
+        if self.__is_multi and self.__multi_source_metadata:
+            metadata["sources"] = [m[0] for m in self.__multi_source_metadata]
+            force_retrieve_missing and metadata_missing.update(
+                {"sources": [m[1] for m in self.__multi_source_metadata]}
+            )
+
         # log it
-        self.__verbose_logs and logger.debug(
-            "Metadata Extraction completed successfully!"
-        )
+        self.__verbose_logs and logger.debug("Metadata Extraction completed successfully!")
         # parse as JSON string(`json.dumps`), if defined
         metadata = json.dumps(metadata, indent=2) if pretty_json else metadata
         metadata_missing = (
@@ -421,7 +534,7 @@ class Sourcer:
         return metadata if not force_retrieve_missing else (metadata, metadata_missing)
 
     @property
-    def enumerate_devices(self):
+    def enumerate_devices(self) -> dict[int, Any]:
         """
         A property object that enumerate all probed Camera Devices connected to your system names
         along with their respective "device indexes" or "camera indexes" as python dictionary.
@@ -429,19 +542,22 @@ class Sourcer:
         **Returns:** Probed Camera Devices as python dictionary.
         """
         # check if metadata has been probed or not
-        assert (
-            self.__metadata_probed
-        ), "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
+        assert self.__metadata_probed, (
+            "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
+        )
 
         # log if specified
         self.__verbose_logs and logger.debug("Enumerating all probed Camera Devices.")
 
         # return probed Camera Devices as python dictionary.
-        return {
-            dev_idx: dev for dev_idx, dev in enumerate(self.__extracted_devices_list)
-        }
+        return dict(enumerate(self.__extracted_devices_list))
 
-    def __validate_source(self, source, source_demuxer=None, forced_validate=False):
+    def __validate_source(
+        self,
+        source: str,
+        source_demuxer: str | None = None,
+        forced_validate: bool = False,
+    ) -> str:
         """
         This Internal method validates source and extracts its metadata.
 
@@ -452,7 +568,7 @@ class Sourcer:
         **Returns:** `True` if passed tests else `False`.
         """
         # validate source demuxer(if defined)
-        if not (source_demuxer is None):
+        if source_demuxer is not None:
             # check if "auto" demuxer is specified
             if source_demuxer == "auto":
                 # integerise source to get index
@@ -467,13 +583,12 @@ class Sourcer:
                     verbose=self.__verbose_logs,
                 )
                 # valid indexes range
-                valid_indexes = [
-                    x
-                    for x in range(
+                valid_indexes = list(
+                    range(
                         -len(self.__extracted_devices_list),
                         len(self.__extracted_devices_list),
                     )
-                ]
+                )
                 # check index is within valid range
                 if self.__extracted_devices_list and index in valid_indexes:
                     # overwrite actual source device name/path/index
@@ -501,15 +616,9 @@ class Sourcer:
                             (
                                 self.__extracted_devices_list[index]
                                 if self.__machine_OS != "Linux"
-                                else next(
-                                    iter(self.__extracted_devices_list[index].values())
-                                )[0]
+                                else next(iter(self.__extracted_devices_list[index].values()))[0]
                             ),
-                            (
-                                index
-                                if index >= 0
-                                else len(self.__extracted_devices_list) + index
-                            ),
+                            (index if index >= 0 else len(self.__extracted_devices_list) + index),
                             self.__source_demuxer,
                         )
                     )
@@ -522,7 +631,7 @@ class Sourcer:
                         )
                     )
             # otherwise validate against supported demuxers
-            elif not (source_demuxer in get_supported_demuxers(self.__ffmpeg)):
+            elif source_demuxer not in get_supported_demuxers(self.__ffmpeg):
                 # raise if fails
                 raise ValueError(
                     "Installed FFmpeg failed to recognize `{}` demuxer. Check `source_demuxer` parameter value again!".format(
@@ -533,9 +642,7 @@ class Sourcer:
                 pass
 
         # assert if valid source
-        assert source and isinstance(
-            source, str
-        ), "Input `source` parameter is of invalid type!"
+        assert source and isinstance(source, str), "Input `source` parameter is of invalid type!"
 
         # Differentiate input
         if forced_validate:
@@ -545,9 +652,7 @@ class Sourcer:
             self.__source = source
         elif os.path.isfile(source):
             self.__source = os.path.abspath(source)
-        elif is_valid_image_seq(
-            self.__ffmpeg, source=source, verbose=self.__verbose_logs
-        ):
+        elif is_valid_image_seq(self.__ffmpeg, source=source, verbose=self.__verbose_logs):
             self.__source = source
             self.__contains_images = True
         elif is_valid_url(self.__ffmpeg, url=source, verbose=self.__verbose_logs):
@@ -592,7 +697,7 @@ class Sourcer:
         # return metadata based on params
         return metadata
 
-    def __extract_video_bitrate(self, default_stream=0):
+    def __extract_video_bitrate(self, default_stream: int = 0) -> str:
         """
         This Internal method parses default video-stream bitrate from metadata.
 
@@ -615,9 +720,7 @@ class Sourcer:
                     else 0
                 )
             ]
-            filtered_bitrate = re.findall(
-                r",\s[0-9]+\s\w\w[\/]s", selected_stream.strip()
-            )
+            filtered_bitrate = re.findall(r",\s[0-9]+\s\w\w[\/]s", selected_stream.strip())
             if len(filtered_bitrate):
                 default_video_bitrate = filtered_bitrate[0].split(" ")[1:3]
                 final_bitrate = "{}{}".format(
@@ -627,7 +730,7 @@ class Sourcer:
                 return final_bitrate
         return ""
 
-    def __extract_video_decoder(self, default_stream=0):
+    def __extract_video_decoder(self, default_stream: int = 0) -> str:
         """
         This Internal method parses default video-stream decoder from metadata.
 
@@ -645,20 +748,14 @@ class Sourcer:
         ]
         if meta_text:
             selected_stream = meta_text[
-                (
-                    default_stream
-                    if default_stream > 0 and default_stream < len(meta_text)
-                    else 0
-                )
+                (default_stream if default_stream > 0 and default_stream < len(meta_text) else 0)
             ]
-            filtered_pixfmt = re.findall(
-                r"Video:\s[a-z0-9_-]*", selected_stream.strip()
-            )
+            filtered_pixfmt = re.findall(r"Video:\s[a-z0-9_-]*", selected_stream.strip())
             if filtered_pixfmt:
                 return filtered_pixfmt[0].split(" ")[-1]
         return ""
 
-    def __extract_video_pixfmt(self, default_stream=0, extract_output=False):
+    def __extract_video_pixfmt(self, default_stream: int = 0, extract_output: bool = False) -> str:
         """
         This Internal method parses default video-stream pixel-format from metadata.
 
@@ -683,20 +780,14 @@ class Sourcer:
         )
         if meta_text:
             selected_stream = meta_text[
-                (
-                    default_stream
-                    if default_stream > 0 and default_stream < len(meta_text)
-                    else 0
-                )
+                (default_stream if default_stream > 0 and default_stream < len(meta_text) else 0)
             ]
-            filtered_pixfmt = re.findall(
-                r",\s[a-z][a-z0-9_-]*", selected_stream.strip()
-            )
+            filtered_pixfmt = re.findall(r",\s[a-z][a-z0-9_-]*", selected_stream.strip())
             if filtered_pixfmt:
                 return filtered_pixfmt[0].split(" ")[-1]
         return ""
 
-    def __extract_audio_bitrate_nd_samplerate(self, default_stream=0):
+    def __extract_audio_bitrate_nd_samplerate(self, default_stream: int = 0) -> dict[str, str]:
         """
         This Internal method parses default audio-stream bitrate and sample-rate from metadata.
 
@@ -714,19 +805,13 @@ class Sourcer:
         result = {}
         if meta_text:
             selected_stream = meta_text[
-                (
-                    default_stream
-                    if default_stream > 0 and default_stream < len(meta_text)
-                    else 0
-                )
+                (default_stream if default_stream > 0 and default_stream < len(meta_text) else 0)
             ]
             # filter data
             filtered_audio_bitrate = re.findall(
                 r"fltp,\s[0-9]+\s\w\w[\/]s", selected_stream.strip()
             )
-            filtered_audio_samplerate = re.findall(
-                r",\s[0-9]+\sHz", selected_stream.strip()
-            )
+            filtered_audio_samplerate = re.findall(r",\s[0-9]+\sHz", selected_stream.strip())
             # get audio bitrate metadata
             if filtered_audio_bitrate:
                 filtered = filtered_audio_bitrate[0].split(" ")[1:3]
@@ -738,13 +823,13 @@ class Sourcer:
                 result["bitrate"] = ""
             # get audio samplerate metadata
             result["samplerate"] = (
-                filtered_audio_samplerate[0].split(", ")[1]
-                if filtered_audio_samplerate
-                else ""
+                filtered_audio_samplerate[0].split(", ")[1] if filtered_audio_samplerate else ""
             )
         return result if result and (len(result) == 2) else {}
 
-    def __extract_resolution_framerate(self, default_stream=0, extract_output=False):
+    def __extract_resolution_framerate(
+        self, default_stream: int = 0, extract_output: bool = False
+    ) -> dict[str, Any]:
         """
         This Internal method parses default video-stream resolution, orientation, and framerate from metadata.
 
@@ -788,33 +873,21 @@ class Sourcer:
         result = {}
         if meta_text:
             selected_stream = meta_text[
-                (
-                    default_stream
-                    if default_stream > 0 and default_stream < len(meta_text)
-                    else 0
-                )
+                (default_stream if default_stream > 0 and default_stream < len(meta_text) else 0)
             ]
 
             # filter data
-            filtered_resolution = re.findall(
-                r"([1-9]\d+)x([1-9]\d+)", selected_stream.strip()
-            )
-            filtered_framerate = re.findall(
-                r"\d+(?:\.\d+)?\sfps", selected_stream.strip()
-            )
+            filtered_resolution = re.findall(r"([1-9]\d+)x([1-9]\d+)", selected_stream.strip())
+            filtered_framerate = re.findall(r"\d+(?:\.\d+)?\sfps", selected_stream.strip())
             filtered_tbr = re.findall(r"\d+(?:\.\d+)?\stbr", selected_stream.strip())
 
             # extract framerate metadata
             if filtered_framerate:
                 # calculate actual framerate
-                result["framerate"] = float(
-                    re.findall(r"[\d\.\d]+", filtered_framerate[0])[0]
-                )
+                result["framerate"] = float(re.findall(r"[\d\.\d]+", filtered_framerate[0])[0])
             elif filtered_tbr:
                 # guess from TBR(if fps unavailable)
-                result["framerate"] = float(
-                    re.findall(r"[\d\.\d]+", filtered_tbr[0])[0]
-                )
+                result["framerate"] = float(re.findall(r"[\d\.\d]+", filtered_tbr[0])[0])
 
             # extract resolution metadata
             if filtered_resolution:
@@ -829,16 +902,14 @@ class Sourcer:
                         else 0
                     )
                 ]
-                filtered_orientation = re.findall(
-                    r"[-]?\d+\.\d+", selected_stream.strip()
-                )
+                filtered_orientation = re.findall(r"[-]?\d+\.\d+", selected_stream.strip())
                 result["orientation"] = float(filtered_orientation[0])
             else:
                 result["orientation"] = 0.0
 
         return result if result and (len(result) == 3) else {}
 
-    def __extract_duration(self, inseconds=True):
+    def __extract_duration(self, inseconds: bool = True) -> float | list[str]:
         """
         This Internal method parses stream duration from metadata.
 
@@ -860,10 +931,7 @@ class Sourcer:
             )
             if t_duration:
                 return (
-                    sum(
-                        float(x) * 60**i
-                        for i, x in enumerate(reversed(t_duration[0].split(":")))
-                    )
+                    sum(float(x) * 60**i for i, x in enumerate(reversed(t_duration[0].split(":"))))
                     if inseconds
                     else t_duration
                 )

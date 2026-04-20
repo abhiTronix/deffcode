@@ -39,13 +39,13 @@ on:
 jobs:
   test:
     name: CI Linux
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install APT Dependencies
@@ -60,22 +60,23 @@ jobs:
           sudo chmod +x scripts/bash/prepare_dataset.sh
       - name: Install Pip Dependencies
         run: |
-          sudo pip install -U pip wheel numpy 
+          sudo pip install -U numpy
           sudo pip install -U .
           sudo pip install -U opencv-python-headless 
           sudo pip install -U vidgear[core]
-          sudo pip install -U flake8 six codecov pytest pytest-cov
+          sudo pip install -U ruff six codecov pytest pytest-cov
         if: success()
       - name: Run prepare_dataset Bash script
         run: bash scripts/bash/prepare_dataset.sh
         shell: bash
-      - name: Run pytest and flake8
+      - name: Run pytest and ruff
         run: |
-          timeout 1200 sudo python -m pytest -sv --cov=deffcode --cov-report=xml --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "EXIT_CODE=$code" >>$GITHUB_ENV; fi
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          timeout 1200 sudo pytest -sv --cov=deffcode --cov-report=xml --cov-report term-missing tests/ || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; else echo "EXIT_CODE=$code" >>$GITHUB_ENV; fi
+          ruff check .
+          ruff format --check .
         if: success()
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           name: ${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}

@@ -22,7 +22,7 @@ limitations under the License.
 
 > Instead of using prerecorded video files as streams, DeFFcode's FFdecoder API with the help of powerful [`lavfi`](http://underpop.online.fr/f/ffmpeg/help/lavfi.htm.gz) _(**Libavfilter** input virtual device)_ source that reads data from the open output pads of a libavfilter filtergraph, is also capable of creating virtual video frames out of thin air in real-time, which you might want to use as input for testing, compositing, and merging with other streams to obtain desired output on-the-fly. 
 
-We'll discuss the recipies for generating Live Fake Sources briefly below:
+We'll discuss the recipes for generating Live Fake Sources briefly below:
 
 &thinsp;
 
@@ -65,7 +65,7 @@ We'll discuss the recipies for generating Live Fake Sources briefly below:
 > The [`sierpinski`](https://ffmpeg.org/ffmpeg-filters.html#toc-sierpinski) graph generates a Sierpinski carpet/triangle fractal, and randomly pan around by a single pixel each frame.
 
 <figure markdown>
-  ![sierpinski pattern](../../../assets/gifs/sierpinski.gif){ width="500" }
+  ![sierpinski pattern](../../assets/gifs/sierpinski.gif){ width="500" }
   <figcaption>Sierpinski carpet fractal</figcaption>
 </figure>
 
@@ -122,7 +122,7 @@ decoder.terminate()
 > The [`testsrc`](https://ffmpeg.org/ffmpeg-filters.html#toc-allrgb_002c-allyuv_002c-color_002c-colorchart_002c-colorspectrum_002c-haldclutsrc_002c-nullsrc_002c-pal75bars_002c-pal100bars_002c-rgbtestsrc_002c-smptebars_002c-smptehdbars_002c-testsrc_002c-testsrc2_002c-yuvtestsrc) graph generates a test video pattern showing a color pattern, a scrolling gradient, and a timestamp. This is useful for testing purposes.
 
 <figure markdown>
-  ![testsrc pattern](../../../assets/gifs/testsrc.gif){ width="500" }
+  ![testsrc pattern](../../assets/gifs/testsrc.gif){ width="500" }
   <figcaption>Test Source pattern</figcaption>
 </figure>
 
@@ -181,7 +181,7 @@ decoder.terminate()
 > The [`gradients`](https://ffmpeg.org/ffmpeg-filters.html#toc-gradients) graph (as name suggests) generates several random gradients.
 
 <figure markdown>
-  ![gradients test pattern](../../../assets/gifs/gradients.gif){ width="500" }
+  ![gradients test pattern](../../assets/gifs/gradients.gif){ width="500" }
   <figcaption>Gradients pattern with real-time text output</figcaption>
 </figure>
 
@@ -249,7 +249,7 @@ decoder.terminate()
 > The [`mandelbrot`](https://ffmpeg.org/ffmpeg-filters.html#toc-mandelbrot) graph generate a [**Mandelbrot set fractal**](https://en.wikipedia.org/wiki/Mandelbrot_set), that progressively zoom towards a specfic point.
 
 <figure markdown>
-  ![mandelbrot test pattern](../../../assets/gifs/mandelbrot_vectorscope_waveforms.gif){ width="500" }
+  ![mandelbrot test pattern](../../assets/gifs/mandelbrot_vectorscope_waveforms.gif){ width="500" }
   <figcaption>Mandelbrot pattern with a Vectorscope & two Waveforms</figcaption>
 </figure>
 
@@ -316,7 +316,7 @@ decoder.terminate()
 > The [`life`](https://ffmpeg.org/ffmpeg-filters.html#toc-life) graph generates a life pattern based on a generalization of John Conway’s life game. The sourced input represents a life grid, each pixel represents a cell which can be in one of two possible states, alive or dead. Every cell interacts with its eight neighbours, which are the cells that are horizontally, vertically, or diagonally adjacent. At each interaction the grid evolves according to the adopted rule, which specifies the number of neighbor alive cells which will make a cell stay alive or born.
 
 <figure markdown>
-  ![life pattern](../../../assets/gifs/life.gif){ width="500" }
+  ![life pattern](../../assets/gifs/life.gif){ width="500" }
   <figcaption>Game of Life Visualization</figcaption>
 </figure>
 
