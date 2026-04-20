@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block extrahead %}
+{% set title = config.site_name %}
+{% if page and page.meta and page.meta.title %}
+{% set title = title ~ " - " ~ page.meta.title %}
+{% elif page and page.title and not page.is_homepage %}
+{% set title = title ~ " - " ~ page.title | striptags %}
+{% endif %}
+{% set image = config.site_url ~ '/assets/images/decode-banner.png' %}
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ title }}">
+<meta property="og:description" content="{{ config.site_description }}">
+<meta property="og:url" content="{{ page.canonical_url }}">
+<meta property="og:image" content="{{ image }}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+{% endblock %}
+{% block announce %}
+<!-- Add announcement here, including arbitrary HTML -->
+{% set announcement_link_1 = config.site_url ~
+'/recipes/advanced/multi_input/' %}
+{% set announcement_link_2 = config.site_url ~
+'recipes/advanced/extract-frame-metadata/' %}
+{% set announcement_link_3 = config.site_url ~
+'/recipes/basic/decode-video-files/#__tabbed_3_2' %}
+
+
+<b><span class="twemoji"> {% include ".icons/material/rocket-launch.svg" %} </span> <code>v0.2.7</code> is out! <a href="{{ announcement_link_1 }}">Decode multiple input streams in parallel ➶</a>, <a href="{{ announcement_link_2 }}">grab per-frame metadata async ➶</a>, and <a href="{{ announcement_link_3 }}">fly through YUV with <code>-extract_luma</code> ➶</a></b>
+{% endblock %}
+{% block outdated %}
+You're not viewing the latest version.
+<a href="{{ '../' ~ base_url }}">
+  <strong>Click here to go to latest.</strong>
+</a>
+{% endblock %}
+{% block content %}
+{{ super() }}
+<footer class="sponsorship">
+  <hr>
+  <a href="https://ko-fi.com/W7W8WTYO">
+    <span class="twemoji heart-throb-hover">
+      <img alt="❤" class="twemoji heart" src="https://twemoji.maxcdn.com/v/latest/svg/2764.svg" title="Donate">
+    </span>
+  </a>
+  <hr>
+</footer>
+{% endblock %}
+<!--
+===============================================
+DeFFcode library source-code is deployed under the Apache 2.0 License:
+
+Copyright (c) 2021 Abhishek Thakur(@abhiTronix) <abhi.una12@gmail.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+===============================================
+-->
