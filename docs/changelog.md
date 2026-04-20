@@ -20,9 +20,68 @@ limitations under the License.
 
 # Release Notes
 
-## v0.2.6 (2024-07-08) :material-new-box:
+## v0.2.7 (2026-04-20) :material-new-box:
 
 ???+ new "New Features"
+    - [x] **FFdecoder:**
+        * Added **Multi-input source list support** in both `FFdecoder` and `Sourcer`, enabling simultaneous decoding from multiple input streams (e.g., multiple RTSP sources).
+        * Added **Async per-frame metadata extraction** via FFmpeg's `showinfo` filter, exposing frame number, PTS time, and keyframe info per decoded frame.
+        * Added **Fast luma-only (`-extract_luma`) YUV decoding**, slicing the Y-plane directly from YUV/NV bytestreams into a 2D `uint8` ndarray.
+            * 💬 Bypasses FFmpeg colorspace conversion for a significant speed boost over `frame_format="gray"`.
+
+??? success "Updates/Improvements"
+    - [x] **Core:**
+        * Added official support for Python `3.12.x` and `3.13.x` legacies.
+        * Modernized codebase with type annotations across core source files and tests, adopting idiomatic Python 3.10+ style.
+    - [x] **Packaging:**
+        * Migrated packaging from `setup.py` to `pyproject.toml`, including metadata, dependencies, classifiers, and project URLs.
+    - [x] **Tooling:**
+        * Adopted **Ruff** project-wide for linting and formatting, replacing `flake8`/`black`.
+    - [x] **CI/CD:**
+        * Upgraded Linux runner from `ubuntu-20.04` to `ubuntu-22.04`/`ubuntu-latest`.
+        * Updated Python CI matrix to `3.10`–`3.13` across GitHub Actions, Azure Pipelines, and AppVeyor.
+        * Migrated Codecov uploader to new CLI (`cli.codecov.io`) with `--fail-on-error`.
+        * Pinned GitHub Actions to latest `checkout`, `setup-python`, and `codecov` action versions.
+        * Bumped docs deployer Python to `3.11`; replaced legacy `mkdocstrings`.
+    - [x] **Docs:**
+        * Restructured Installation guide with dedicated Poetry install instructions.
+        * Added new recipes: multi-input source configurations, per-frame metadata extraction, YUV grayscale fast-path, YUV420p performance tip, and Input/Output Seeking methods with pros/cons.
+        * Updated contributions guide to reference Ruff instead of flake8/black.
+        * Updated README with keyframe decoding and VFR sync recipe links.
+        * Improved docs formatting and nav: OS icons in install tabs, HW-acceleration limitation section, transcode recipe clarity fixes.
+        * Updated Citation and Zenodo badge to v0.2.6 DOI.
+
+??? danger "Breaking Updates/Changes"
+    * **Core:**
+        - [x] :skull_crossbones: **Minimum Python version raised to `3.10+`.** Python `3.8` and `3.9` are no longer supported and have been officially dropped from all CI/CD pipelines and package metadata.
+
+??? bug "Bug-fixes"
+    - [x] **FFhelper:**
+        * Fixed `StopIteration` crash in `get_supported_demuxers` when FFmpeg `-demuxers` output lacks the expected `--` separator line; now returns an empty list with a warning instead of raising.
+        * Fixed regex expression bugs in `get_supported_demuxers`: simplified regex, corrected multi-line output handling, and fixed comma-within-demuxer-name stripping.
+    - [x] **Sourcer:**
+        * Fixed incorrect `param` name in `Sourcer.retrieve_metadata` docstring.
+    - [x] **CI:**
+        * Fixed `output_filename` → `output` parameter name in WriteGear API test calls to match upstream API changes.
+    - [x] **Docs:**
+        * Fixed asset paths and typos in recipe and reference documentation pages.
+        * Fixed duplicate `pymdownx.magiclink` extension entry in MkDocs config.
+
+??? question "Pull Requests"
+    * PR #65
+    * PR #64
+    * PR #63
+    * PR #61
+    * PR #60
+    * PR #59
+
+&nbsp;
+
+&nbsp;
+
+## v0.2.6 (2024-07-08) :material-new-box:
+
+??? new "New Features"
     - [x] **FFdecoder:**
         * Introduced a new optional `-disable_ffmpeg_window` boolean parameter.
 	        * 💬 Prevents the FFmpeg command line window from appearing by applying the `DETACHED_PROCESS` flag to the subprocess FFmpeg pipeline when building `.exe` files on Windows in silent (`verbose=False`) mode.
