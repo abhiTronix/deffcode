@@ -329,6 +329,7 @@ class FFdecoder:
         ):
             self.__inputframerate = __framerate
         elif isinstance(__framerate, (float, int)):
+            # assign input framerate
             self.__inputframerate = float(__framerate) if __framerate > 0.0 else 0.0
         else:
             # warn if wrong type
