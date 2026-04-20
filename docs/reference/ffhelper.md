@@ -28,10 +28,6 @@ limitations under the License.
 
 &nbsp;
 
-::: deffcode.ffhelper.get_valid_ffmpeg_path
-
-&nbsp;
-
 ::: deffcode.ffhelper.download_ffmpeg_binaries
 
 &nbsp;
