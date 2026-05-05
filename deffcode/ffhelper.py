@@ -42,8 +42,10 @@ logger.propagate = False
 logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
 
+# set default timeout for subprocesses
+DEFAULT_TIMEOUT_SUBPROCESS: float = float(os.getenv("DEFAULT_TIMEOUT_SUBPROCESS", 3.0))
 # set default timer for download requests
-DEFAULT_TIMEOUT = 3
+DEFAULT_TIMEOUT: float = float(os.getenv("DEFAULT_TIMEOUT", 3.0))
 
 
 class TimeoutHTTPAdapter(HTTPAdapter):
@@ -58,7 +60,9 @@ class TimeoutHTTPAdapter(HTTPAdapter):
             del kwargs["timeout"]
         super().__init__(*args, **kwargs)
 
-    def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:
+    def send(
+        self, request: requests.PreparedRequest, **kwargs: Any
+    ) -> requests.Response:
         timeout = kwargs.get("timeout")
         if timeout is None:
             kwargs["timeout"] = self.timeout
@@ -131,7 +135,9 @@ def get_valid_ffmpeg_path(
             final_path = os.path.join(final_path, "ffmpeg.exe")
         else:
             # else return False
-            verbose and logger.debug("No valid FFmpeg executables found at Custom FFmpeg path!")
+            verbose and logger.debug(
+                "No valid FFmpeg executables found at Custom FFmpeg path!"
+            )
             return False
     else:
         # otherwise perform test for Unix
@@ -145,7 +151,9 @@ def get_valid_ffmpeg_path(
                 final_path = os.path.join(custom_ffmpeg, "ffmpeg")
             else:
                 # else return False
-                verbose and logger.debug("No valid FFmpeg executables found at Custom FFmpeg path!")
+                verbose and logger.debug(
+                    "No valid FFmpeg executables found at Custom FFmpeg path!"
+                )
                 return False
         else:
             # otherwise assign ffmpeg binaries from system
@@ -157,7 +165,9 @@ def get_valid_ffmpeg_path(
     return final_path if validate_ffmpeg(final_path, verbose=verbose) else False
 
 
-def download_ffmpeg_binaries(path: str, os_windows: bool = False, os_bit: str = "") -> str:
+def download_ffmpeg_binaries(
+    path: str, os_windows: bool = False, os_bit: str = ""
+) -> str:
     """
     ## download_ffmpeg_binaries
 
@@ -177,7 +187,9 @@ def download_ffmpeg_binaries(path: str, os_windows: bool = False, os_bit: str = 
             os_bit
         )
 
-        file_name = os.path.join(os.path.abspath(path), "ffmpeg-static-{}-gpl.zip".format(os_bit))
+        file_name = os.path.join(
+            os.path.abspath(path), "ffmpeg-static-{}-gpl.zip".format(os_bit)
+        )
         file_path = os.path.join(
             os.path.abspath(path),
             "ffmpeg-static-{}-gpl/bin/ffmpeg.exe".format(os_bit),
@@ -192,7 +204,8 @@ def download_ffmpeg_binaries(path: str, os_windows: bool = False, os_bit: str = 
 
             # check if given path has write access
             assert os.access(path, os.W_OK), (
-                "[Helper:ERROR] :: Permission Denied, Cannot write binaries to directory = " + path
+                "[Helper:ERROR] :: Permission Denied, Cannot write binaries to directory = "
+                + path
             )
             # remove leftovers if exists
             os.path.isfile(file_name) and delete_file_safe(file_name)
@@ -210,7 +223,9 @@ def download_ffmpeg_binaries(path: str, os_windows: bool = False, os_bit: str = 
                         status_forcelist=[429, 500, 502, 503, 504],
                     )
                     # Mount it for https usage
-                    adapter = TimeoutHTTPAdapter(timeout=2.0, max_retries=retries)
+                    adapter = TimeoutHTTPAdapter(
+                        timeout=DEFAULT_TIMEOUT_SUBPROCESS, max_retries=retries
+                    )
                     http.mount("https://", adapter)
                     response = http.get(file_url, stream=True)
                     response.raise_for_status()
@@ -219,9 +234,9 @@ def download_ffmpeg_binaries(path: str, os_windows: bool = False, os_bit: str = 
                         if "content-length" in response.headers
                         else len(response.content)
                     )
-                    assert total_length is not None, (
-                        "[Helper:ERROR] :: Failed to retrieve files, check your Internet connectivity!"
-                    )
+                    assert (
+                        total_length is not None
+                    ), "[Helper:ERROR] :: Failed to retrieve files, check your Internet connectivity!"
                     bar = tqdm(total=int(total_length), unit="B", unit_scale=True)
                     for data in response.iter_content(chunk_size=4096):
                         f.write(data)
@@ -259,7 +274,9 @@ def validate_ffmpeg(path: str, verbose: bool = False) -> bool:
         if verbose:  # log if test are passed
             logger.debug("FFmpeg validity Test Passed!")
             logger.debug(
-                "Found valid FFmpeg Version: `{}` installed on this system".format(version)
+                "Found valid FFmpeg Version: `{}` installed on this system".format(
+                    version
+                )
             )
     except Exception as e:
         # log if test are failed
@@ -286,14 +303,20 @@ def get_supported_pixfmts(path: str) -> list[tuple[str, str, str]]:
     srtindex = [i for i, s in enumerate(splitted) if b"-----" in s]
     # extract video encoders
     supported_pxfmts = [
-        x.decode("utf-8").strip() for x in splitted[srtindex[0] + 1 :] if x.decode("utf-8").strip()
+        x.decode("utf-8").strip()
+        for x in splitted[srtindex[0] + 1 :]
+        if x.decode("utf-8").strip()
     ]
     # compile regex
     finder = re.compile(r"([A-Z]*[\.]+[A-Z]*\s[a-z0-9_-]*)(\s+[0-4])(\s+[0-9]+)")
     # find all outputs
     outputs = finder.findall("\n".join(supported_pxfmts))
     # return output findings
-    return [(list(o[0].split(" "))[-1], o[1].strip(), o[2].strip()) for o in outputs if len(o) == 3]
+    return [
+        (list(o[0].split(" "))[-1], o[1].strip(), o[2].strip())
+        for o in outputs
+        if len(o) == 3
+    ]
 
 
 def get_supported_vdecoders(path: str) -> list[str]:
@@ -369,9 +392,9 @@ def extract_device_n_demuxer(
     **Returns:** Tuple of list of supported device(s) path/name/index and OS specific demuxer used.
     """
     # validate `machine_OS` parameter value
-    assert machine_OS is not None and isinstance(machine_OS, str), (
-        "`machine_OS` parameter value is empty or invalid type. Aborting!"
-    )
+    assert machine_OS is not None and isinstance(
+        machine_OS, str
+    ), "`machine_OS` parameter value is empty or invalid type. Aborting!"
 
     # initialize params
     devices: list[Any] = []  # handles devices discovered
@@ -395,14 +418,16 @@ def extract_device_n_demuxer(
     verbose and logger.debug("Auto-Searching for valid devices...")
 
     # assert if demuxer is supported by provided ffmpeg.
-    assert req_demuxer in get_supported_demuxers(path), (
-        "Required `{}` demuxer isn't supported by provided FFmpeg binaries. Kindly compile FFmpeg with \
+    assert req_demuxer in get_supported_demuxers(
+        path
+    ), "Required `{}` demuxer isn't supported by provided FFmpeg binaries. Kindly compile FFmpeg with \
             suitable flags or manually assign `source` and `source_demuxer` parameter values. Aborting!".format(
-            valid_demuxers[machine_OS]
-        )
+        valid_demuxers[machine_OS]
     )
     # create default ffmpeg command (for Windows and MacOS)
-    default_ffcommand = "-hide_banner -list_devices true -f {} -i dummy".format(req_demuxer)
+    default_ffcommand = "-hide_banner -list_devices true -f {} -i dummy".format(
+        req_demuxer
+    )
 
     # find all OS specific FFmpeg devices path and demuxer
     if machine_OS == "Windows":
@@ -410,6 +435,7 @@ def extract_device_n_demuxer(
         metadata = check_sp_output(
             [path, *default_ffcommand.split(" ")],
             force_retrieve_stderr=True,
+            timeout=DEFAULT_TIMEOUT_SUBPROCESS,
         )
         # clean and split metadata
         splitted = [x.decode("utf-8").strip() for x in metadata.split(b"\n")]
@@ -434,7 +460,10 @@ def extract_device_n_demuxer(
         if (
             not decoded
             or {"command", "not", "found"}.issubset(decoded.split(" "))
-            or ({"Cannot", "open", "device"}.issubset(decoded.split(" ")) and "):" not in decoded)
+            or (
+                {"Cannot", "open", "device"}.issubset(decoded.split(" "))
+                and "):" not in decoded
+            )
         ):
             logger.error(
                 "Cannot execute `v4l2-ctl` command. "
@@ -447,7 +476,9 @@ def extract_device_n_demuxer(
         else:
             # clean metadata
             clean_n_splitted = [
-                x.strip() for x in decoded.split("\n\n") if "/dev/video" in x and "):" in x
+                x.strip()
+                for x in decoded.split("\n\n")
+                if "/dev/video" in x and "):" in x
             ]
             # compile regex
             finder = re.compile(r"^[a-zA-Z0-9_.\- ]*")
@@ -469,10 +500,14 @@ def extract_device_n_demuxer(
                         # search in path properties
                         metadata_path = check_sp_output(
                             ["v4l2-ctl", "--device={}".format(path), "--all"],
+                            timeout=DEFAULT_TIMEOUT_SUBPROCESS,
                         )
                         # decode path metadata
                         decoded_path = metadata_path.decode("utf-8").strip()
-                        if "Width/Height" in decoded_path and "Pixel Format" in decoded_path:
+                        if (
+                            "Width/Height" in decoded_path
+                            and "Pixel Format" in decoded_path
+                        ):
                             # append once required Width/Height and Pixel Format detected
                             devices.append({path: device_name})
                         else:
@@ -488,6 +523,7 @@ def extract_device_n_demuxer(
         metadata = check_sp_output(
             [path, *default_ffcommand.split(" ")],
             force_retrieve_stderr=True,
+            timeout=DEFAULT_TIMEOUT_SUBPROCESS,
         )
         # clean and split metadata
         splitted = [x.decode("utf-8").strip() for x in metadata.split(b"\n")]
@@ -532,7 +568,9 @@ def extract_device_n_demuxer(
         )
 
 
-def validate_imgseqdir(source: str, extension: str = "jpg", verbose: bool = False) -> bool:
+def validate_imgseqdir(
+    source: str, extension: str = "jpg", verbose: bool = False
+) -> bool:
     """
     ## validate_imgseqdir
 
@@ -558,7 +596,9 @@ def validate_imgseqdir(source: str, extension: str = "jpg", verbose: bool = Fals
         return False
 
 
-def is_valid_image_seq(path: str, source: str | None = None, verbose: bool = False) -> bool:
+def is_valid_image_seq(
+    path: str, source: str | None = None, verbose: bool = False
+) -> bool:
     """
     ## is_valid_image_seq
 
@@ -578,7 +618,9 @@ def is_valid_image_seq(path: str, source: str | None = None, verbose: bool = Fal
     # extract all FFmpeg supported protocols
     formats = check_sp_output([path, "-hide_banner", "-formats"])
     extract_formats = re.findall(r"\w+_pipe", formats.decode("utf-8").strip())
-    supported_image_formats = [x.split("_")[0] for x in extract_formats if x.endswith("_pipe")]
+    supported_image_formats = [
+        x.split("_")[0] for x in extract_formats if x.endswith("_pipe")
+    ]
     _filename, extension = os.path.splitext(source)
     # Test and return result whether scheme is supported
     if extension and source.endswith(tuple(supported_image_formats)):
@@ -623,7 +665,9 @@ def is_valid_url(path: str, url: str | None = None, verbose: bool = False) -> bo
     supported_protocols = splitted[splitted.index("Output:") + 1 : len(splitted) - 1]
     # RTSP is a demuxer somehow
     # support both RTSP and RTSPS(over SSL)
-    supported_protocols += ["rtsp", "rtsps"] if "rtsp" in get_supported_demuxers(path) else []
+    supported_protocols += (
+        ["rtsp", "rtsps"] if "rtsp" in get_supported_demuxers(path) else []
+    )
     # Test and return result whether scheme is supported
     if extracted_scheme_url and extracted_scheme_url in supported_protocols:
         verbose and logger.debug(
@@ -646,39 +690,65 @@ def check_sp_output(*args: Any, **kwargs: Any) -> bytes:
     Parameters:
         args (based on input): Non Keyword Arguments
         kwargs (based on input): Keyword Arguments
+            force_retrieve_stderr (bool): If True, returns stderr.
+            timeout (float): Seconds to wait before killing the process.
 
-    **Returns:** A string value.
+    **Returns:** A bytes value.
     """
     # workaround for python bug: https://bugs.python.org/issue37380
     if platform.system() == "Windows":
         # see comment https://bugs.python.org/msg370334
         sp._cleanup = lambda: None
+
     # handle additional params
     retrieve_stderr = kwargs.pop("force_retrieve_stderr", False)
+    timeout = kwargs.pop("timeout", None)
+
     # execute command in subprocess
     process = sp.Popen(
         *args,
         stdout=sp.PIPE,
-        stderr=sp.DEVNULL if not (retrieve_stderr) else sp.PIPE,
+        stderr=sp.DEVNULL if not retrieve_stderr else sp.PIPE,
         **kwargs,
     )
-    # communicate and poll process
-    output, stderr = process.communicate()
+
+    # communicate and poll process with timeout handling
+    timeout_occurred = False
+    try:
+        output, stderr = process.communicate(timeout=timeout)
+    except sp.TimeoutExpired:
+        logger.warning(
+            f"[Pipeline-Warning] :: Process exceeded timeout of {timeout}s. Killing process..."
+        )
+        process.kill()
+        # Communicate again to retrieve remaining output and clean up the zombie process
+        output, stderr = process.communicate()
+        timeout_occurred = True
+
     retcode = process.poll()
+
     # handle return code
-    if retcode and not (retrieve_stderr):
-        logger.error("[Pipeline-Error] :: {}".format(output.decode("utf-8")))
+    # Bypass CalledProcessError if we purposefully killed the process via our timeout
+    if retcode and not retrieve_stderr and not timeout_occurred:
+        logger.error(
+            "[Pipeline-Error] :: {}".format(
+                output.decode("utf-8") if output else "No output"
+            )
+        )
         cmd = kwargs.get("args")
         if cmd is None:
             cmd = args[0]
         error = sp.CalledProcessError(retcode, cmd)
         error.output = output
         raise error
+
     # raise error if no output
-    bool(output) or bool(stderr) or logger.error(
-        "[Pipeline-Error] :: Pipeline failed to exact any data from command: {}!".format(
-            args[0] if args else []
+    if not (bool(output) or bool(stderr)):
+        logger.error(
+            "[Pipeline-Error] :: Pipeline failed to extract any data from command: {}!".format(
+                args[0] if args else []
+            )
         )
-    )
+
     # return output otherwise
     return stderr if retrieve_stderr and stderr else output
