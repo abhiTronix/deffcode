@@ -147,7 +147,7 @@ def test_check_sp_output() -> None:
     """
     Testing check_sp_output method
     """
-    check_sp_output(["ffmpeg", "-Vv"])
+    check_sp_output(["ffmpeg", "-Vv"], timeout=2.0)
 
 
 @pytest.mark.parametrize(
