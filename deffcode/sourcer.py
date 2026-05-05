@@ -33,6 +33,7 @@ from typing import Any
 import numpy as np
 
 from .ffhelper import (
+    DEFAULT_TIMEOUT_SUBPROCESS,
     check_sp_output,
     extract_device_n_demuxer,
     get_supported_demuxers,
@@ -107,13 +108,17 @@ class Sourcer:
         # sanitize sourcer_params
         self.__sourcer_params = {
             str(k).strip(): (
-                str(v).strip() if not isinstance(v, (dict, list, int, float, tuple)) else v
+                str(v).strip()
+                if not isinstance(v, (dict, list, int, float, tuple))
+                else v
             )
             for k, v in sourcer_params.items()
         }
 
         # handle whether to force validate source
-        self.__forcevalidatesource = self.__sourcer_params.pop("-force_validate_source", False)
+        self.__forcevalidatesource = self.__sourcer_params.pop(
+            "-force_validate_source", False
+        )
         if not isinstance(self.__forcevalidatesource, bool):
             # reset improper values
             self.__forcevalidatesource = False
@@ -231,10 +236,10 @@ class Sourcer:
             # assign if valid demuxer value
             self.__source_demuxer = source_demuxer.strip().lower()
             # assign if valid demuxer value
-            assert self.__source_demuxer != "auto" or validate_device_index(source), (
-                "Invalid `source_demuxer='auto'` value detected with source: `{}`. Aborting!".format(
-                    source
-                )
+            assert self.__source_demuxer != "auto" or validate_device_index(
+                source
+            ), "Invalid `source_demuxer='auto'` value detected with source: `{}`. Aborting!".format(
+                source
             )
         else:
             # otherwise find valid default source demuxer value
@@ -294,7 +299,9 @@ class Sourcer:
         # check whether metadata probed or not?
         self.__metadata_probed = False
 
-    def probe_stream(self, default_stream_indexes: list[int] | tuple[int, int] = (0, 0)) -> Sourcer:
+    def probe_stream(
+        self, default_stream_indexes: list[int] | tuple[int, int] = (0, 0)
+    ) -> Sourcer:
         """
         This method Parses/Probes FFmpeg `subprocess` pipe's Standard Output for given input source and Populates the information in private class variables.
 
@@ -312,7 +319,9 @@ class Sourcer:
         self.__ffsp_output = self.__validate_source(
             self.__source,
             source_demuxer=self.__source_demuxer,
-            forced_validate=(self.__forcevalidatesource if self.__source_demuxer is None else True),
+            forced_validate=(
+                self.__forcevalidatesource if self.__source_demuxer is None else True
+            ),
         )
         # parse resolution and framerate
         video_rfparams = self.__extract_resolution_framerate(
@@ -393,7 +402,9 @@ class Sourcer:
             # source's flat metadata is captured first via retrieve_metadata;
             # the guard inside retrieve_metadata (checks for non-empty
             # __multi_source_metadata) prevents `sources: []` self-pollution.
-            self.__multi_source_metadata.append(self.retrieve_metadata(force_retrieve_missing=True))
+            self.__multi_source_metadata.append(
+                self.retrieve_metadata(force_retrieve_missing=True)
+            )
             for idx in range(1, len(self.__source_list)):
                 _src = self.__source_list[idx]
                 _demux = self.__source_demuxer_list[idx]
@@ -439,9 +450,9 @@ class Sourcer:
         **Returns:** `metadata` or `(metadata, metadata_missing)`, formatted as JSON string or python dictionary.
         """
         # check if metadata has been probed or not
-        assert self.__metadata_probed, (
-            "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
-        )
+        assert (
+            self.__metadata_probed
+        ), "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
         # log it
         self.__verbose_logs and logger.debug("Extracting Metadata...")
         # create metadata dictionary from information populated in private class variables
@@ -524,7 +535,9 @@ class Sourcer:
             )
 
         # log it
-        self.__verbose_logs and logger.debug("Metadata Extraction completed successfully!")
+        self.__verbose_logs and logger.debug(
+            "Metadata Extraction completed successfully!"
+        )
         # parse as JSON string(`json.dumps`), if defined
         metadata = json.dumps(metadata, indent=2) if pretty_json else metadata
         metadata_missing = (
@@ -542,9 +555,9 @@ class Sourcer:
         **Returns:** Probed Camera Devices as python dictionary.
         """
         # check if metadata has been probed or not
-        assert self.__metadata_probed, (
-            "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
-        )
+        assert (
+            self.__metadata_probed
+        ), "Source Metadata not been probed yet! Check if you called `probe_stream()` method."
 
         # log if specified
         self.__verbose_logs and logger.debug("Enumerating all probed Camera Devices.")
@@ -616,9 +629,15 @@ class Sourcer:
                             (
                                 self.__extracted_devices_list[index]
                                 if self.__machine_OS != "Linux"
-                                else next(iter(self.__extracted_devices_list[index].values()))[0]
+                                else next(
+                                    iter(self.__extracted_devices_list[index].values())
+                                )[0]
                             ),
-                            (index if index >= 0 else len(self.__extracted_devices_list) + index),
+                            (
+                                index
+                                if index >= 0
+                                else len(self.__extracted_devices_list) + index
+                            ),
                             self.__source_demuxer,
                         )
                     )
@@ -642,7 +661,9 @@ class Sourcer:
                 pass
 
         # assert if valid source
-        assert source and isinstance(source, str), "Input `source` parameter is of invalid type!"
+        assert source and isinstance(
+            source, str
+        ), "Input `source` parameter is of invalid type!"
 
         # Differentiate input
         if forced_validate:
@@ -652,7 +673,9 @@ class Sourcer:
             self.__source = source
         elif os.path.isfile(source):
             self.__source = os.path.abspath(source)
-        elif is_valid_image_seq(self.__ffmpeg, source=source, verbose=self.__verbose_logs):
+        elif is_valid_image_seq(
+            self.__ffmpeg, source=source, verbose=self.__verbose_logs
+        ):
             self.__source = source
             self.__contains_images = True
         elif is_valid_url(self.__ffmpeg, url=source, verbose=self.__verbose_logs):
@@ -687,13 +710,14 @@ class Sourcer:
             check_sp_output(
                 meta_cmd,
                 force_retrieve_stderr=True,
+                timeout=DEFAULT_TIMEOUT_SUBPROCESS,
             )
             .decode("utf-8")
             .strip()
         )
         # separate input and output metadata (if available)
         if "Output #" in metadata:
-            (metadata, self.__metadata_output) = metadata.split("Output #")
+            metadata, self.__metadata_output = metadata.split("Output #")
         # return metadata based on params
         return metadata
 
@@ -720,7 +744,9 @@ class Sourcer:
                     else 0
                 )
             ]
-            filtered_bitrate = re.findall(r",\s[0-9]+\s\w\w[\/]s", selected_stream.strip())
+            filtered_bitrate = re.findall(
+                r",\s[0-9]+\s\w\w[\/]s", selected_stream.strip()
+            )
             if len(filtered_bitrate):
                 default_video_bitrate = filtered_bitrate[0].split(" ")[1:3]
                 final_bitrate = "{}{}".format(
@@ -748,14 +774,22 @@ class Sourcer:
         ]
         if meta_text:
             selected_stream = meta_text[
-                (default_stream if default_stream > 0 and default_stream < len(meta_text) else 0)
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
-            filtered_pixfmt = re.findall(r"Video:\s[a-z0-9_-]*", selected_stream.strip())
+            filtered_pixfmt = re.findall(
+                r"Video:\s[a-z0-9_-]*", selected_stream.strip()
+            )
             if filtered_pixfmt:
                 return filtered_pixfmt[0].split(" ")[-1]
         return ""
 
-    def __extract_video_pixfmt(self, default_stream: int = 0, extract_output: bool = False) -> str:
+    def __extract_video_pixfmt(
+        self, default_stream: int = 0, extract_output: bool = False
+    ) -> str:
         """
         This Internal method parses default video-stream pixel-format from metadata.
 
@@ -780,14 +814,22 @@ class Sourcer:
         )
         if meta_text:
             selected_stream = meta_text[
-                (default_stream if default_stream > 0 and default_stream < len(meta_text) else 0)
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
-            filtered_pixfmt = re.findall(r",\s[a-z][a-z0-9_-]*", selected_stream.strip())
+            filtered_pixfmt = re.findall(
+                r",\s[a-z][a-z0-9_-]*", selected_stream.strip()
+            )
             if filtered_pixfmt:
                 return filtered_pixfmt[0].split(" ")[-1]
         return ""
 
-    def __extract_audio_bitrate_nd_samplerate(self, default_stream: int = 0) -> dict[str, str]:
+    def __extract_audio_bitrate_nd_samplerate(
+        self, default_stream: int = 0
+    ) -> dict[str, str]:
         """
         This Internal method parses default audio-stream bitrate and sample-rate from metadata.
 
@@ -805,13 +847,19 @@ class Sourcer:
         result = {}
         if meta_text:
             selected_stream = meta_text[
-                (default_stream if default_stream > 0 and default_stream < len(meta_text) else 0)
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
             # filter data
             filtered_audio_bitrate = re.findall(
                 r"fltp,\s[0-9]+\s\w\w[\/]s", selected_stream.strip()
             )
-            filtered_audio_samplerate = re.findall(r",\s[0-9]+\sHz", selected_stream.strip())
+            filtered_audio_samplerate = re.findall(
+                r",\s[0-9]+\sHz", selected_stream.strip()
+            )
             # get audio bitrate metadata
             if filtered_audio_bitrate:
                 filtered = filtered_audio_bitrate[0].split(" ")[1:3]
@@ -823,7 +871,9 @@ class Sourcer:
                 result["bitrate"] = ""
             # get audio samplerate metadata
             result["samplerate"] = (
-                filtered_audio_samplerate[0].split(", ")[1] if filtered_audio_samplerate else ""
+                filtered_audio_samplerate[0].split(", ")[1]
+                if filtered_audio_samplerate
+                else ""
             )
         return result if result and (len(result) == 2) else {}
 
@@ -873,21 +923,33 @@ class Sourcer:
         result = {}
         if meta_text:
             selected_stream = meta_text[
-                (default_stream if default_stream > 0 and default_stream < len(meta_text) else 0)
+                (
+                    default_stream
+                    if default_stream > 0 and default_stream < len(meta_text)
+                    else 0
+                )
             ]
 
             # filter data
-            filtered_resolution = re.findall(r"([1-9]\d+)x([1-9]\d+)", selected_stream.strip())
-            filtered_framerate = re.findall(r"\d+(?:\.\d+)?\sfps", selected_stream.strip())
+            filtered_resolution = re.findall(
+                r"([1-9]\d+)x([1-9]\d+)", selected_stream.strip()
+            )
+            filtered_framerate = re.findall(
+                r"\d+(?:\.\d+)?\sfps", selected_stream.strip()
+            )
             filtered_tbr = re.findall(r"\d+(?:\.\d+)?\stbr", selected_stream.strip())
 
             # extract framerate metadata
             if filtered_framerate:
                 # calculate actual framerate
-                result["framerate"] = float(re.findall(r"[\d\.\d]+", filtered_framerate[0])[0])
+                result["framerate"] = float(
+                    re.findall(r"[\d\.\d]+", filtered_framerate[0])[0]
+                )
             elif filtered_tbr:
                 # guess from TBR(if fps unavailable)
-                result["framerate"] = float(re.findall(r"[\d\.\d]+", filtered_tbr[0])[0])
+                result["framerate"] = float(
+                    re.findall(r"[\d\.\d]+", filtered_tbr[0])[0]
+                )
 
             # extract resolution metadata
             if filtered_resolution:
@@ -902,7 +964,9 @@ class Sourcer:
                         else 0
                     )
                 ]
-                filtered_orientation = re.findall(r"[-]?\d+\.\d+", selected_stream.strip())
+                filtered_orientation = re.findall(
+                    r"[-]?\d+\.\d+", selected_stream.strip()
+                )
                 result["orientation"] = float(filtered_orientation[0])
             else:
                 result["orientation"] = 0.0
@@ -931,7 +995,10 @@ class Sourcer:
             )
             if t_duration:
                 return (
-                    sum(float(x) * 60**i for i, x in enumerate(reversed(t_duration[0].split(":"))))
+                    sum(
+                        float(x) * 60**i
+                        for i, x in enumerate(reversed(t_duration[0].split(":")))
+                    )
                     if inseconds
                     else t_duration
                 )
