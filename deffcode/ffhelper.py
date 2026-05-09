@@ -44,6 +44,12 @@ logger.setLevel(logging.DEBUG)
 
 # set default timeout for subprocesses
 MAX_TIMEOUT_SUBPROCESS: float = float(os.getenv("MAX_TIMEOUT_SUBPROCESS", 10.0))
+# set grace period (seconds) between SIGTERM and SIGKILL when terminating
+# a timed-out subprocess. Allows FFmpeg to flush buffers and release hardware
+# resources before being force-killed.
+TERMINATE_TIMEOUT_SUBPROCESS: float = float(
+    os.getenv("TERMINATE_TIMEOUT_SUBPROCESS", 2.0)
+)
 # set default timer for download requests
 DEFAULT_TIMEOUT_REQUESTS: float = float(os.getenv("DEFAULT_TIMEOUT_REQUESTS", 3.0))
 
@@ -685,13 +691,20 @@ def check_sp_output(*args: Any, **kwargs: Any) -> bytes:
     """
     ## check_sp_output
 
-    Returns FFmpeg `stdout` output from subprocess module.
+    Executes a subprocess command and returns its `stdout` (or `stderr` when
+    requested). On timeout, performs a two-step graceful shutdown — sends
+    `SIGTERM` first to allow FFmpeg to flush buffers and release hardware
+    resources (decoders, capture devices), then escalates to `SIGKILL` if the
+    process fails to exit within a short grace period.
 
     Parameters:
         args (based on input): Non Keyword Arguments
         kwargs (based on input): Keyword Arguments
-            force_retrieve_stderr (bool): If True, returns stderr.
-            timeout (float): Seconds to wait before killing the process.
+            force_retrieve_stderr (bool): If True, returns stderr. Also
+                suppresses `CalledProcessError` on non-zero exit, since some
+                FFmpeg diagnostic commands (e.g. `-list_devices`) emit useful
+                output on stderr while exiting non-zero by design.
+            timeout (float): Seconds to wait before terminating the process.
 
     **Returns:** A bytes value.
     """
@@ -708,27 +721,38 @@ def check_sp_output(*args: Any, **kwargs: Any) -> bytes:
     process = sp.Popen(
         *args,
         stdout=sp.PIPE,
-        stderr=sp.DEVNULL if not retrieve_stderr else sp.PIPE,
+        stderr=sp.PIPE if retrieve_stderr else sp.DEVNULL,
         **kwargs,
     )
 
-    # communicate and poll process with timeout handling
+    # communicate and poll process with two-step timeout handling
     timeout_occurred = False
     try:
         output, stderr = process.communicate(timeout=timeout)
     except sp.TimeoutExpired:
-        logger.warning(
-            f"[Pipeline-Warning] :: Process exceeded timeout of {timeout}s. Killing process..."
-        )
-        process.kill()
-        # Communicate again to retrieve remaining output and clean up the zombie process
-        output, stderr = process.communicate()
         timeout_occurred = True
+        logger.warning(
+            f"[Pipeline-Warning] :: Process exceeded timeout of {timeout}s. "
+            "Attempting graceful termination..."
+        )
+        # Step 1: polite SIGTERM, give process a chance to clean up
+        process.terminate()
+        try:
+            output, stderr = process.communicate(timeout=TERMINATE_TIMEOUT_SUBPROCESS)
+        except sp.TimeoutExpired:
+            # Step 2: process ignored SIGTERM, force kill
+            logger.error(
+                "[Pipeline-Error] :: Process unresponsive to SIGTERM. "
+                "Hard killing..."
+            )
+            process.kill()
+            output, stderr = process.communicate()
 
     retcode = process.poll()
 
     # handle return code
-    # Bypass CalledProcessError if we purposefully killed the process via our timeout
+    # Bypass CalledProcessError if caller wants stderr (some FFmpeg commands
+    # exit non-zero by design) or if we killed the process via our timeout.
     if retcode and not retrieve_stderr and not timeout_occurred:
         logger.error(
             "[Pipeline-Error] :: {}".format(
@@ -742,7 +766,7 @@ def check_sp_output(*args: Any, **kwargs: Any) -> bytes:
         error.output = output
         raise error
 
-    # raise error if no output
+    # warn if process emitted nothing on either stream
     if not (bool(output) or bool(stderr)):
         logger.error(
             "[Pipeline-Error] :: Pipeline failed to extract any data from command: {}!".format(
@@ -750,5 +774,5 @@ def check_sp_output(*args: Any, **kwargs: Any) -> bytes:
             )
         )
 
-    # return output otherwise
+    # return stderr when explicitly requested (and present), else stdout
     return stderr if retrieve_stderr and stderr else output
