@@ -145,9 +145,72 @@ def test_get_valid_ffmpeg_path(paths: str, ffmpeg_download_paths: str, results: 
 @pytest.mark.xfail(raises=Exception)
 def test_check_sp_output() -> None:
     """
-    Testing check_sp_output method
+    Testing check_sp_output method raises CalledProcessError on invalid flags.
     """
     check_sp_output(["ffmpeg", "-Vv"], timeout=2.0)
+
+
+def test_check_sp_output_happy_path() -> None:
+    """
+    Testing check_sp_output returns stdout bytes for a successful command.
+    """
+    output = check_sp_output([return_static_ffmpeg(), "-version"], timeout=5.0)
+    assert isinstance(output, bytes) and len(output) > 0, "Expected non-empty stdout"
+    assert b"ffmpeg version" in output, "Expected ffmpeg version banner in stdout"
+
+
+def test_check_sp_output_force_retrieve_stderr_bypass() -> None:
+    """
+    Testing that `force_retrieve_stderr=True` suppresses CalledProcessError on
+    non-zero exit and returns stderr bytes. Mirrors how `extract_device_n_demuxer`
+    consumes `ffmpeg -list_devices` output (which exits non-zero by design).
+    """
+    # `-list_devices true -i dummy` exits non-zero on every platform
+    cmd = [
+        return_static_ffmpeg(),
+        "-hide_banner",
+        "-list_devices",
+        "-i",
+        "dummy",
+    ]
+    stderr = check_sp_output(cmd, force_retrieve_stderr=True, timeout=5.0)
+    assert isinstance(stderr, bytes), "Expected bytes return on stderr bypass"
+
+
+def test_check_sp_output_graceful_timeout() -> None:
+    """
+    Testing two-step timeout handling: a long-running FFmpeg process must be
+    terminated within roughly `timeout + grace_period` seconds and must NOT
+    raise CalledProcessError (timeout kills are bypassed by design).
+    """
+    import time
+
+    # null source → null sink loop runs forever; ensures we hit the timeout
+    cmd = [
+        return_static_ffmpeg(),
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-f",
+        "lavfi",
+        "-i",
+        "nullsrc",
+        "-t",
+        "60",
+        "-f",
+        "null",
+        "-",
+    ]
+    timeout = 1.0
+    start = time.monotonic()
+    output = check_sp_output(cmd, timeout=timeout)
+    elapsed = time.monotonic() - start
+    # must return bytes (possibly empty), no exception
+    assert isinstance(output, bytes), "Expected bytes return on graceful timeout"
+    # must complete within timeout + 2s grace + reasonable overhead
+    assert elapsed < timeout + 5.0, (
+        f"Process took {elapsed:.2f}s — graceful shutdown likely stuck"
+    )
 
 
 @pytest.mark.parametrize(
