@@ -33,7 +33,7 @@ from typing import Any
 import numpy as np
 
 from .ffhelper import (
-    DEFAULT_TIMEOUT_SUBPROCESS,
+    MAX_TIMEOUT_SUBPROCESS,
     check_sp_output,
     extract_device_n_demuxer,
     get_supported_demuxers,
@@ -710,7 +710,7 @@ class Sourcer:
             check_sp_output(
                 meta_cmd,
                 force_retrieve_stderr=True,
-                timeout=DEFAULT_TIMEOUT_SUBPROCESS,
+                timeout=MAX_TIMEOUT_SUBPROCESS,
             )
             .decode("utf-8")
             .strip()

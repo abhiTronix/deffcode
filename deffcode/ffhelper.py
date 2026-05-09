@@ -43,7 +43,7 @@ logger.addHandler(logger_handler())
 logger.setLevel(logging.DEBUG)
 
 # set default timeout for subprocesses
-DEFAULT_TIMEOUT_SUBPROCESS: float = float(os.getenv("DEFAULT_TIMEOUT_SUBPROCESS", 3.0))
+MAX_TIMEOUT_SUBPROCESS: float = float(os.getenv("MAX_TIMEOUT_SUBPROCESS", 10.0))
 # set default timer for download requests
 DEFAULT_TIMEOUT_REQUESTS: float = float(os.getenv("DEFAULT_TIMEOUT_REQUESTS", 3.0))
 
@@ -224,7 +224,7 @@ def download_ffmpeg_binaries(
                     )
                     # Mount it for https usage
                     adapter = TimeoutHTTPAdapter(
-                        timeout=DEFAULT_TIMEOUT_SUBPROCESS, max_retries=retries
+                        timeout=MAX_TIMEOUT_SUBPROCESS, max_retries=retries
                     )
                     http.mount("https://", adapter)
                     response = http.get(file_url, stream=True)
@@ -435,7 +435,7 @@ def extract_device_n_demuxer(
         metadata = check_sp_output(
             [path, *default_ffcommand.split(" ")],
             force_retrieve_stderr=True,
-            timeout=DEFAULT_TIMEOUT_SUBPROCESS,
+            timeout=MAX_TIMEOUT_SUBPROCESS,
         )
         # clean and split metadata
         splitted = [x.decode("utf-8").strip() for x in metadata.split(b"\n")]
@@ -500,7 +500,7 @@ def extract_device_n_demuxer(
                         # search in path properties
                         metadata_path = check_sp_output(
                             ["v4l2-ctl", "--device={}".format(path), "--all"],
-                            timeout=DEFAULT_TIMEOUT_SUBPROCESS,
+                            timeout=MAX_TIMEOUT_SUBPROCESS,
                         )
                         # decode path metadata
                         decoded_path = metadata_path.decode("utf-8").strip()
@@ -523,7 +523,7 @@ def extract_device_n_demuxer(
         metadata = check_sp_output(
             [path, *default_ffcommand.split(" ")],
             force_retrieve_stderr=True,
-            timeout=DEFAULT_TIMEOUT_SUBPROCESS,
+            timeout=MAX_TIMEOUT_SUBPROCESS,
         )
         # clean and split metadata
         splitted = [x.decode("utf-8").strip() for x in metadata.split(b"\n")]
