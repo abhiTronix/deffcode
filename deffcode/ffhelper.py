@@ -45,7 +45,7 @@ logger.setLevel(logging.DEBUG)
 # set default timeout for subprocesses
 DEFAULT_TIMEOUT_SUBPROCESS: float = float(os.getenv("DEFAULT_TIMEOUT_SUBPROCESS", 3.0))
 # set default timer for download requests
-DEFAULT_TIMEOUT: float = float(os.getenv("DEFAULT_TIMEOUT", 3.0))
+DEFAULT_TIMEOUT_REQUESTS: float = float(os.getenv("DEFAULT_TIMEOUT_REQUESTS", 3.0))
 
 
 class TimeoutHTTPAdapter(HTTPAdapter):
@@ -54,7 +54,7 @@ class TimeoutHTTPAdapter(HTTPAdapter):
     """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.timeout: float = DEFAULT_TIMEOUT
+        self.timeout: float = DEFAULT_TIMEOUT_REQUESTS
         if "timeout" in kwargs:
             self.timeout = kwargs["timeout"]
             del kwargs["timeout"]
