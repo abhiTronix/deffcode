@@ -226,6 +226,9 @@ class FFdecoder:
         if {"-vf", "-filter_complex"}.intersection(self.__extra_params.keys()):
             key = "-vf" if "-vf" in self.__extra_params else "-filter_complex"
             sourcer_params[key] = self.__extra_params[key]
+        # multi-input output streams are selected via `-map`, so probe with it too
+        if self.__is_multi and "-map" in self.__extra_params:
+            sourcer_params["-map"] = self.__extra_params["-map"]
 
         # define dict to store user-defined parameters
         self.__user_metadata = {}
@@ -662,7 +665,9 @@ class FFdecoder:
             if "-frames:v" in input_params:
                 self.__raw_frame_num = input_params["-frames:v"]
             elif (
-                self.__sourcer_metadata["approx_video_nframes"] is not None
+                # composite output length is unrelated to the primary source's length
+                not self.__is_multi
+                and self.__sourcer_metadata["approx_video_nframes"] is not None
                 and self.__sourcer_metadata["approx_video_nframes"] > 0
             ):
                 self.__raw_frame_num = self.__sourcer_metadata["approx_video_nframes"]
