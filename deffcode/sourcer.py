@@ -28,7 +28,7 @@ import os
 import platform
 import re
 import shutil
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
 
@@ -301,7 +301,7 @@ class Sourcer:
 
     def probe_stream(
         self, default_stream_indexes: list[int] | tuple[int, int] = (0, 0)
-    ) -> Sourcer:
+    ) -> Self:
         """
         This method Parses/Probes FFmpeg `subprocess` pipe's Standard Output for given input source and Populates the information in private class variables.
 
