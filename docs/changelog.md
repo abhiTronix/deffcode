@@ -20,9 +20,73 @@ limitations under the License.
 
 # Release Notes
 
-## v0.2.7 (2026-04-20) :material-new-box:
+## v0.2.8 (2026-10-18) :material-new-box:
 
 ???+ new "New Features"
+    - [x] **FFhelper:**
+        * Added configurable **subprocess timeout** support to `check_sp_output`, preventing indefinite hangs on frozen FFmpeg streams.
+            * Added `MAX_TIMEOUT_SUBPROCESS` (default `10.0`s) and `TERMINATE_TIMEOUT_SUBPROCESS` (default `2.0`s) constants, overridable via environment variables.
+            * 💬 On timeout, performs a graceful two-step shutdown: sends `SIGTERM` first, then escalates to `SIGKILL` if the process stays unresponsive.
+    - [x] **Core:**
+        * Added official support for Python `3.14.x` legacies.
+    - [x] **Docs:**
+        * Added new multi-input `-filter_complex` recipes: **2x2 video grid _(mosaic)_** via `xstack` and **crossfade transition** via `xfade`.
+        * Added input scaling example to side-by-side `hstack` recipe, and scaled-down PiP `overlay` recipe.
+
+??? success "Updates/Improvements"
+    - [x] **FFhelper:**
+        * Renamed `DEFAULT_TIMEOUT` to `DEFAULT_TIMEOUT_REQUESTS`, now overridable via environment variable.
+        * Applied subprocess timeout to all internal FFmpeg subprocess calls and download adapter.
+    - [x] **Core:**
+        * Used `typing.Self` for fluent `formulate`/`probe_stream` return types.
+        * Bumped Ruff `target-version` to `py311` and applied `ruff format` across sources, tests and README.
+    - [x] **Packaging:**
+        * Added Poetry `version` field and `poetry.lock` to `pyproject.toml`.
+        * Bumped version to `0.2.8`.
+    - [x] **CI/CD:**
+        * Updated Python CI matrix to `3.11`–`3.14` across GitHub Actions, Azure Pipelines, and AppVeyor.
+        * Bumped `actions/checkout` and `actions/setup-python` to `v7`.
+    - [x] **Maintenance:**
+        * Enforced LF line endings project-wide via `.gitattributes`.
+        * Ignored `cover/` directory.
+    - [x] **Tests:**
+        * Added coverage for `check_sp_output` edge cases including timeout handling.
+        * Added multi-input composite output size and frame-count tests (`hstack`, `overlay`, `xstack`, `xfade`, `-map`).
+    - [x] **Docs:**
+        * Updated supported Python versions to `3.11+`.
+        * Updated Citation to v0.2.7 release.
+        * Updated webcam link to use custom demuxer anchor.
+
+??? danger "Breaking Updates/Changes"
+    * **Core:**
+        - [x] :skull_crossbones: **Minimum Python version raised to `3.11+`.** Python `3.10` (EOL) is no longer supported and has been dropped from all CI/CD pipelines and package metadata.
+    * **FFhelper:**
+        - [x] :warning: `DEFAULT_TIMEOUT` constant renamed to `DEFAULT_TIMEOUT_REQUESTS`.
+
+??? bug "Bug-fixes"
+    - [x] **Sourcer:**
+        * Fixed multi-input filtergraph metadata probing only including first input, causing composite outputs (`hstack`, `xstack`, `overlay`) to report wrong `output_frames_resolution` and yield corrupted frames.
+        * Fixed `-vf`/`-filter_complex`/`-map` leaking into per-source probes of multi-input `Sourcer`.
+    - [x] **FFdecoder:**
+        * Fixed `-map` not forwarded to Sourcer when probing multi-input sources.
+        * Fixed multi-input pipelines (e.g. `xfade`) being truncated to first input's frame count; now decodes until EOF.
+    - [x] **FFhelper:**
+        * Fixed `check_sp_output` hanging indefinitely on frozen FFmpeg streams.
+    - [x] **Docs:**
+        * Fixed missing leading slash in announcement link URL.
+
+??? question "Pull Requests"
+    * PR #72
+    * PR #71
+    * PR #67
+
+&nbsp;
+
+&nbsp;
+
+## v0.2.7 (2026-04-20) :material-new-box:
+
+??? new "New Features"
     - [x] **FFdecoder:**
         * Added **Multi-input source list support** in both `FFdecoder` and `Sourcer`, enabling simultaneous decoding from multiple input streams (e.g., multiple RTSP sources).
         * Added **Async per-frame metadata extraction** via FFmpeg's `showinfo` filter, exposing frame number, PTS time, and keyframe info per decoded frame.
