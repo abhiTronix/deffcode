@@ -309,6 +309,40 @@ class Sourcer:
             and len(default_stream_indexes) == 2
             and all(isinstance(x, int) for x in default_stream_indexes)
         ), "Invalid default_stream_indexes value!"
+        # probe extra inputs first via independent single-source Sourcers, so
+        # their resolved source/demuxer (e.g. camera index -> device) can be
+        # reused by the combined filtergraph probe below.
+        extra_metadata = []
+        if self.__is_multi:
+            for idx in range(1, len(self.__source_list)):
+                _src = self.__source_list[idx]
+                _demux = self.__source_demuxer_list[idx]
+                _prefixes = self.__ffmpeg_prefixes_list[idx]
+                _params = self.__sourcer_params.copy()
+                _params["-ffprefixes"] = _prefixes
+                # output routing references all inputs; meaningless per-source
+                for _key in ("-vf", "-filter_complex", "-map"):
+                    _params.pop(_key, None)
+                # Resolve to an absolute path: on Unix `self.__ffmpeg` may be
+                # the bare command "ffmpeg" found via PATH, which the nested
+                # `get_valid_ffmpeg_path()` would reject as "not a file".
+                _custom_ffmpeg = (
+                    self.__ffmpeg
+                    if self.__ffmpeg and os.path.isfile(self.__ffmpeg)
+                    else (shutil.which(self.__ffmpeg) or "")
+                )
+                _s = Sourcer(
+                    _src,
+                    source_demuxer=_demux,
+                    custom_ffmpeg=_custom_ffmpeg,
+                    verbose=self.__verbose_logs,
+                    **_params,
+                )
+                _s.probe_stream(default_stream_indexes)
+                extra_metadata.append(_s.retrieve_metadata(force_retrieve_missing=True))
+        self.__resolved_extra_inputs = [
+            (m[0]["source"], m[0].get("source_demuxer")) for m in extra_metadata
+        ]
         # validate source and extract metadata
         self.__ffsp_output = self.__validate_source(
             self.__source,
@@ -395,37 +429,7 @@ class Sourcer:
             # the guard inside retrieve_metadata (checks for non-empty
             # __multi_source_metadata) prevents `sources: []` self-pollution.
             self.__multi_source_metadata.append(self.retrieve_metadata(force_retrieve_missing=True))
-            for idx in range(1, len(self.__source_list)):
-                _src = self.__source_list[idx]
-                _demux = self.__source_demuxer_list[idx]
-                _prefixes = self.__ffmpeg_prefixes_list[idx]
-                _params = self.__sourcer_params.copy()
-                _params["-ffprefixes"] = _prefixes
-                # output routing references all inputs; meaningless per-source
-                for _key in ("-vf", "-filter_complex", "-map"):
-                    _params.pop(_key, None)
-                # spawn an independent single-source Sourcer per extra input;
-                # this reuses the resolved ffmpeg path and isolates per-source
-                # parsing state (which probe_stream otherwise clobbers).
-                # Resolve to an absolute path: on Unix `self.__ffmpeg` may be
-                # the bare command "ffmpeg" found via PATH, which the nested
-                # `get_valid_ffmpeg_path()` would reject as "not a file".
-                _custom_ffmpeg = (
-                    self.__ffmpeg
-                    if self.__ffmpeg and os.path.isfile(self.__ffmpeg)
-                    else (shutil.which(self.__ffmpeg) or "")
-                )
-                _s = Sourcer(
-                    _src,
-                    source_demuxer=_demux,
-                    custom_ffmpeg=_custom_ffmpeg,
-                    verbose=self.__verbose_logs,
-                    **_params,
-                )
-                _s.probe_stream(default_stream_indexes)
-                self.__multi_source_metadata.append(
-                    _s.retrieve_metadata(force_retrieve_missing=True)
-                )
+            self.__multi_source_metadata.extend(extra_metadata)
 
         # return reference to the instance object.
         return self
@@ -679,9 +683,8 @@ class Sourcer:
                 # so the probe must ingest all of them to resolve output metadata.
                 + [
                     arg
-                    for src, demux, prefixes in zip(
-                        self.__source_list[1:],
-                        self.__source_demuxer_list[1:],
+                    for (src, demux), prefixes in zip(
+                        self.__resolved_extra_inputs,
                         self.__ffmpeg_prefixes_list[1:],
                         strict=True,
                     )
@@ -714,6 +717,8 @@ class Sourcer:
         # separate input and output metadata (if available)
         if "Output #" in metadata:
             metadata, self.__metadata_output = metadata.split("Output #")
+        # primary `source_*` metadata must only describe input 0
+        metadata = re.split(r"^Input #1\b", metadata, maxsplit=1, flags=re.M)[0]
         # return metadata based on params
         return metadata
 
