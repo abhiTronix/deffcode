@@ -961,7 +961,7 @@ class FFdecoder:
                 )
                 if _src_meta.get("source_demuxer"):
                     cmd += ["-f", _src_meta["source_demuxer"]]
-                cmd += ["-i", _src]
+                cmd += ["-i", _src_meta.get("source", _src)]
         else:
             cmd += self.__ffmpeg_prefixes
             cmd += input_parameters

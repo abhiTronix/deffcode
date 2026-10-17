@@ -196,3 +196,28 @@ def test_probe_stream_n_retrieve_metadata(
             pytest.xfail("Test Still Passed!")
         else:
             pytest.fail(str(e))
+
+
+def test_multi_input_primary_metadata() -> None:
+    """
+    Primary `source_*` metadata must describe input 0 only, even with a
+    nonzero default video stream index and a combined filtergraph probe.
+    """
+    metadata = (
+        Sourcer(
+            [
+                "testsrc=size=320x240:rate=25:duration=2",
+                "testsrc=size=160x120:rate=10:duration=2",
+            ],
+            source_demuxer="lavfi",
+            **{"-filter_complex": "[0:v][1:v]overlay"},
+        )
+        .probe_stream(default_stream_indexes=(1, 0))
+        .retrieve_metadata()
+    )
+    assert metadata["source_video_resolution"] == [320, 240]
+    assert metadata["source_video_framerate"] == 25.0
+    assert [s["source_video_resolution"] for s in metadata["sources"]] == [
+        [320, 240],
+        [160, 120],
+    ]
