@@ -39,7 +39,11 @@ DeFFcode is well-tested and supported on the following systems(but not limited t
 
 ## Supported Python legacies
 
-:fontawesome-brands-python: [**Python 3.10+**](https://www.python.org/downloads/) are only supported legacies for installing DeFFcode `v0.2.7` and above.
+!!! warning "Depreciation Notice"
+
+    Python-3.10 legacies support has been dropped from DeFFcode.
+
+:fontawesome-brands-python: [**Python 3.11+**](https://www.python.org/downloads/) are only supported legacies for installing DeFFcode `v0.2.8` and above.
 
 &thinsp;
 

@@ -111,7 +111,7 @@ All PRs must pass testing and code quality checks.
 
 ### Requirements
 
-!!! info "Python 3.10+ required"
+!!! info "Python 3.11+ required"
 
 Install dependencies:
 
