@@ -401,6 +401,9 @@ class Sourcer:
                 _prefixes = self.__ffmpeg_prefixes_list[idx]
                 _params = self.__sourcer_params.copy()
                 _params["-ffprefixes"] = _prefixes
+                # output routing references all inputs; meaningless per-source
+                for _key in ("-vf", "-filter_complex", "-map"):
+                    _params.pop(_key, None)
                 # spawn an independent single-source Sourcer per extra input;
                 # this reuses the resolved ffmpeg path and isolates per-source
                 # parsing state (which probe_stream otherwise clobbers).
@@ -672,6 +675,21 @@ class Sourcer:
                 + self.__ffmpeg_prefixes
                 + (["-f", source_demuxer] if source_demuxer else [])
                 + ["-i", source]
+                # multi-input filtergraphs reference every input (e.g. `[1:v]`),
+                # so the probe must ingest all of them to resolve output metadata.
+                + [
+                    arg
+                    for src, demux, prefixes in zip(
+                        self.__source_list[1:],
+                        self.__source_demuxer_list[1:],
+                        self.__ffmpeg_prefixes_list[1:],
+                        strict=True,
+                    )
+                    for arg in ["-t", "0.0001"]
+                    + prefixes
+                    + (["-f", demux] if demux else [])
+                    + ["-i", src]
+                ]
                 + dict2Args(self.__sourcer_params)
                 + ["-f", "null", "-"]
             )
