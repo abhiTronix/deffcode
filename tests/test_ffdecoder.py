@@ -848,3 +848,39 @@ def test_discard_n_filter_params(frame_format: str, ffparams: dict[str, Any], re
     finally:
         # terminate
         decoder is not None and decoder.terminate()
+
+
+_grid = "[0:v][1:v][2:v][3:v]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[out]"
+test_data = [
+    (["320x240"] * 2, {"-filter_complex": "hstack=inputs=2"}, (240, 640), 50),
+    (
+        ["320x240", "160x120"],
+        {"-filter_complex": "[1:v]scale=80:-1[s];[0:v][s]overlay=W-w-10:H-h-10"},
+        (240, 320),
+        50,
+    ),
+    (["320x240"] * 4, {"-filter_complex": _grid, "-map": "[out]"}, (480, 640), 50),
+    (
+        ["320x240"] * 2,
+        {"-filter_complex": "[0:v][1:v]xfade=duration=1:offset=1[v]", "-map": "[v]"},
+        (240, 320),
+        75,
+    ),
+    (["320x240", "160x120"], {"-map": "1:v"}, (120, 160), 50),
+]
+
+
+@pytest.mark.parametrize("sizes, ffparams, shape, n_frames", test_data)
+def test_multi_input_composites(
+    sizes: list[str], ffparams: dict[str, Any], shape: tuple[int, int], n_frames: int
+) -> None:
+    """
+    Testing multi-input filtergraph recipes yield frames of the composite size and length
+    """
+    source = ["testsrc=size={}:rate=25:duration=2".format(s) for s in sizes]
+    with FFdecoder(
+        source, source_demuxer=["lavfi"] * len(sizes), frame_format="bgr24", **ffparams
+    ) as decoder:
+        frames = [f for f in decoder.generateFrame() if f is not None]
+    assert frames and frames[0].shape == (*shape, 3)
+    assert abs(len(frames) - n_frames) <= 1
