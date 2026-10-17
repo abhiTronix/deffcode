@@ -208,9 +208,7 @@ def test_check_sp_output_graceful_timeout() -> None:
     # must return bytes (possibly empty), no exception
     assert isinstance(output, bytes), "Expected bytes return on graceful timeout"
     # must complete within timeout + 2s grace + reasonable overhead
-    assert elapsed < timeout + 5.0, (
-        f"Process took {elapsed:.2f}s — graceful shutdown likely stuck"
-    )
+    assert elapsed < timeout + 5.0, f"Process took {elapsed:.2f}s — graceful shutdown likely stuck"
 
 
 @pytest.mark.parametrize(
