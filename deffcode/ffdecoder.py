@@ -30,7 +30,7 @@ import threading
 from collections import OrderedDict
 from collections.abc import Generator
 from types import TracebackType
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
 
@@ -364,7 +364,7 @@ class FFdecoder:
             # reset improper values
             self.__custom_resolution = None
 
-    def formulate(self) -> FFdecoder:
+    def formulate(self) -> Self:
         """
         This method formulates all necessary FFmpeg pipeline arguments and executes it inside the FFmpeg `subprocess` pipe.
 
