@@ -77,7 +77,7 @@ We'll walk through Multi-Input Source Configurations in the recipes below:
 
 In this example we will decode two video files _(say `video_stream_1.mp4` and `video_stream_2.mp4`)_ as a single side-by-side BGR24 frame stream by passing them as a list to FFdecoder API and routing both inputs through `hstack` via the `-filter_complex` parameter, and preview the composited frames using OpenCV Library's `cv2.imshow()` method in real-time.
 
-!!! alert "Both inputs must share the same height for `hstack` to succeed. Use a `scale` clause inside `-filter_complex` if your sources differ in resolution."
+!!! alert "Both inputs must share the same height for `hstack` to succeed. Use a `scale` clause inside `-filter_complex` if your sources differ in resolution, for example: `[0:v]scale=-2:720[v0];[1:v]scale=-2:720[v1];[v0][v1]hstack=inputs=2[out]` along with `-map` set to `[out]`."
 
 ```python
 # import the necessary packages
@@ -206,8 +206,8 @@ ffparams = {
         ["-re"],                  # pace input 0 at native frame rate
         ["-stream_loop", "-1"],   # loop input 1 infinitely
     ],
-    # PiP overlay: input 1 anchored 10px from the top-right of input 0
-    "-filter_complex": "[0:v][1:v]overlay=main_w-overlay_w-10:10",
+    # PiP overlay: input 1 downscaled to 320px wide & anchored 10px from the top-right of input 0
+    "-filter_complex": "[1:v]scale=320:-1[small];[0:v][small]overlay=main_w-overlay_w-10:10",
 }
 
 # initialize and formulate the decoder for BGR24 output
@@ -273,6 +273,117 @@ ffparams = {"-filter_complex": "hstack=inputs=2"}
 decoder = FFdecoder(
     source, source_demuxer=source_demuxer, frame_format="bgr24", **ffparams
 ).formulate()
+
+# grab the BGR24 frame from the decoder
+for frame in decoder.generateFrame():
+
+    # check if frame is None
+    if frame is None:
+        break
+
+    # {do something with the frame here}
+
+    # Show output window
+    cv2.imshow("Output", frame)
+
+    # check for 'q' key if pressed
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        break
+
+# close output window
+cv2.destroyAllWindows()
+
+# terminate the decoder
+decoder.terminate()
+```
+
+&nbsp;
+
+## Decoding multiple inputs as 2x2 video grid _(mosaic)_
+
+> Security-camera style mosaics are built with FFmpeg's [`xstack`](https://ffmpeg.org/ffmpeg-filters.html#xstack) filter, which places any number of inputs on a canvas according to a custom `layout`. Each input is first normalized to the same tile size via `scale`, so sources with mismatched resolutions still line up.
+
+In this example we will decode four video files _(say `video1.mp4` to `video4.mp4`)_ as a single 2x2 grid of BGR24 frames by scaling every input to a `640x360` tile, arranging them with `xstack`, routing the labeled `[out]` pad via `-map`, and preview the mosaic frames using OpenCV Library's `cv2.imshow()` method in real-time.
+
+!!! tip "Label your final filtergraph output _(e.g. `[out]`)_ and pass that label to `-map` to select exactly which stream FFdecoder decodes — DeFFcode probes the filtergraph with the same routing, so the decoded frame size always matches the composite _(here `1280x720`)_."
+
+```python
+# import the necessary packages
+from deffcode import FFdecoder
+import cv2
+
+# define our four sources in grid order (top-left, top-right, bottom-left, bottom-right)
+source = ["video1.mp4", "video2.mp4", "video3.mp4", "video4.mp4"]
+
+# reset timestamps & scale each input to a 640x360 tile, then
+# arrange tiles as a 2x2 grid with xstack
+ffparams = {
+    "-filter_complex": "[0:v]setpts=PTS-STARTPTS,scale=640:360[a0];"
+    "[1:v]setpts=PTS-STARTPTS,scale=640:360[a1];"
+    "[2:v]setpts=PTS-STARTPTS,scale=640:360[a2];"
+    "[3:v]setpts=PTS-STARTPTS,scale=640:360[a3];"
+    "[a0][a1][a2][a3]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[out]",
+    "-map": "[out]",  # decode the labeled grid output
+}
+
+# initialize and formulate the decoder for BGR24 output
+decoder = FFdecoder(source, frame_format="bgr24", **ffparams).formulate()
+
+# grab the 1280x720 BGR24 grid frame from the decoder
+for frame in decoder.generateFrame():
+
+    # check if frame is None
+    if frame is None:
+        break
+
+    # {do something with the frame here}
+
+    # Show output window
+    cv2.imshow("Output", frame)
+
+    # check for 'q' key if pressed
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        break
+
+# close output window
+cv2.destroyAllWindows()
+
+# terminate the decoder
+decoder.terminate()
+```
+
+&nbsp;
+
+## Decoding crossfade transition between multiple inputs
+
+> FFmpeg's [`xfade`](https://ffmpeg.org/ffmpeg-filters.html#xfade) filter smoothly blends one input into the next over a timeline, which is handy for building slideshows or stitching clips without intermediate files. Its `offset` is the timestamp _(in seconds of the first input)_ where the transition starts, and `duration` is how long it lasts.
+
+In this example we will decode two video files _(say `video1.mp4` and `video2.mp4`)_ as a single BGR24 frame stream that fades from the first into the second over `1` second starting at the `4` second mark, and preview the frames using OpenCV Library's `cv2.imshow()` method in real-time.
+
+!!! alert "`xfade` requires both inputs to share the same resolution, pixel format and framerate. Normalize them with `scale`, `format` and `fps` clauses inside `-filter_complex` if they differ."
+
+!!! info "The composite's length differs from any single input _(here `4s + length of video2`)_, so FFdecoder decodes multi-input pipelines until FFmpeg signals end-of-stream rather than relying on the first source's frame count."
+
+!!! note "FFdecoder only decodes video frames, hence audio filters _(such as `acrossfade`)_ have no effect here."
+
+```python
+# import the necessary packages
+from deffcode import FFdecoder
+import cv2
+
+# define our two sources in playback order
+source = ["video1.mp4", "video2.mp4"]
+
+# fade from input 0 into input 1 over 1 second, starting at 4 seconds
+ffparams = {
+    "-filter_complex": "[0:v][1:v]xfade=transition=fade:duration=1:offset=4[outv]",
+    "-map": "[outv]",  # decode the labeled transition output
+}
+
+# initialize and formulate the decoder for BGR24 output
+decoder = FFdecoder(source, frame_format="bgr24", **ffparams).formulate()
 
 # grab the BGR24 frame from the decoder
 for frame in decoder.generateFrame():
