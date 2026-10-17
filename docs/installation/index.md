@@ -39,7 +39,7 @@ DeFFcode is well-tested and supported on the following systems(but not limited t
 
 ## Supported Python legacies
 
-!!! warning "Depreciation Notice"
+!!! warning "Deprecation Notice"
 
     Python-3.10 legacies support has been dropped from DeFFcode.
 
