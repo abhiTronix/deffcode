@@ -58,6 +58,11 @@ packages = ["deffcode"]
 [tool.setuptools.dynamic]
 version = {attr = "deffcode.version.__version__"}
 
+[tool.poetry]
+# Poetry can't read setuptools' dynamic version,
+# keep in sync with deffcode/version.py
+version = "0.2.8"
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"
