@@ -231,9 +231,8 @@ decoder = FFdecoder("https://abhitronix.github.io/html/Big_Buck_Bunny_1080_10s_1
 
 # grab RGB24(default) 3D frames from decoder
 for frame in decoder.generateFrame():
-
     # lets print its shape
-    print(frame.shape) # (1080, 1920, 3)
+    print(frame.shape)  # (1080, 1920, 3)
 
 # terminate the decoder
 decoder.terminate()
@@ -248,7 +247,9 @@ The primary function of [**Sourcer API**][sourcer-api] is to **gather metadata i
 from deffcode import Sourcer
 
 # initialize and formulate the decoder using suitable source
-sourcer = Sourcer("https://abhitronix.github.io/html/Big_Buck_Bunny_1080_10s_1MB.mp4").probe_stream()
+sourcer = Sourcer(
+    "https://abhitronix.github.io/html/Big_Buck_Bunny_1080_10s_1MB.mp4"
+).probe_stream()
 
 # print metadata as `json.dump`
 print(sourcer.retrieve_metadata(pretty_json=True))
