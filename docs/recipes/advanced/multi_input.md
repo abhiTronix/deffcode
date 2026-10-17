@@ -362,7 +362,7 @@ decoder.terminate()
 
 In this example we will decode two video files _(say `video1.mp4` and `video2.mp4`)_ as a single BGR24 frame stream that fades from the first into the second over `1` second starting at the `4` second mark, and preview the frames using OpenCV Library's `cv2.imshow()` method in real-time.
 
-!!! alert "`xfade` requires both inputs to share the same resolution, pixel format and framerate. Normalize them with `scale`, `format` and `fps` clauses inside `-filter_complex` if they differ."
+!!! alert "`xfade` requires both inputs to be constant-frame-rate and share the same resolution, pixel format, framerate and timebase. Normalize them with `scale`, `format`, `fps` and `settb=AVTB` clauses inside `-filter_complex` if they differ."
 
 !!! info "The composite's length differs from any single input _(here `4s + length of video2`)_, so FFdecoder decodes multi-input pipelines until FFmpeg signals end-of-stream rather than relying on the first source's frame count."
 
