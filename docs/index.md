@@ -198,18 +198,24 @@ It is something I am doing with my own free time. But so much more needs to be d
 
 Here is a Bibtex entry you can use to cite this project in a publication:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12689394.svg)](https://doi.org/10.5281/zenodo.12689394)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19658542.svg)](https://doi.org/10.5281/zenodo.19658542)
 
 ```BibTeX
 @software{deffcode,
   author       = {Abhishek Thakur},
-  title        = {abhiTronix/deffcode: v0.2.6},
-  month        = jul,
-  year         = 2024,
+  title        = {abhiTronix/deffcode: v0.2.7},
+  month        = apr,
+  year         = 2026,
   publisher    = {Zenodo},
-  version      = {v0.2.6},
-  doi          = {10.5281/zenodo.12689394},
-  url          = {https://doi.org/10.5281/zenodo.12689394},
+  version      = {v0.2.7},
+  doi          = {10.5281/zenodo.19658542},
+  url          = {https://doi.org/10.5281/zenodo.19658542},
+  swhid        = {swh:1:dir:85e8dfd087aed870deb4043c532faaa9b156d1e1
+                   ;origin=https://doi.org/10.5281/zenodo.6976947;vis
+                   it=swh:1:snp:af1b478890801c02d56b95f563b86761980bf
+                   82c;anchor=swh:1:rel:85f9af4452f8030317ec2012acc10
+                   29e8a945e2d;path=abhiTronix-deffcode-5162649
+                  },
 }
 ```
 
