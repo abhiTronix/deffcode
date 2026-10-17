@@ -195,6 +195,8 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [CUDA-NVENC-accelerated Video Transcoding with WriteGear API][cuda-nvenc-accelerated-video-transcoding-with-writegear-api]
 - [CUDA-NVENC-accelerated End-to-end Lossless Video Transcoding with WriteGear API][cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api]
 - [Multi-Input Source Configurations][multi-input-source-configurations]
+  - [Decoding multiple inputs as 2x2 video grid _(mosaic)_][decoding-multiple-inputs-as-2x2-video-grid-mosaic]
+  - [Decoding crossfade transition between multiple inputs][decoding-crossfade-transition-between-multiple-inputs]
 
 </details>
 
@@ -445,6 +447,8 @@ Advanced Recipes
 [smart-keyframe-only-decoding-for-heavy-ai-inference]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/extract-frame-metadata/#smart-keyframe-only-decoding-for-heavy-ai-inference
 [variable-frame-rate-vfr-synchronization-via-pts_time]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/extract-frame-metadata/#variable-frame-rate-vfr-synchronization-via-pts_time
 [multi-input-source-configurations]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#multi-input-source-configurations
+[decoding-multiple-inputs-as-2x2-video-grid-mosaic]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-multiple-inputs-as-2x2-video-grid-mosaic
+[decoding-crossfade-transition-between-multiple-inputs]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-crossfade-transition-between-multiple-inputs
 
 <!--
 CI Apps URLs
