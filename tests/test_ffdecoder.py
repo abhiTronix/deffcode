@@ -667,7 +667,7 @@ def test_FFdecoder_params(source: str | list[str], ffparams: dict[str, Any], res
             # prepare OpenCV parameters
             FOURCC = cv2.VideoWriter_fourcc("M", "J", "P", "G")
             FRAMERATE = metadata_dict["source_video_framerate"]
-            FRAMESIZE = tuple(metadata_dict["source_video_resolution"])
+            FRAMESIZE = tuple(metadata_dict["output_frames_resolution"])
 
             # Define writer with parameters and suitable output filename for e.g. `output_foo.avi`
             writer = cv2.VideoWriter(f_name, FOURCC, FRAMERATE, FRAMESIZE)

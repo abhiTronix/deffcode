@@ -89,6 +89,8 @@ In this example, we will decode video frames with different pixel formats from a
 
 !!! tip "You can use FFdecoder's [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object that dumps source Video's metadata information _(as JSON string)_ to retrieve output framerate and resolution."
 
+!!! note "Use `output_frames_resolution` instead of `source_video_resolution` when setting the OpenCV `VideoWriter()` frame size. The decoded frames can differ in size from the source _(e.g. when scaling params are applied)_, and a mismatched size makes the writer produce unusable output."
+
 === "BGR frames"
 
     By default, OpenCV expects `BGR` format frames in its `cv2.write()` method.
