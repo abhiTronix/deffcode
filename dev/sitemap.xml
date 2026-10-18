@@ -1,143 +1,143 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/changelog/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/changelog/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/help/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/help/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/license/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/license/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/contribution/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/contribution/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/contribution/PR/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/contribution/PR/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/contribution/issue/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/contribution/issue/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/help/get_help/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/help/get_help/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/installation/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/installation/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/installation/ffmpeg_install/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/installation/ffmpeg_install/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/advanced/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/advanced/decode-hw-acceleration/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/decode-hw-acceleration/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/advanced/decode-live-feed-devices/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/decode-live-feed-devices/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/advanced/decode-live-virtual-sources/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/decode-live-virtual-sources/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/advanced/extract-frame-metadata/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/extract-frame-metadata/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/advanced/multi_input/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/multi_input/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/advanced/transcode-art-filtergraphs/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/transcode-art-filtergraphs/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/advanced/transcode-hw-acceleration/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/transcode-hw-acceleration/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/advanced/transcode-live-frames-complexgraphs/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/transcode-live-frames-complexgraphs/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/advanced/update-metadata/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/update-metadata/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/basic/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/basic/decode-camera-devices/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/decode-camera-devices/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/basic/decode-image-sequences/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/decode-image-sequences/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/basic/decode-network-streams/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/decode-network-streams/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/basic/decode-video-files/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/decode-video-files/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/basic/extract-video-metadata/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/extract-video-metadata/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/basic/save-keyframe-image/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/save-keyframe-image/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/basic/transcode-live-frames-simplegraphs/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/transcode-live-frames-simplegraphs/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/recipes/basic/transcode-live-frames/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/transcode-live-frames/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/reference/ffhelper/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/ffhelper/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/reference/utils/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/utils/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/reference/ffdecoder/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/ffdecoder/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/reference/ffdecoder/params/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/ffdecoder/params/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/reference/sourcer/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/sourcer/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
     <url>
-         <loc>https://abhitronix.github.io/deffcode/v0.2.8-dev/reference/sourcer/params/</loc>
+         <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/sourcer/params/</loc>
          <lastmod>2026-10-18</lastmod>
     </url>
 </urlset>
