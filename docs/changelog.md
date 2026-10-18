@@ -46,16 +46,21 @@ limitations under the License.
     - [x] **CI/CD:**
         * Updated Python CI matrix to `3.11`–`3.14` across GitHub Actions, Azure Pipelines, and AppVeyor.
         * Bumped `actions/checkout` and `actions/setup-python` to `v7`.
+        * Pinned `opencv-python` below `5` in Azure Pipelines installs.
     - [x] **Maintenance:**
         * Enforced LF line endings project-wide via `.gitattributes`.
-        * Ignored `cover/` directory.
+        * Ignored `cover/` and `/temp` directories.
     - [x] **Tests:**
         * Added coverage for `check_sp_output` edge cases including timeout handling.
         * Added multi-input composite output size and frame-count tests (`hstack`, `overlay`, `xstack`, `xfade`, `-map`).
+        * Added regression test for multi-input primary metadata scoping to input 0.
     - [x] **Docs:**
         * Updated supported Python versions to `3.11+`.
         * Updated Citation to v0.2.7 release.
         * Updated webcam link to use custom demuxer anchor.
+        * Added links to new 2x2 grid and crossfade recipes in README.
+        * Clarified `xfade` input requirements _(constant-frame-rate, matching timebase via `settb=AVTB`)_ in multi-input recipe.
+        * Added note to use `output_frames_resolution` instead of `source_video_resolution` for OpenCV `VideoWriter()` frame size.
 
 ??? danger "Breaking Updates/Changes"
     * **Core:**
@@ -67,13 +72,19 @@ limitations under the License.
     - [x] **Sourcer:**
         * Fixed multi-input filtergraph metadata probing only including first input, causing composite outputs (`hstack`, `xstack`, `overlay`) to report wrong `output_frames_resolution` and yield corrupted frames.
         * Fixed `-vf`/`-filter_complex`/`-map` leaking into per-source probes of multi-input `Sourcer`.
+        * Fixed primary `source_*` metadata picking streams from other inputs with a nonzero default stream index; now always describes input 0.
+        * Fixed extra multi-input sources (e.g. camera indexes) being passed unresolved with `-f auto` in combined filtergraph probe.
     - [x] **FFdecoder:**
         * Fixed `-map` not forwarded to Sourcer when probing multi-input sources.
         * Fixed multi-input pipelines (e.g. `xfade`) being truncated to first input's frame count; now decodes until EOF.
+        * Fixed extra multi-input sources not using their resolved device path/demuxer in the FFmpeg pipeline.
     - [x] **FFhelper:**
         * Fixed `check_sp_output` hanging indefinitely on frozen FFmpeg streams.
     - [x] **Docs:**
         * Fixed missing leading slash in announcement link URL.
+        * Fixed "Depreciation" → "Deprecation" typo in installation notes.
+    - [x] **CI:**
+        * Fixed `test_FFdecoder_params` sizing OpenCV `VideoWriter()` from `source_video_resolution`, causing frame size mismatch errors with filtergraphs like `hstack`.
 
 ??? question "Pull Requests"
     * PR #72
@@ -84,7 +95,7 @@ limitations under the License.
 
 &nbsp;
 
-## v0.2.7 (2026-04-20) :material-new-box:
+## v0.2.7 (2026-04-20)
 
 ??? new "New Features"
     - [x] **FFdecoder:**
@@ -143,7 +154,7 @@ limitations under the License.
 
 &nbsp;
 
-## v0.2.6 (2024-07-08) :material-new-box:
+## v0.2.6 (2024-07-08)
 
 ??? new "New Features"
     - [x] **FFdecoder:**
@@ -232,7 +243,7 @@ limitations under the License.
 
 &nbsp; 
 
-## v0.2.5 (2023-01-11) :material-new-box:
+## v0.2.5 (2023-01-11)
 
 ??? new "New Features"
     - [x] **FFdecoder:**
