@@ -133,3 +133,6 @@ dmypy.json
 # vim temporary files
 *~
 .*.sw?
+
+# claude files
+.claude
