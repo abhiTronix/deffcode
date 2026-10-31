@@ -293,7 +293,7 @@ Its valid input can be one of the following:
     decoder = FFdecoder("USB2.0 Camera", source_demuxer="dshow", frame_format="bgr24", verbose=True).formulate()
     ```
 
-    !!! example "Related usage recipe :material-pot-mix: can found [here ➶](../../../recipes/basic/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam)"
+    !!! example "Related usage recipe :material-pot-mix: can found [here ➶](../../recipes/advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam)"
 
 - [x] **Screen Capturing/Recording:** Valid screen capture device's name _(e.g. `"desktop"`)_ or its index _(e.g. `":0.0"`)_ as input w.r.t [`source_demuxer`](#source_demuxer) parameter value in use. You can also specify additional specifications _(such as limiting capture area to a region, setting capturing coordinates, whether to capture mouse pointer and clicks etc.)_. For example, for capturing `"0:"` indexed device with `avfoundation` source demuxer on :material-apple: MacOS along with mouse pointer and clicks, we can do as follows in FFdecoder API: 
 
@@ -424,7 +424,7 @@ Its valid input can be one of the following:
     decoder = FFdecoder("0:", source_demuxer="avfoundation", frame_format="bgr24", verbose=True, **ffparams).formulate()
     ```
 
-    !!! example "Related usage recipe :material-pot-mix: can found [here ➶](../../../recipes/basic/decode-live-feed-devices/#capturing-and-previewing-frames-from-your-desktop)"
+    !!! example "Related usage recipe :material-pot-mix: can found [here ➶](../../recipes/advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-your-desktop)"
 
 
 - [x] **Virtual Sources:** Valid filtergraph to use as input with [`lavfi`](http://underpop.online.fr/f/ffmpeg/help/lavfi.htm.gz) _(**Libavfilter** input virtual device)_ source that reads data from the open output pads of a libavfilter filtergraph. For example, for generating and decoding [Mandelbrot](https://en.wikipedia.org/wiki/Mandelbrot_set) graph of `1280x720` frame size and `30` framerate using `lavfi` input virtual device, we can do as follows in FFdecoder API: 
@@ -523,7 +523,7 @@ This parameter can be used to manually assigns the system _file-path/directory_ 
 
 ??? info "Behavior on Windows :fontawesome-brands-windows:"
     
-    If custom FFmpeg executable binary _file-path/directory_ is not assigned through `custom_ffmpeg` parameter on Windows machine, then FFdecoder API will ==automatically attempt to download and extract suitable Static FFmpeg binaries at suitable location on your windows machine==. More information can be found [here ➶](../ffmpeg_install/#a-auto-installation).
+    If custom FFmpeg executable binary _file-path/directory_ is not assigned through `custom_ffmpeg` parameter on Windows machine, then FFdecoder API will ==automatically attempt to download and extract suitable Static FFmpeg binaries at suitable location on your windows machine==. More information can be found [here ➶](../../installation/ffmpeg_install/#a-auto-installation).
 
     ??? question "How to change FFmpeg Static Binaries download directory?"
 
