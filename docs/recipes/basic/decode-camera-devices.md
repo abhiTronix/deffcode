@@ -28,7 +28,7 @@ We'll discuss the Decoding Camera Devices using Indexes briefly in the following
 
 !!! warning "DeFFcode APIs requires FFmpeg executable"
 
-    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../../installation/ffmpeg_install/) for its installation.
+    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../installation/ffmpeg_install/) for its installation.
 
 ??? info "Additional Python Dependencies for following recipes"
 
@@ -62,7 +62,7 @@ We'll discuss the Decoding Camera Devices using Indexes briefly in the following
 
 ## Enumerating all Camera Devices with Indexes
 
-> In Sourcer API, you can easily use its [`enumerate_devices`](../../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) property object to enumerate all probed Camera Devices _(connected to your system)_ as **dictionary object** with device indexes as keys and device names as their respective values. 
+> In Sourcer API, you can easily use its [`enumerate_devices`](../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) property object to enumerate all probed Camera Devices _(connected to your system)_ as **dictionary object** with device indexes as keys and device names as their respective values. 
 
 ??? danger "Requirement for Enumerating all Camera Devices in Sourcer API"
 
@@ -78,11 +78,11 @@ We'll discuss the Decoding Camera Devices using Indexes briefly in the following
 
         **:warning: Important:** Kindly make sure your FFmpeg binaries support these platform specific demuxers as well as system have the appropriate video drivers and related softwares installed.
 
-    - [x] The [`source`](../../../reference/sourcer/params/#source) parameter value **MUST be any Camera Device index** that can be of either **integer** _(e.g. `-1`,`0`,`1`, etc.)_ or **string of integer** _(e.g. `"-1"`,`"0"`,`"1"`, etc.)_ type.
+    - [x] The [`source`](../../reference/sourcer/params/#source) parameter value **MUST be any Camera Device index** that can be of either **integer** _(e.g. `-1`,`0`,`1`, etc.)_ or **string of integer** _(e.g. `"-1"`,`"0"`,`"1"`, etc.)_ type.
 
-    - [x] The [`source_demuxer`](../../../reference/sourcer/params/#source_demuxer) parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`**. 
+    - [x] The [`source_demuxer`](../../reference/sourcer/params/#source_demuxer) parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`**. 
 
-In this example we will enumerate all probed Camera Devices connected on a :fontawesome-brands-windows: Windows machine using [`enumerate_devices`](../../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) property object in Sourcer API, both as dictionary object and JSON string.
+In this example we will enumerate all probed Camera Devices connected on a :fontawesome-brands-windows: Windows machine using [`enumerate_devices`](../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) property object in Sourcer API, both as dictionary object and JSON string.
 
 ```python
 # import the necessary packages
@@ -136,8 +136,8 @@ print(json.dumps(sourcer.enumerate_devices,indent=2))
         | :material-apple: Mac OS | [`avfoundation`](https://ffmpeg.org/ffmpeg-devices.html#avfoundation) |
 
         **:warning: Important:** Kindly make sure your FFmpeg binaries support these platform specific demuxers as well as system have the appropriate video drivers and related softwares installed.
-    - [x] The [`source`](../../../reference/ffdecoder/params/#source) parameter value **MUST be exactly the probed Camera Device index** _(use Sourcer API's [`enumerate_devices`](../../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) to list them)_.
-    - [x] The [`source_demuxer`](../../../reference/ffdecoder/params/#source_demuxer) parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`**. 
+    - [x] The [`source`](../../reference/ffdecoder/params/#source) parameter value **MUST be exactly the probed Camera Device index** _(use Sourcer API's [`enumerate_devices`](../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) to list them)_.
+    - [x] The [`source_demuxer`](../../reference/ffdecoder/params/#source_demuxer) parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`**. 
 
 In this example we will decode **BGR24** video frames from **Integrated Camera at index `0`** on a Windows Machine, and preview them using OpenCV Library's `cv2.imshow()` method.
 

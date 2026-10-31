@@ -20,7 +20,7 @@ limitations under the License.
 
 !!! abstract "Following are the helper methods required by the DeFFcode APIs."
 
-!!! example "For usage examples, kindly refer our **[Basic Recipes :cake:](../../recipes/basic)** and **[Advanced Recipes :croissant:](../../recipes/advanced)**"
+!!! example "For usage examples, kindly refer our **[Basic Recipes :cake:](../recipes/basic)** and **[Advanced Recipes :croissant:](../recipes/advanced)**"
 
 &nbsp;
 

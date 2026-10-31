@@ -386,7 +386,7 @@ This parameter can be used to manually assigns the system _file-path/directory_ 
 
     ??? question "How to change FFmpeg Static Binaries download directory?"
 
-        You can use [`-ffmpeg_download_path`](#exclusive-parameters) exclusive parameter in Sourcer API to set the custom directory for downloading FFmpeg Static Binaries during the [Auto-Installation](../../../installation/ffmpeg_install/#a-auto-installation) step on Windows Machines. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows in Sourcer API:
+        You can use [`-ffmpeg_download_path`](#exclusive-parameters) exclusive parameter in Sourcer API to set the custom directory for downloading FFmpeg Static Binaries during the [Auto-Installation](../../installation/ffmpeg_install/#a-auto-installation) step on Windows Machines. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows in Sourcer API:
 
         ```python
         # # define suitable parameter to download at "C:/User/foo/foo1"

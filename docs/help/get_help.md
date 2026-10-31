@@ -44,10 +44,10 @@ There you can ask quick questions, swiftly troubleshoot your problems, help othe
 
 ## :fontawesome-solid-question: This is what you do when... 
 
-- [x] [Got a question or problem?](../../contribution/#got-a-question-or-problem)
-- [x] [Found a typo?](../../contribution/#found-a-typo)
-- [x] [Found a bug?](../../contribution/#found-a-bug)
-- [x] [Missing a feature/improvement?](../../contribution/#request-for-a-featureimprovement)
+- [x] [Got a question or problem?](../contribution/#got-a-question-or-problem)
+- [x] [Found a typo?](../contribution/#found-a-typo)
+- [x] [Found a bug?](../contribution/#found-a-bug)
+- [x] [Missing a feature/improvement?](../contribution/#request-for-a-featureimprovement)
 
 
 &thinsp;
@@ -56,7 +56,7 @@ There you can ask quick questions, swiftly troubleshoot your problems, help othe
 
 > Want to report a bug? Suggest a new feature?
 
-Before you do, please read our [guidelines ➶](../../contribution/issue/)
+Before you do, please read our [guidelines ➶](../contribution/issue/)
 
 
 &thinsp;
@@ -66,7 +66,7 @@ Before you do, please read our [guidelines ➶](../../contribution/issue/)
 
 > Interested in contributing to DeFFcode?
 
-Before you do, please read our [guidelines ➶](../../contribution/PR/)
+Before you do, please read our [guidelines ➶](../contribution/PR/)
 
 &thinsp;
 
