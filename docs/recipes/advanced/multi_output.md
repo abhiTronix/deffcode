@@ -208,6 +208,7 @@ decoder.terminate()
     | Extra outputs run at the speed of your Python loop | FFmpeg blocks until Python reads each frame | Keep the frame loop fast |
     | `-frames:v`/`-t` in `ffparams` only limit frames sent to Python | They are output options of the rawvideo pipe | Repeat them inside `-extra_outputs` for each output |
     | `tee` fails with header errors on `.mkv`/`.flv` | Those formats need a global header | Add `"-flags", "+global_header"` |
+    | `tee` output missing on Windows | `tee` treats `\` as an escape character, mangling paths like `C:\foo\out.mkv` | Use forward slashes _(`C:/foo/out.mkv`)_ in `tee` paths |
     | Calling `terminate()` early truncates extra outputs | By design | Outputs are finalized gracefully; for live sources prefer `.mkv`/`.ts` over `.mp4` |
 
 !!! info "Need several raw frame streams _(e.g. 720p and 240p)_ in Python at once? Combine them into one frame with `hstack`/`vstack` filters and slice the array, or run two FFdecoder instances."

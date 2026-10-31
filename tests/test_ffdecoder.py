@@ -997,7 +997,10 @@ test_data = [
                 "+global_header",
                 "-f",
                 "tee",
-                "{}|[f=mpegts]{}".format(_side_path("side_tee.mkv"), _side_path("side_tee.ts")),
+                # tee treats `\` as escape char, so use forward slashes for Windows paths
+                "{}|[f=mpegts]{}".format(
+                    _side_path("side_tee.mkv"), _side_path("side_tee.ts")
+                ).replace("\\", "/"),
             ]
         },
         [_side_path("side_tee.mkv"), _side_path("side_tee.ts")],
