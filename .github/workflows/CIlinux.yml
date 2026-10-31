@@ -39,7 +39,7 @@ on:
 jobs:
   test:
     name: CI Linux
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14"]
