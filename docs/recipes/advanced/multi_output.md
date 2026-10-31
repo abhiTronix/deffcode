@@ -18,7 +18,7 @@ limitations under the License.
 ======================================================================
 -->
 
-# :material-call-split: Creating Multiple Outputs
+# :material-call-split: Multi-Outputs Configurations
 
 > FFmpeg can write [any number of outputs](https://trac.ffmpeg.org/wiki/Creating%20multiple%20outputs) from a single process, decoding the source only **once**. The [`-extra_outputs`](../../reference/ffdecoder/params/#b-exclusive-parameters) exclusive parameter brings this to FFdecoder: you keep receiving frames in Python, while the same FFmpeg pipeline records to files, transcodes or streams to servers in parallel.
 

@@ -68,6 +68,7 @@ Here are some key features that stand out:
 - Hands down the easiest [**Index based Camera Device Capturing**][decoding-camera-devices-using-indexes], similar to OpenCV.
 - Easy to code **Real-time [Simple][transcoding-live-simple-filtergraphs] & [Complex][transcoding-live-complex-filtergraphs] Filtergraphs**. _(Yes, You read it correctly "Real-time"!)_
 - Native **[Multi-Input Source Configurations][multi-input-source-configurations]** support for decoding complex topologies.
+- Native **[Multi-Outputs Configurations][multi-outputs-configurations]** support for recording/streaming while decoding, in a single FFmpeg pipeline.
 - Lightning fast dedicated **GPU-Accelerated Video [Decoding][hardware-accelerated-video-decoding] & [Transcoding][hardware-accelerated-video-transcoding]**.
 - Enables precise FFmpeg [**Key-frame Seeking**][extracting-key-frames-as-png-image] with pinpoint accuracy.
 - Effortless [**Metadata Extraction**][extracting-video-metadata] from all streams available in the source.
@@ -197,6 +198,9 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [Multi-Input Source Configurations][multi-input-source-configurations]
   - [Decoding multiple inputs as 2x2 video grid _(mosaic)_][decoding-multiple-inputs-as-2x2-video-grid-mosaic]
   - [Decoding crossfade transition between multiple inputs][decoding-crossfade-transition-between-multiple-inputs]
+- [Multi-Outputs Configurations][multi-outputs-configurations]
+  - [Recording while decoding][recording-while-decoding]
+  - [Encode once, duplicate to file and stream][encode-once-duplicate-to-file-and-stream]
 
 </details>
 
@@ -443,6 +447,9 @@ Advanced Recipes
 [multi-input-source-configurations]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#multi-input-source-configurations
 [decoding-multiple-inputs-as-2x2-video-grid-mosaic]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-multiple-inputs-as-2x2-video-grid-mosaic
 [decoding-crossfade-transition-between-multiple-inputs]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-crossfade-transition-between-multiple-inputs
+[multi-outputs-configurations]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#multi-outputs-configurations
+[recording-while-decoding]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#recording-while-decoding
+[encode-once-duplicate-to-file-and-stream]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#encode-once-duplicate-to-file-and-stream
 
 <!--
 CI Apps URLs

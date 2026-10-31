@@ -732,7 +732,7 @@ These parameters are discussed below:
     }
     ```
 
-    See the [Creating Multiple Outputs recipe ➶](../../../recipes/advanced/create-multiple-outputs/) for more examples.
+    See the [Multi-Outputs Configurations recipe ➶](../../../recipes/advanced/multi_output/#multi-outputs-configurations) for more examples.
 
 &ensp;
 
