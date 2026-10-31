@@ -26,8 +26,9 @@ import platform
 import queue
 import re
 import subprocess as sp
+import sys
 import threading
-from collections import OrderedDict
+from collections import OrderedDict, deque
 from collections.abc import Generator
 from types import TracebackType
 from typing import Any, Self
@@ -36,6 +37,7 @@ import numpy as np
 
 # import utils packages
 from .ffhelper import (
+    TERMINATE_TIMEOUT_SUBPROCESS,
     get_supported_pixfmts,
     get_supported_vdecoders,
 )
@@ -279,6 +281,13 @@ class FFdecoder:
             self.__verbose_logs and logger.critical(
                 "Enabling asynchronous `showinfo` per-frame metadata extraction."
             )
+
+        # handle capturing FFmpeg stderr tail for diagnosing pipeline failures
+        self.__capture_stderr = self.__extra_params.pop("-capture_stderr", False)
+        if not isinstance(self.__capture_stderr, bool):
+            self.__capture_stderr = False
+        self.__stderr_tail: deque[str] = deque(maxlen=50)
+        self.__returncode: int | None = None
 
         # handle disabling window for ffmpeg subprocess on Windows OS
         # this patch prevents ffmpeg creation window from opening when
@@ -783,16 +792,37 @@ class FFdecoder:
             while not self.__terminate_stream:  # infinite raw frames
                 frame = self.__fetchNextFrame()
                 if frame is None:
-                    self.__terminate_stream = True
+                    self.__handle_stream_end()
                     break
                 yield self.__attach_metadata(frame)
         else:
             for _ in range(self.__raw_frame_num):  # finite raw frames
                 frame = self.__fetchNextFrame()
                 if frame is None:
-                    self.__terminate_stream = True
+                    self.__handle_stream_end()
                     break
                 yield self.__attach_metadata(frame)
+
+    def __handle_stream_end(self) -> None:
+        """
+        Internal: marks stream as ended on a short read and, when `-capture_stderr`
+        is enabled and FFmpeg exited with a non-zero code, logs the `stderr_tail`.
+        """
+        self.__terminate_stream = True
+        if not self.__capture_stderr or self.__process is None:
+            return
+        try:
+            retcode = self.__process.wait(timeout=TERMINATE_TIMEOUT_SUBPROCESS)
+        except sp.TimeoutExpired:
+            return
+        if retcode:
+            # let the reader thread drain remaining stderr lines first
+            self.__stderr_thread and self.__stderr_thread.join(timeout=TERMINATE_TIMEOUT_SUBPROCESS)
+            logger.error(
+                "FFmpeg exited with code {}. Last stderr lines:\n{}".format(
+                    retcode, "\n".join(self.__stderr_tail)
+                )
+            )
 
     def __attach_metadata(self, frame: np.ndarray):
         """
@@ -829,6 +859,25 @@ class FFdecoder:
         Handles exit with the `with` statement. See [PEP343 -- The 'with' statement'](https://peps.python.org/pep-0343/).
         """
         self.terminate()
+
+    @property
+    def returncode(self) -> int | None:
+        """
+        A property object that holds FFmpeg process exit code, set by `terminate()`.
+
+        **Returns:** FFmpeg exit code, or `None` if pipeline has not been terminated yet.
+        """
+        return self.__returncode
+
+    @property
+    def stderr_tail(self) -> list[str]:
+        """
+        A property object that holds the last 50 lines of FFmpeg's stderr output.
+        Only populated when `-capture_stderr` (or `-extract_metadata`) is enabled.
+
+        **Returns:** List of stderr lines (oldest first).
+        """
+        return list(self.__stderr_tail)
 
     @property
     def metadata(self) -> str:
@@ -974,11 +1023,11 @@ class FFdecoder:
 
         cmd += output_parameters
         cmd += ["-f", "rawvideo", "-"]
-        # When metadata extraction is enabled we must capture stderr regardless
-        # of verbose mode so the background reader thread can parse showinfo
-        # lines. Without PIPE the reader would have nothing to read (verbose
+        # When metadata extraction or stderr capture is enabled we must pipe stderr
+        # regardless of verbose mode so the background reader thread can consume
+        # it. Without PIPE the reader would have nothing to read (verbose
         # inherits parent stderr; silent discards it).
-        if self.__extract_metadata:
+        if self.__extract_metadata or self.__capture_stderr:
             stderr_target = sp.PIPE
         elif self.__verbose_logs:
             stderr_target = None
@@ -1001,18 +1050,20 @@ class FFdecoder:
                 ),
             )
 
-        # spin up the stderr reader thread that parses `showinfo` lines and
-        # feeds per-frame metadata dicts into the queue consumed by generateFrame()
-        if self.__extract_metadata:
-            self.__metadata_queue = queue.Queue()
+        # spin up the stderr reader thread that records stderr tail, and parses
+        # `showinfo` lines into the metadata queue consumed by generateFrame()
+        if self.__extract_metadata or self.__capture_stderr:
+            if self.__extract_metadata:
+                self.__metadata_queue = queue.Queue()
             self.__stderr_stop.clear()
             self.__stderr_thread = threading.Thread(target=self.__read_stderr, daemon=True)
             self.__stderr_thread.start()
 
     def __read_stderr(self) -> None:
         """
-        Internal: background daemon that parses FFmpeg `showinfo` lines off
-        stderr and pushes per-frame metadata dicts onto `__metadata_queue`.
+        Internal: background daemon that appends FFmpeg stderr lines to `__stderr_tail`
+        (echoing them when verbose), and parses `showinfo` lines into per-frame metadata
+        dicts on `__metadata_queue` when `-extract_metadata` is enabled.
         Exits when FFmpeg closes stderr or when `__stderr_stop` is signalled.
         """
         assert self.__process is not None and self.__process.stderr is not None
@@ -1022,6 +1073,11 @@ class FFdecoder:
                 if self.__stderr_stop.is_set():
                     break
                 decoded = line.decode("utf-8", errors="ignore")
+                self.__stderr_tail.append(decoded.rstrip())
+                # echo so verbose console output stays unchanged
+                self.__verbose_logs and sys.stderr.write(decoded)
+                if not self.__extract_metadata:
+                    continue
                 match = _SHOWINFO_REGEX.search(decoded)
                 if not match:
                     continue
@@ -1037,11 +1093,13 @@ class FFdecoder:
             pass
         finally:
             # sentinel so consumers unblock on EOF
-            self.__metadata_queue.put(None)
+            self.__metadata_queue is not None and self.__metadata_queue.put(None)
 
-    def terminate(self) -> None:
+    def terminate(self) -> int | None:
         """
         Safely terminates all processes.
+
+        **Returns:** FFmpeg process exit code (also available via `returncode`), or `None` if no process was launched.
         """
 
         # signal we are closing
@@ -1049,9 +1107,9 @@ class FFdecoder:
         self.__terminate_stream = True
         self.__stderr_stop.set()
         # check if no process was initiated at first place
-        if self.__process is None or self.__process.poll() is not None:
+        if self.__process is None:
             logger.info("Pipeline already terminated.")
-            return
+            return self.__returncode
         # Attempt to close pipeline.
         # close `stdin` output
         self.__process.stdin and self.__process.stdin.close()
@@ -1059,13 +1117,19 @@ class FFdecoder:
         self.__process.stdout and self.__process.stdout.close()
         # close `stderr` so the background reader thread's blocking readline() unblocks
         self.__process.stderr and self.__process.stderr.close()
-        # terminate/kill process if still processing
-        self.__process.poll() is None and self.__process.terminate()
-        # wait if not exiting
-        self.__process.wait()
+        # terminate process if still processing, escalate to kill if unresponsive
+        if self.__process.poll() is None:
+            self.__process.terminate()
+            try:
+                self.__process.wait(TERMINATE_TIMEOUT_SUBPROCESS)
+            except sp.TimeoutExpired:
+                self.__process.kill()
+                self.__process.wait()
         # join the stderr reader thread so it does not outlive the pipeline
         if self.__stderr_thread is not None and self.__stderr_thread.is_alive():
             self.__stderr_thread.join(timeout=2.0)
         self.__stderr_thread = None
+        self.__returncode = self.__process.returncode
         self.__process = None
         logger.info("Pipeline terminated successfully.")
+        return self.__returncode
