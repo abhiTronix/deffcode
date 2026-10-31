@@ -30,6 +30,7 @@ import sys
 import threading
 from collections import OrderedDict, deque
 from collections.abc import Generator
+from itertools import pairwise
 from types import TracebackType
 from typing import Any, Self
 
@@ -209,6 +210,15 @@ class FFdecoder:
                 self.__ffmpeg_prefixes = []
             sourcer_params["-ffprefixes"] = self.__ffmpeg_prefixes
 
+        # handles user-defined additional FFmpeg outputs, appended after the rawvideo pipe output (must be a flat list)
+        self.__extra_outputs = self.__extra_params.pop("-extra_outputs", [])
+        if not isinstance(self.__extra_outputs, list) or any(
+            isinstance(x, (list, tuple, dict)) for x in self.__extra_outputs
+        ):
+            logger.warning("Discarding invalid `-extra_outputs` value! It must be a flat list.")
+            self.__extra_outputs = []
+        self.__extra_outputs = [str(x) for x in self.__extra_outputs]
+
         # pass parameter(if specified) to Sourcer API, specifying where to save the downloaded FFmpeg Static
         # assets on Windows(if specified)
         sourcer_params["-ffmpeg_download_path"] = self.__extra_params.pop(
@@ -231,6 +241,17 @@ class FFdecoder:
         # multi-input output streams are selected via `-map`, so probe with it too
         if self.__is_multi and "-map" in self.__extra_params:
             sourcer_params["-map"] = self.__extra_params["-map"]
+        # filtergraph labels consumed only by `-extra_outputs` must also be consumed while
+        # probing, otherwise FFmpeg aborts with "unconnected output"; map all into the probe sink.
+        if self.__extra_outputs and "-filter_complex" in sourcer_params:
+            if "-map" in self.__extra_params:
+                sourcer_params["-map"] = self.__extra_params["-map"]
+            sourcer_params["-clones"] = [
+                arg
+                for key, val in pairwise(self.__extra_outputs)
+                if key == "-map" and val.startswith("[")
+                for arg in (key, val)
+            ]
 
         # define dict to store user-defined parameters
         self.__user_metadata = {}
@@ -1025,6 +1046,7 @@ class FFdecoder:
 
         cmd += output_parameters
         cmd += ["-f", "rawvideo", "-"]
+        cmd += self.__extra_outputs
         # When metadata extraction or stderr capture is enabled we must pipe stderr
         # regardless of verbose mode so the background reader thread can consume
         # it. Without PIPE the reader would have nothing to read (verbose
@@ -1119,6 +1141,12 @@ class FFdecoder:
         self.__process.stdout and self.__process.stdout.close()
         # close `stderr` so the background reader thread's blocking readline() unblocks
         self.__process.stderr and self.__process.stderr.close()
+        # let FFmpeg finalize `-extra_outputs` (trailers/moov) on EPIPE before forcing termination
+        if self.__extra_outputs:
+            try:
+                self.__process.wait(TERMINATE_TIMEOUT_SUBPROCESS)
+            except sp.TimeoutExpired:
+                pass
         # terminate process if still processing, escalate to kill if unresponsive
         if self.__process.poll() is None:
             self.__process.terminate()
