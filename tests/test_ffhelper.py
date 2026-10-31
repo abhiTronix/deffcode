@@ -159,6 +159,23 @@ def test_check_sp_output_happy_path() -> None:
     assert b"ffmpeg version" in output, "Expected ffmpeg version banner in stdout"
 
 
+def test_check_sp_output_stdin_devnull(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Testing check_sp_output defaults `stdin` to DEVNULL, while honoring caller override.
+    """
+    seen = []
+    real_popen = ffhelper.sp.Popen
+
+    def spy(*args, **kwargs):
+        seen.append(kwargs.get("stdin"))
+        return real_popen(*args, **kwargs)
+
+    monkeypatch.setattr(ffhelper.sp, "Popen", spy)
+    check_sp_output([return_static_ffmpeg(), "-version"], timeout=5.0)
+    check_sp_output([return_static_ffmpeg(), "-version"], stdin=None, timeout=5.0)
+    assert seen == [ffhelper.sp.DEVNULL, None], f"Unexpected stdin values: {seen}"
+
+
 def test_check_sp_output_force_retrieve_stderr_bypass() -> None:
     """
     Testing that `force_retrieve_stderr=True` suppresses CalledProcessError on
