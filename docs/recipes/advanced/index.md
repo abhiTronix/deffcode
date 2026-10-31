@@ -91,6 +91,11 @@ The following challenging recipes will take your skills to the next level and wi
 - [x] **[:material-timer-sync: Per-Frame Metadata Extraction](../advanced/extract-frame-metadata/#per-frame-metadata-extraction)**
     - [Smart Keyframe-only decoding for heavy AI inference](../advanced/extract-frame-metadata/#smart-keyframe-only-decoding-for-heavy-ai-inference)
     - [Variable-Frame-Rate (VFR) synchronization via `pts_time`](../advanced/extract-frame-metadata/#variable-frame-rate-vfr-synchronization-via-pts_time)
+- [x] **[:material-call-split: Creating Multiple Outputs](../advanced/create-multiple-outputs/#creating-multiple-outputs)**
+    - [Recording while decoding](../advanced/create-multiple-outputs/#recording-while-decoding)
+    - [Same filtering for all outputs](../advanced/create-multiple-outputs/#same-filtering-for-all-outputs)
+    - [Different filtering for each output](../advanced/create-multiple-outputs/#different-filtering-for-each-output)
+    - [Encode once, duplicate to file and stream](../advanced/create-multiple-outputs/#encode-once-duplicate-to-file-and-stream)
 
 
 &thinsp;

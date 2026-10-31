@@ -221,6 +221,7 @@ nav:
           - Multi-Input Source Configurations: recipes/advanced/multi_input.md
           - Updating Video Metadata: recipes/advanced/update-metadata.md
           - Per-Frame Metadata Extraction: recipes/advanced/extract-frame-metadata.md
+          - Creating Multiple Outputs: recipes/advanced/create-multiple-outputs.md
   - API References:
       - deffcode.FFdecoder:
           - API: reference/ffdecoder/index.md

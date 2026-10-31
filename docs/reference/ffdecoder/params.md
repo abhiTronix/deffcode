@@ -673,7 +673,7 @@ These parameters are discussed below:
         The `-clones` and `-ffprefixes` parameters even tho fundamentally work the same, they're meant to serve at different positions in the FFmpeg command. Normally, FFdecoder API pipeline looks something like following with these parameters in place:
 
         ```sh
-        ffmpeg {{-ffprefixes FFmpeg params}} -vcodec h264 -i foo.mp4 -pix_fmt rgb24 -s 1280x720 -framerate 25.0 {{-clones FFmpeg params}} -f rawvideo -
+        ffmpeg {{-ffprefixes FFmpeg params}} -vcodec h264 -i foo.mp4 -pix_fmt rgb24 -s 1280x720 -framerate 25.0 {{-clones FFmpeg params}} -f rawvideo - {{-extra_outputs FFmpeg params}}
         ```
 
     !!! tip "Turn on [`verbose`](#verbose) parameter _(`verbose = True`)_ to see the FFmpeg command that is being executed in FFdecoder's pipeline. This helps you debug/address any issues and make adjustments accordingly."
@@ -708,6 +708,31 @@ These parameters are discussed below:
     
     # NOTE: Will be format as `ffmpeg -vcodec -i foo.mp4 -pix_fmt rgb24 -s 1280x720 -framerate 25.0 -map 0:v:0 -map 1:a -f rawvideo -`
     ```
+
+&ensp;
+
+* **`-extra_outputs`** _(list)_: This attribute sets additional FFmpeg outputs _(files, network streams, `tee` muxer, etc.)_ that are generated from the **same** FFmpeg pipeline alongside the decoded frames. Its values are appended verbatim **after** the rawvideo pipe output (`-f rawvideo -`), so its output options never affect the frames delivered to Python. Its value can be of datatype **`list`** only _(nested lists/dicts are discarded with a warning)_, and its usage is as follows:
+
+    ```sh
+    ffmpeg ... -i foo.mp4 -pix_fmt rgb24 -s 1280x720 -framerate 25.0 -f rawvideo - {{-extra_outputs FFmpeg params}}
+    ```
+
+    !!! tip "Turn on [`verbose`](#verbose) parameter _(`verbose = True`)_ to see the FFmpeg command that is being executed in FFdecoder's pipeline. This helps you debug/address any issues and make adjustments accordingly."
+
+    !!! warning "Always add `-y` _(overwrite)_ to `-extra_outputs`, otherwise an existing output file makes FFmpeg exit on its overwrite prompt, and **no frames** are decoded."
+
+    !!! danger "If any extra output fails _(e.g. invalid path or unreachable server)_, FFmpeg aborts the **whole** pipeline including frame decoding. Use the `tee` muxer with `[onfail=ignore]` for fragile outputs."
+
+    ```python
+    # define suitable parameter
+    ffparams = {
+        "-filter_complex": "[0:v]split=2[main][rec];[main]scale=640:-2[main]",
+        "-map": "[main]",  # decoded frames
+        "-extra_outputs": ["-y", "-map", "[rec]", "-map", "0:a?", "-c:v", "libx264", "-c:a", "aac", "recording.mp4"],
+    }
+    ```
+
+    See the [Creating Multiple Outputs recipe ➶](../../../recipes/advanced/create-multiple-outputs/) for more examples.
 
 &ensp;
 
