@@ -20,9 +20,70 @@ limitations under the License.
 
 # Release Notes
 
-## v0.2.8 (2026-10-18) :material-new-box:
+## v0.2.9 (2026-11-01) :material-new-box:
 
 ???+ new "New Features"
+    - [x] **FFdecoder:**
+        * Added **multiple FFmpeg outputs** support via new `-extra_outputs` exclusive parameter, generating additional outputs _(files, network streams, `tee` muxer, etc.)_ from the **same** FFmpeg pipeline alongside decoded frames.
+            * 💬 Values are appended verbatim after the rawvideo pipe output (`-f rawvideo -`), so its output options never affect frames delivered to Python.
+            * Filtergraph labels consumed only by `-extra_outputs` are auto-mapped into Sourcer probe, avoiding FFmpeg's "unconnected output" error.
+        * Added **FFmpeg stderr capture** via new `-capture_stderr` exclusive parameter, recording last 50 stderr lines for diagnosing pipeline failures.
+            * Added `stderr_tail` property exposing captured stderr lines.
+            * 💬 On non-zero FFmpeg exit mid-stream, captured lines are logged at error level as `generateFrame()` generator ends.
+        * Added `returncode` property holding FFmpeg process exit code.
+    - [x] **Docs:**
+        * Added new **Multi-Outputs Configurations** recipe: recording while decoding, same/different filtering per output, and encode once → duplicate to file and stream.
+        * Documented `-extra_outputs` and `-capture_stderr` exclusive parameters.
+
+??? success "Updates/Improvements"
+    - [x] **FFdecoder:**
+        * `terminate()` now returns FFmpeg exit code _(or `None` if no process was launched)_.
+        * `terminate()` now waits for FFmpeg to finalize `-extra_outputs` _(trailers/moov)_ or exit cleanly after stream end, before forcing termination.
+        * `terminate()` now escalates `SIGTERM` → `SIGKILL` if FFmpeg stays unresponsive past `TERMINATE_TIMEOUT_SUBPROCESS`.
+        * Verbose stderr output is echoed to console when stderr is piped for capture/metadata extraction.
+    - [x] **FFhelper:**
+        * `check_sp_output` no longer inherits parent's stdin _(defaults to `subprocess.DEVNULL`)_, avoiding blocking on unexpected input reads.
+    - [x] **Sourcer:**
+        * Dropped `-clones` from multi-input per-source probes.
+    - [x] **Packaging:**
+        * Bumped version to `0.2.9`.
+    - [x] **CI/CD:**
+        * Pinned runners to `ubuntu-24.04` instead of `ubuntu-latest`.
+        * Installed Zensical and `mike` fork in docs deployer.
+        * Added relative docs links check before deploying dev docs.
+    - [x] **Maintenance:**
+        * Added `scripts/bash/check_links.sh` relative link checker script with whitelist.
+        * Ignored `.claude-docs` directory.
+    - [x] **Tests:**
+        * Added coverage for `-extra_outputs` side outputs, early terminate and invalid values.
+        * Added coverage for stderr capture, exit codes _(including after full stream decode)_ and metadata setter fix.
+        * Added coverage for `check_sp_output` stdin handling.
+    - [x] **Docs:**
+        * Migrated docs engine from **MkDocs** to **Zensical**.
+        * Adapted relative links to Zensical path resolution.
+        * Added Multi-Outputs Configurations to key features in docs index and linked its recipes in README.
+        * Updated Citation to v0.2.8 release and Zenodo DOI.
+
+??? bug "Bug-fixes"
+    - [x] **FFdecoder:**
+        * Fixed `terminate()` skipping cleanup and losing exit code when FFmpeg process had already exited.
+        * Fixed exit code reported on clean stream end; now `0` instead of terminate signal code.
+        * Fixed `.format()` called on logger return value instead of message inside `metadata` setter warning.
+    - [x] **Docs:**
+        * Fixed pre-existing broken internal links.
+
+??? question "Pull Requests"
+    * PR #79
+    * PR #77
+    * PR #76
+
+&nbsp;
+
+&nbsp;
+
+## v0.2.8 (2026-10-18)
+
+??? new "New Features"
     - [x] **FFhelper:**
         * Added configurable **subprocess timeout** support to `check_sp_output`, preventing indefinite hangs on frozen FFmpeg streams.
             * Added `MAX_TIMEOUT_SUBPROCESS` (default `10.0`s) and `TERMINATE_TIMEOUT_SUBPROCESS` (default `2.0`s) constants, overridable via environment variables.
