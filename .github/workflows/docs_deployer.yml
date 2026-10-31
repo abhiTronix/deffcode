@@ -47,8 +47,8 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin          
-          pip install -U mkdocs-exclude mike mkdocstrings mkdocstrings-python
+          pip install -U zensical mkdocstrings-python
+          pip install -U "git+https://github.com/squidfunk/mike.git"
         if: success()
       - name: git configure
         run: |
@@ -94,8 +94,8 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin          
-          pip install -U mkdocs-exclude mike mkdocstrings mkdocstrings-python
+          pip install -U zensical mkdocstrings-python
+          pip install -U "git+https://github.com/squidfunk/mike.git"
         if: success()
       - name: git configure
         run: |
@@ -143,8 +143,8 @@ jobs:
         if: success()
       - name: install_docs_deps
         run: |
-          pip install -U mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin          
-          pip install -U mkdocs-exclude mike mkdocstrings mkdocstrings-python
+          pip install -U zensical mkdocstrings-python
+          pip install -U "git+https://github.com/squidfunk/mike.git"
         if: success()
       - name: git configure
         run: |
