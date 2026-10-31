@@ -957,8 +957,10 @@ class FFdecoder:
                 else:
                     # otherwise discard and log it
                     logger.warning(
-                        "Manually assigned `{}` metadata property value is of invalid type. Discarding!"
-                    ).format(key)
+                        "Manually assigned `{}` metadata property value is of invalid type. Discarding!".format(
+                            key
+                        )
+                    )
                 # delete invalid key
                 del value[key]
             # There is no concept of a tuple in the JSON format.
