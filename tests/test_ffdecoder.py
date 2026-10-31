@@ -492,6 +492,19 @@ def test_capture_stderr_success(capture: Any) -> None:
     )
 
 
+def test_returncode_on_stream_exhausted() -> None:
+    """
+    Decoding a source to its end and terminating right away must report exit
+    code 0, not a SIGTERM-induced one while FFmpeg is still exiting.
+    """
+    decoder = FFdecoder(
+        return_testvideo_path(fmt="vo"), custom_ffmpeg=return_static_ffmpeg()
+    ).formulate()
+    # discard frames to consume fast, racing FFmpeg exit
+    assert sum(1 for _ in decoder.generateFrame()) > 0, "Test failed - expected frames"
+    assert decoder.terminate() == 0, "Test failed - expected exit code 0"
+
+
 def test_metadata_invalid_type_discarded() -> None:
     """
     Assigning an invalid-typed value to a source metadata property must be
