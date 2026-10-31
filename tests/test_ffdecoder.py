@@ -450,6 +450,66 @@ def test_extract_luma_invalid_type() -> None:
         decoder is not None and decoder.terminate()
 
 
+@pytest.mark.parametrize("verbose", [True, False])
+def test_capture_stderr_on_failure(verbose: bool) -> None:
+    """
+    With `-capture_stderr`, an FFmpeg pipeline that dies (invalid filter) must end
+    the generator gracefully, expose its non-zero exit code via `terminate()`/`returncode`,
+    and keep its error output in `stderr_tail`.
+    """
+    decoder = FFdecoder(
+        return_testvideo_path(fmt="vo"),
+        custom_ffmpeg=return_static_ffmpeg(),
+        verbose=verbose,
+        **{"-capture_stderr": True, "-vf": "nonexistentfilter"},
+    ).formulate()
+    assert decoder.returncode is None, "Test failed - returncode set before termination"
+    assert list(decoder.generateFrame()) == [], "Test failed - expected no frames"
+    retcode = decoder.terminate()
+    assert retcode and retcode == decoder.returncode, f"Test failed - got exit code {retcode}"
+    assert any("nonexistentfilter" in line for line in decoder.stderr_tail), (
+        f"Test failed - error missing from stderr_tail: {decoder.stderr_tail}"
+    )
+    # repeated terminate must be idempotent
+    assert decoder.terminate() == retcode, "Test failed - returncode lost on re-terminate"
+
+
+@pytest.mark.parametrize("capture", [True, "yes"])
+def test_capture_stderr_success(capture: Any) -> None:
+    """
+    A cleanly finished pipeline must report exit code 0. Non-bool
+    `-capture_stderr` values are discarded, leaving `stderr_tail` empty.
+    """
+    decoder = FFdecoder(
+        return_testvideo_path(fmt="vo"),
+        custom_ffmpeg=return_static_ffmpeg(),
+        **{"-capture_stderr": capture, "-vframes": 5},
+    ).formulate()
+    assert len(list(decoder.generateFrame())) == 5, "Test failed - expected 5 frames"
+    assert decoder.terminate() == 0, "Test failed - expected exit code 0"
+    assert bool(decoder.stderr_tail) == (capture is True), (
+        f"Test failed - unexpected stderr_tail: {decoder.stderr_tail}"
+    )
+
+
+def test_metadata_invalid_type_discarded() -> None:
+    """
+    Assigning an invalid-typed value to a source metadata property must be
+    discarded with a warning, not raise `AttributeError`.
+    """
+    decoder = FFdecoder(
+        return_testvideo_path(fmt="vo"), custom_ffmpeg=return_static_ffmpeg()
+    ).formulate()
+    try:
+        original = json.loads(decoder.metadata)["source_video_pixfmt"]
+        decoder.metadata = {"source_video_pixfmt": 1234}
+        assert json.loads(decoder.metadata)["source_video_pixfmt"] == original, (
+            "Test failed - invalid-typed value was not discarded"
+        )
+    finally:
+        decoder.terminate()
+
+
 @pytest.mark.parametrize(
     "custom_params, checks",
     [
