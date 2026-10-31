@@ -677,6 +677,8 @@ def check_sp_output(*args: Any, **kwargs: Any) -> bytes:
     # handle additional params
     retrieve_stderr = kwargs.pop("force_retrieve_stderr", False)
     timeout = kwargs.pop("timeout", None)
+    # never inherit parent's stdin, avoids blocking on unexpected input reads
+    kwargs.setdefault("stdin", sp.DEVNULL)
 
     # execute command in subprocess
     process = sp.Popen(
