@@ -786,6 +786,25 @@ These parameters are discussed below:
 
 &ensp;
 
+* **`-capture_stderr`** _(bool)_: This attribute can be enabled(`True`) to capture the last 50 lines of FFmpeg's stderr output for diagnosing pipeline failures. When enabled, captured lines are available via the [`stderr_tail`](../../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.stderr_tail) property, and if FFmpeg exits with a non-zero code mid-stream, they are logged at error level as the [`generateFrame()`](../../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.generateFrame) generator ends. Its default value is `False`. It can be used as follows:
+
+    !!! info "With `verbose=True`, captured stderr is still echoed to the console, so log output stays unchanged."
+
+    !!! tip "FFmpeg exit code is returned by [`terminate()`](../../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.terminate) and also available via the [`returncode`](../../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.returncode) property, regardless of this flag."
+
+    ```python
+    # define suitable parameter
+    ffparams = {"-capture_stderr": True} # captures FFmpeg stderr tail
+
+    decoder = FFdecoder("input.mp4", **ffparams).formulate()
+    for frame in decoder.generateFrame():
+        ...
+    if decoder.terminate():  # non-zero exit code
+        print("\n".join(decoder.stderr_tail))
+    ```
+
+&ensp;
+
 * **`-disable_ffmpeg_window`** _(bool)_: This attribute can be used to prevent the FFmpeg command line window from appearing when using the FFdecoder API on Windows. This is especially useful when creating an `.exe` file for your Python script with logging disabled(`verbose=False`), as it stops the FFmpeg window from popping up even in windowed or no-console mode. Its usage is as follows:
 
     !!! warning "The `-disable_ffmpeg_window` flag is only available on :fontawesome-brands-windows: Windows OS with logging disabled."
