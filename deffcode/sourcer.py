@@ -321,7 +321,7 @@ class Sourcer:
                 _params = self.__sourcer_params.copy()
                 _params["-ffprefixes"] = _prefixes
                 # output routing references all inputs; meaningless per-source
-                for _key in ("-vf", "-filter_complex", "-map"):
+                for _key in ("-vf", "-filter_complex", "-map", "-clones"):
                     _params.pop(_key, None)
                 # Resolve to an absolute path: on Unix `self.__ffmpeg` may be
                 # the bare command "ffmpeg" found via PATH, which the nested
