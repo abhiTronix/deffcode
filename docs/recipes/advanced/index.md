@@ -80,6 +80,11 @@ The following challenging recipes will take your skills to the next level and wi
     - [Decoding Picture-in-Picture overlay with per-input configuration](../advanced/multi_input/#decoding-picture-in-picture-overlay-with-per-input-configuration)
     - [Decoding mixed sources with different demuxers](../advanced/multi_input/#decoding-mixed-sources-with-different-demuxers)
     - [Probing multiple inputs with Sourcer API](../advanced/multi_input/#probing-multiple-inputs-with-sourcer-api)
+- [x] **[:material-call-split: Multi-Outputs Configurations](../advanced/multi_output/#multi-outputs-configurations)**
+    - [Recording while decoding](../advanced/multi_output/#recording-while-decoding)
+    - [Same filtering for all outputs](../advanced/multi_output/#same-filtering-for-all-outputs)
+    - [Different filtering for each output](../advanced/multi_output/#different-filtering-for-each-output)
+    - [Encode once, duplicate to file and stream](../advanced/multi_output/#encode-once-duplicate-to-file-and-stream)
 
 <div class="spacer"></div>
 
@@ -91,11 +96,6 @@ The following challenging recipes will take your skills to the next level and wi
 - [x] **[:material-timer-sync: Per-Frame Metadata Extraction](../advanced/extract-frame-metadata/#per-frame-metadata-extraction)**
     - [Smart Keyframe-only decoding for heavy AI inference](../advanced/extract-frame-metadata/#smart-keyframe-only-decoding-for-heavy-ai-inference)
     - [Variable-Frame-Rate (VFR) synchronization via `pts_time`](../advanced/extract-frame-metadata/#variable-frame-rate-vfr-synchronization-via-pts_time)
-- [x] **[:material-call-split: Creating Multiple Outputs](../advanced/create-multiple-outputs/#creating-multiple-outputs)**
-    - [Recording while decoding](../advanced/create-multiple-outputs/#recording-while-decoding)
-    - [Same filtering for all outputs](../advanced/create-multiple-outputs/#same-filtering-for-all-outputs)
-    - [Different filtering for each output](../advanced/create-multiple-outputs/#different-filtering-for-each-output)
-    - [Encode once, duplicate to file and stream](../advanced/create-multiple-outputs/#encode-once-duplicate-to-file-and-stream)
 
 
 &thinsp;

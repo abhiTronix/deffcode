@@ -219,9 +219,9 @@ nav:
           - Transcoding Video Art with Filtergraphs: recipes/advanced/transcode-art-filtergraphs.md
           - Hardware-Accelerated Video Transcoding: recipes/advanced/transcode-hw-acceleration.md
           - Multi-Input Source Configurations: recipes/advanced/multi_input.md
+          - Multi-Outputs Configurations: recipes/advanced/multi_output.md
           - Updating Video Metadata: recipes/advanced/update-metadata.md
           - Per-Frame Metadata Extraction: recipes/advanced/extract-frame-metadata.md
-          - Creating Multiple Outputs: recipes/advanced/create-multiple-outputs.md
   - API References:
       - deffcode.FFdecoder:
           - API: reference/ffdecoder/index.md
