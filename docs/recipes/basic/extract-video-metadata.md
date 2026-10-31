@@ -28,7 +28,7 @@ We'll discuss video metadata extraction using both these APIs briefly in the fol
 
 !!! warning "DeFFcode APIs requires FFmpeg executable"
 
-    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../../installation/ffmpeg_install/) for its installation.
+    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../installation/ffmpeg_install/) for its installation.
 
 ??? danger "Never name your python script `deffcode.py`"
 
@@ -105,7 +105,7 @@ In this example we will probe all metadata information available within `foo.mp4
 
 In this example we will probe all metadata information available within `foo.mp4` video file on :fontawesome-brands-windows: Windows machine, and print it as JSON string using  [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object in FFdecoder API.
 
-!!! note "You can also update video's metadata by using the same overloaded [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object in FFdecoder API. More information can be found in this [Advanced Recipe :material-pot-steam: ➶](../../advanced/update-metadata/#updating-source-video-metadata-in-ffdecoder-api)"
+!!! note "You can also update video's metadata by using the same overloaded [`metadata`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.metadata) property object in FFdecoder API. More information can be found in this [Advanced Recipe :material-pot-steam: ➶](../advanced/update-metadata/#updating-source-video-metadata-in-ffdecoder-api)"
 
 ```python
 # import the necessary packages

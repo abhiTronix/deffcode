@@ -41,7 +41,7 @@ If you've discovered a bug or have an idea that could improve **DeFFcode**, weâ€
 Before opening a new issue, please check the following first:
 
 - [x] Search for an existing [open or closed issue](https://github.com/abhiTronix/deffcode/issues?q=is%3Aissue) that matches your problem.
-- [x] Review the [FAQ & Troubleshooting section](../../help/get_help/#frequently-asked-questions).
+- [x] Review the [FAQ & Troubleshooting section](../help/get_help/#frequently-asked-questions).
 - [x] For quick questions, use our [Gitter community](https://gitter.im/deffcode-python/community) instead of opening an issue.
 
 You may find that your question has already been answered or that a workaround already exists.
