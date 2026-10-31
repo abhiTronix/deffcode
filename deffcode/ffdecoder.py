@@ -823,6 +823,8 @@ class FFdecoder:
                     self.__handle_stream_end()
                     break
                 yield self.__attach_metadata(frame)
+        # generator exhausted, FFmpeg may still be flushing/exiting cleanly
+        self.__terminate_stream = True
 
     def __handle_stream_end(self) -> None:
         """
@@ -1128,6 +1130,7 @@ class FFdecoder:
 
         # signal we are closing
         self.__verbose_logs and logger.debug("Terminating FFdecoder Pipeline...")
+        stream_exhausted = self.__terminate_stream
         self.__terminate_stream = True
         self.__stderr_stop.set()
         # check if no process was initiated at first place
@@ -1141,8 +1144,9 @@ class FFdecoder:
         self.__process.stdout and self.__process.stdout.close()
         # close `stderr` so the background reader thread's blocking readline() unblocks
         self.__process.stderr and self.__process.stderr.close()
-        # let FFmpeg finalize `-extra_outputs` (trailers/moov) on EPIPE before forcing termination
-        if self.__extra_outputs:
+        # let FFmpeg finalize `-extra_outputs` (trailers/moov) on EPIPE, or exit cleanly
+        # after stream end, before forcing termination
+        if self.__extra_outputs or stream_exhausted:
             try:
                 self.__process.wait(TERMINATE_TIMEOUT_SUBPROCESS)
             except sp.TimeoutExpired:
