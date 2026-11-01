@@ -21,16 +21,6 @@
     ]
   },
   {
-    "version": "v0.2.9-dev",
-    "title": "dev",
-    "aliases": []
-  },
-  {
-    "version": "v0.2.8-stable",
-    "title": "latest",
-    "aliases": []
-  },
-  {
     "version": "v0.2.8-release",
     "title": "0.2.8",
     "aliases": [
