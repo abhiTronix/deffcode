@@ -61,7 +61,7 @@ version = {attr = "deffcode.version.__version__"}
 [tool.poetry]
 # Poetry can't read setuptools' dynamic version,
 # keep in sync with deffcode/version.py
-version = "0.2.9"
+version = "0.3.0"
 
 [tool.ruff]
 line-length = 100
