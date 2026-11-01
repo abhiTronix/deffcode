@@ -1142,8 +1142,6 @@ class FFdecoder:
         self.__process.stdin and self.__process.stdin.close()
         # close `stdout` output
         self.__process.stdout and self.__process.stdout.close()
-        # close `stderr` so the background reader thread's blocking readline() unblocks
-        self.__process.stderr and self.__process.stderr.close()
         # let FFmpeg finalize `-extra_outputs` (trailers/moov) on EPIPE, or exit cleanly
         # after stream end, before forcing termination
         if self.__extra_outputs or stream_exhausted:
@@ -1159,10 +1157,12 @@ class FFdecoder:
             except sp.TimeoutExpired:
                 self.__process.kill()
                 self.__process.wait()
-        # join the stderr reader thread so it does not outlive the pipeline
+        # join the stderr reader thread (it hits EOF once FFmpeg exits) so it does not outlive
+        # the pipeline, then close `stderr`; closing earlier blocks on the reader's buffer lock
         if self.__stderr_thread is not None and self.__stderr_thread.is_alive():
             self.__stderr_thread.join(timeout=2.0)
         self.__stderr_thread = None
+        self.__process.stderr and self.__process.stderr.close()
         self.__returncode = self.__process.returncode
         self.__process = None
         logger.info("Pipeline terminated successfully.")
