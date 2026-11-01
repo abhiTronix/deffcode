@@ -46,6 +46,7 @@ Here are some key features that stand out:
 - [x] Hands down the easiest [**Index based Camera Device Capturing**](recipes/basic/decode-camera-devices), similar to OpenCV.
 - [x] Memory efficient **Live [Simple](recipes/basic/transcode-live-frames-simplegraphs/#transcoding-live-simple-filtergraphs) & [Complex](recipes/advanced/transcode-live-frames-complexgraphs/#transcoding-live-complex-filtergraphs) Filtergraphs**. _(Yes, You read it correctly "Live"!)_
 - [x] Native **[Multi-Input Source Configurations](recipes/advanced/multi_input/#multi-input-source-configurations)** support for decoding complex topologies.
+- [x] Native **[Multi-Outputs Configurations](recipes/advanced/multi_output/#multi-outputs-configurations)** support for recording/streaming while decoding, in a single FFmpeg pipeline.
 - [x] Lightning fast dedicated **:fontawesome-solid-microchip: GPU-Accelerated Video [Decoding](recipes/advanced/decode-hw-acceleration/#hardware-accelerated-video-decoding) & [Transcoding](recipes/advanced/transcode-hw-acceleration/#hardware-accelerated-video-transcoding)**.
 - [x] Enables precise FFmpeg [**Frame Seeking**](recipes/basic/save-keyframe-image/#extracting-key-frames-as-png-image) with pinpoint accuracy.
 - [x] Effortless [**Metadata Extraction**](recipes/basic/extract-video-metadata/#extracting-video-metadata) from all streams available in the source.
@@ -198,24 +199,18 @@ It is something I am doing with my own free time. But so much more needs to be d
 
 Here is a Bibtex entry you can use to cite this project in a publication:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19658542.svg)](https://doi.org/10.5281/zenodo.19658542)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23446604.svg)](https://doi.org/10.5281/zenodo.23446604)
 
 ```BibTeX
 @software{deffcode,
   author       = {Abhishek Thakur},
-  title        = {abhiTronix/deffcode: v0.2.7},
-  month        = apr,
+  title        = {abhiTronix/deffcode: v0.2.8},
+  month        = oct,
   year         = 2026,
   publisher    = {Zenodo},
-  version      = {v0.2.7},
-  doi          = {10.5281/zenodo.19658542},
-  url          = {https://doi.org/10.5281/zenodo.19658542},
-  swhid        = {swh:1:dir:85e8dfd087aed870deb4043c532faaa9b156d1e1
-                   ;origin=https://doi.org/10.5281/zenodo.6976947;vis
-                   it=swh:1:snp:af1b478890801c02d56b95f563b86761980bf
-                   82c;anchor=swh:1:rel:85f9af4452f8030317ec2012acc10
-                   29e8a945e2d;path=abhiTronix-deffcode-5162649
-                  },
+  version      = {v0.2.8},
+  doi          = {10.5281/zenodo.23446604},
+  url          = {https://doi.org/10.5281/zenodo.23446604},
 }
 ```
 

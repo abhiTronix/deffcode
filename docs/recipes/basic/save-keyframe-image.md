@@ -29,7 +29,7 @@ We'll discuss about it briefly in the following recipes:
 
 !!! warning "DeFFcode APIs requires FFmpeg executable"
 
-    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../../installation/ffmpeg_install/) for its installation.
+    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../installation/ffmpeg_install/) for its installation.
 
 ??? info "Additional Python Dependencies for following recipes"
 
@@ -373,7 +373,7 @@ This is when you tell FFmpeg to start seeking the video after it has read it.
 ## Generating Thumbnail with a Fancy filter
 
 <figure>
-<img src="../../../assets/images/fancy_thumbnail.jpg" loading="lazy" alt="fancy_thumbnail.jpg" title="fancy_thumbnail.jpg" />
+<img src="../../assets/images/fancy_thumbnail.jpg" loading="lazy" alt="fancy_thumbnail.jpg" title="fancy_thumbnail.jpg" />
 <figcaption><code>fancy_thumbnail.jpg</code> (Courtesy - <a href="https://peach.blender.org/trailer-page/">BigBuckBunny</a>)</figcaption>
 </figure>
 

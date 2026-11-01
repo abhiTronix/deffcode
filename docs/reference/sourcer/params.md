@@ -382,11 +382,11 @@ This parameter can be used to manually assigns the system _file-path/directory_ 
 
 ??? info "Behavior on Windows :fontawesome-brands-windows:"
     
-    If custom FFmpeg executable binary _file-path/directory_ is not assigned through `custom_ffmpeg` parameter on Windows machine, then Sourcer API will ==automatically attempt to download and extract suitable Static FFmpeg binaries at suitable location on your windows machine==. More information can be found [here ➶](../ffmpeg_install/#a-auto-installation).
+    If custom FFmpeg executable binary _file-path/directory_ is not assigned through `custom_ffmpeg` parameter on Windows machine, then Sourcer API will ==automatically attempt to download and extract suitable Static FFmpeg binaries at suitable location on your windows machine==. More information can be found [here ➶](../../installation/ffmpeg_install/#a-auto-installation).
 
     ??? question "How to change FFmpeg Static Binaries download directory?"
 
-        You can use [`-ffmpeg_download_path`](#exclusive-parameters) exclusive parameter in Sourcer API to set the custom directory for downloading FFmpeg Static Binaries during the [Auto-Installation](../../../installation/ffmpeg_install/#a-auto-installation) step on Windows Machines. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows in Sourcer API:
+        You can use [`-ffmpeg_download_path`](#exclusive-parameters) exclusive parameter in Sourcer API to set the custom directory for downloading FFmpeg Static Binaries during the [Auto-Installation](../../installation/ffmpeg_install/#a-auto-installation) step on Windows Machines. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows in Sourcer API:
 
         ```python
         # # define suitable parameter to download at "C:/User/foo/foo1"
@@ -475,7 +475,7 @@ These parameters are discussed below:
 
 &ensp;
 
-* **`-ffmpeg_download_path`** _(string)_: sets the custom directory for downloading FFmpeg Static Binaries in Compression Mode, during the [Auto-Installation](../ffmpeg_install/#a-auto-installation) on Windows Machines Only. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows: 
+* **`-ffmpeg_download_path`** _(string)_: sets the custom directory for downloading FFmpeg Static Binaries in Compression Mode, during the [Auto-Installation](../../installation/ffmpeg_install/#a-auto-installation) on Windows Machines Only. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows: 
 
     ```python
     sourcer_params = {"-ffmpeg_download_path": "C:/User/foo/foo1"} # will be saved to "C:/User/foo/foo1"

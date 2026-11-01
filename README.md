@@ -68,6 +68,7 @@ Here are some key features that stand out:
 - Hands down the easiest [**Index based Camera Device Capturing**][decoding-camera-devices-using-indexes], similar to OpenCV.
 - Easy to code **Real-time [Simple][transcoding-live-simple-filtergraphs] & [Complex][transcoding-live-complex-filtergraphs] Filtergraphs**. _(Yes, You read it correctly "Real-time"!)_
 - Native **[Multi-Input Source Configurations][multi-input-source-configurations]** support for decoding complex topologies.
+- Native **[Multi-Outputs Configurations][multi-outputs-configurations]** support for recording/streaming while decoding, in a single FFmpeg pipeline.
 - Lightning fast dedicated **GPU-Accelerated Video [Decoding][hardware-accelerated-video-decoding] & [Transcoding][hardware-accelerated-video-transcoding]**.
 - Enables precise FFmpeg [**Key-frame Seeking**][extracting-key-frames-as-png-image] with pinpoint accuracy.
 - Effortless [**Metadata Extraction**][extracting-video-metadata] from all streams available in the source.
@@ -197,6 +198,9 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [Multi-Input Source Configurations][multi-input-source-configurations]
   - [Decoding multiple inputs as 2x2 video grid _(mosaic)_][decoding-multiple-inputs-as-2x2-video-grid-mosaic]
   - [Decoding crossfade transition between multiple inputs][decoding-crossfade-transition-between-multiple-inputs]
+- [Multi-Outputs Configurations][multi-outputs-configurations]
+  - [Recording while decoding][recording-while-decoding]
+  - [Encode once, duplicate to file and stream][encode-once-duplicate-to-file-and-stream]
 
 </details>
 
@@ -317,24 +321,18 @@ It is something I am doing with my own free time. But so much more needs to be d
 
 Here is a Bibtex entry you can use to cite this project in a publication:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19658542.svg)](https://doi.org/10.5281/zenodo.19658542)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23446604.svg)](https://doi.org/10.5281/zenodo.23446604)
 
 ```BibTeX
 @software{deffcode,
   author       = {Abhishek Thakur},
-  title        = {abhiTronix/deffcode: v0.2.7},
-  month        = apr,
+  title        = {abhiTronix/deffcode: v0.2.8},
+  month        = oct,
   year         = 2026,
   publisher    = {Zenodo},
-  version      = {v0.2.7},
-  doi          = {10.5281/zenodo.19658542},
-  url          = {https://doi.org/10.5281/zenodo.19658542},
-  swhid        = {swh:1:dir:85e8dfd087aed870deb4043c532faaa9b156d1e1
-                   ;origin=https://doi.org/10.5281/zenodo.6976947;vis
-                   it=swh:1:snp:af1b478890801c02d56b95f563b86761980bf
-                   82c;anchor=swh:1:rel:85f9af4452f8030317ec2012acc10
-                   29e8a945e2d;path=abhiTronix-deffcode-5162649
-                  },
+  version      = {v0.2.8},
+  doi          = {10.5281/zenodo.23446604},
+  url          = {https://doi.org/10.5281/zenodo.23446604},
 }
 ```
 
@@ -449,6 +447,9 @@ Advanced Recipes
 [multi-input-source-configurations]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#multi-input-source-configurations
 [decoding-multiple-inputs-as-2x2-video-grid-mosaic]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-multiple-inputs-as-2x2-video-grid-mosaic
 [decoding-crossfade-transition-between-multiple-inputs]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-crossfade-transition-between-multiple-inputs
+[multi-outputs-configurations]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#multi-outputs-configurations
+[recording-while-decoding]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#recording-while-decoding
+[encode-once-duplicate-to-file-and-stream]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#encode-once-duplicate-to-file-and-stream
 
 <!--
 CI Apps URLs

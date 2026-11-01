@@ -35,7 +35,7 @@ We'll walk through two flagship optimizations this unlocks in the recipes below.
 
 !!! warning "DeFFcode APIs requires FFmpeg executable"
 
-    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../../installation/ffmpeg_install/) for its installation.
+    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../installation/ffmpeg_install/) for its installation.
 
 !!! warning "Incompatible with `-filter_complex`"
 

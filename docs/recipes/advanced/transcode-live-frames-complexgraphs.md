@@ -41,7 +41,7 @@ We'll discuss the transcoding of live complex filtergraphs in the following reci
 
 !!! warning "DeFFcode APIs requires FFmpeg executable"
 
-    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../../installation/ffmpeg_install/) for its installation.
+    ==DeFFcode APIs **MUST** requires valid FFmpeg executable for all of its core functionality==, and any failure in detection will raise `RuntimeError` immediately. Follow dedicated [FFmpeg Installation doc ➶](../../installation/ffmpeg_install/) for its installation.
 
 ??? info "Additional Python Dependencies for following recipes"
 
@@ -189,7 +189,7 @@ In this example we will blend **`10` seconds of Mandelbrot test pattern** _(gene
     decoder = FFdecoder('/path/to/img%03d.png', verbose=True, **ffparams).formulate()
     ```
 
-!!! note "FFdecoder API also accepts Glob pattern(`*.png`) as well Single looping image as as input to its [`source`](../../reference/sourcer/params/#source) parameter. See this [Basic Recipe :material-pot-steam: ➶](../../basic/decode-image-sequences/#decoding-image-sequences) for more information."
+!!! note "FFdecoder API also accepts Glob pattern(`*.png`) as well Single looping image as as input to its [`source`](../../reference/sourcer/params/#source) parameter. See this [Basic Recipe :material-pot-steam: ➶](../basic/decode-image-sequences/#decoding-image-sequences) for more information."
 
 ```python
 # import the necessary packages

@@ -450,6 +450,79 @@ def test_extract_luma_invalid_type() -> None:
         decoder is not None and decoder.terminate()
 
 
+@pytest.mark.parametrize("verbose", [True, False])
+def test_capture_stderr_on_failure(verbose: bool) -> None:
+    """
+    With `-capture_stderr`, an FFmpeg pipeline that dies (invalid filter) must end
+    the generator gracefully, expose its non-zero exit code via `terminate()`/`returncode`,
+    and keep its error output in `stderr_tail`.
+    """
+    decoder = FFdecoder(
+        return_testvideo_path(fmt="vo"),
+        custom_ffmpeg=return_static_ffmpeg(),
+        verbose=verbose,
+        **{"-capture_stderr": True, "-vf": "nonexistentfilter"},
+    ).formulate()
+    assert decoder.returncode is None, "Test failed - returncode set before termination"
+    assert list(decoder.generateFrame()) == [], "Test failed - expected no frames"
+    retcode = decoder.terminate()
+    assert retcode and retcode == decoder.returncode, f"Test failed - got exit code {retcode}"
+    assert any("nonexistentfilter" in line for line in decoder.stderr_tail), (
+        f"Test failed - error missing from stderr_tail: {decoder.stderr_tail}"
+    )
+    # repeated terminate must be idempotent
+    assert decoder.terminate() == retcode, "Test failed - returncode lost on re-terminate"
+
+
+@pytest.mark.parametrize("capture", [True, "yes"])
+def test_capture_stderr_success(capture: Any) -> None:
+    """
+    A cleanly finished pipeline must report exit code 0. Non-bool
+    `-capture_stderr` values are discarded, leaving `stderr_tail` empty.
+    """
+    decoder = FFdecoder(
+        return_testvideo_path(fmt="vo"),
+        custom_ffmpeg=return_static_ffmpeg(),
+        **{"-capture_stderr": capture, "-vframes": 5},
+    ).formulate()
+    assert len(list(decoder.generateFrame())) == 5, "Test failed - expected 5 frames"
+    assert decoder.terminate() == 0, "Test failed - expected exit code 0"
+    assert bool(decoder.stderr_tail) == (capture is True), (
+        f"Test failed - unexpected stderr_tail: {decoder.stderr_tail}"
+    )
+
+
+def test_returncode_on_stream_exhausted() -> None:
+    """
+    Decoding a source to its end and terminating right away must report exit
+    code 0, not a SIGTERM-induced one while FFmpeg is still exiting.
+    """
+    decoder = FFdecoder(
+        return_testvideo_path(fmt="vo"), custom_ffmpeg=return_static_ffmpeg()
+    ).formulate()
+    # discard frames to consume fast, racing FFmpeg exit
+    assert sum(1 for _ in decoder.generateFrame()) > 0, "Test failed - expected frames"
+    assert decoder.terminate() == 0, "Test failed - expected exit code 0"
+
+
+def test_metadata_invalid_type_discarded() -> None:
+    """
+    Assigning an invalid-typed value to a source metadata property must be
+    discarded with a warning, not raise `AttributeError`.
+    """
+    decoder = FFdecoder(
+        return_testvideo_path(fmt="vo"), custom_ffmpeg=return_static_ffmpeg()
+    ).formulate()
+    try:
+        original = json.loads(decoder.metadata)["source_video_pixfmt"]
+        decoder.metadata = {"source_video_pixfmt": 1234}
+        assert json.loads(decoder.metadata)["source_video_pixfmt"] == original, (
+            "Test failed - invalid-typed value was not discarded"
+        )
+    finally:
+        decoder.terminate()
+
+
 @pytest.mark.parametrize(
     "custom_params, checks",
     [
@@ -884,3 +957,140 @@ def test_multi_input_composites(
         frames = [f for f in decoder.generateFrame() if f is not None]
     assert frames and frames[0].shape == (*shape, 3)
     assert abs(len(frames) - n_frames) <= 1
+
+
+def _side_path(name: str) -> str:
+    return os.path.join(tempfile.gettempdir(), "temp_write", name)
+
+
+test_data = [
+    (
+        {"-extra_outputs": ["-y", "-map", "0", "-c", "copy", _side_path("side_copy.mkv")]},
+        [_side_path("side_copy.mkv")],
+        None,
+    ),
+    (
+        {
+            "-filter_complex": "[0:v]split=2[main][rec];[main]scale=320:-2[main]",
+            "-map": "[main]",
+            "-extra_outputs": [
+                "-y",
+                "-map",
+                "[rec]",
+                "-c:v",
+                "libx264",
+                _side_path("side_split.mp4"),
+            ],
+        },
+        [_side_path("side_split.mp4")],
+        320,
+    ),
+    (
+        {
+            "-extra_outputs": [
+                "-y",
+                "-map",
+                "0:v",
+                "-c:v",
+                "libx264",
+                "-flags",
+                "+global_header",
+                "-f",
+                "tee",
+                # tee treats `\` as escape char, so use forward slashes for Windows paths
+                "{}|[f=mpegts]{}".format(
+                    _side_path("side_tee.mkv"), _side_path("side_tee.ts")
+                ).replace("\\", "/"),
+            ]
+        },
+        [_side_path("side_tee.mkv"), _side_path("side_tee.ts")],
+        None,
+    ),
+]
+
+
+@pytest.mark.parametrize("ffparams, side_files, width", test_data)
+def test_extra_outputs(ffparams: dict[str, Any], side_files: list[str], width: int | None) -> None:
+    """
+    Testing `-extra_outputs` writes side outputs from the same pipeline while frames
+    still reach Python intact (incl. `-filter_complex` labels consumed only by side outputs)
+    """
+    decoder = None
+    source = return_testvideo_path(fmt="av")
+    actual_count, actual_shape = actual_frame_count_n_frame_size(source)
+    os.makedirs(_side_path(""), exist_ok=True)
+    try:
+        decoder = FFdecoder(
+            source, frame_format="bgr24", custom_ffmpeg=return_static_ffmpeg(), **ffparams
+        ).formulate()
+        frames = [f for f in decoder.generateFrame() if f is not None]
+        assert decoder.terminate() == 0, "Test failed - FFmpeg exited with an error"
+        assert len(frames) == actual_count, f"Test failed - got {len(frames)} frames"
+        # width proves output metadata came from the probe, not the source fallback
+        assert frames[0].shape[1] == (width or actual_shape[1]), (
+            f"Test failed - unexpected frame shape {frames[0].shape}"
+        )
+        for side in side_files:
+            # count via FFmpeg, since OpenCV on macOS (AVFoundation) can't read `.mkv`; use
+            # default FFmpeg, as the pinned 2022 static build dies silently probing `.ts` on CI
+            side_decoder = FFdecoder(side).formulate()
+            side_count = sum(f is not None for f in side_decoder.generateFrame())
+            side_decoder.terminate()
+            assert side_count > 0, f"Test failed - empty {side}"
+    except Exception as e:
+        pytest.fail(str(e))
+    finally:
+        decoder is not None and decoder.terminate()
+        for side in side_files:
+            remove_file_safe(side)
+
+
+def test_extra_outputs_early_terminate() -> None:
+    """
+    Terminating mid-stream must still leave a valid (finalized) side `.mp4`
+    """
+    decoder = None
+    side = _side_path("side_early.mp4")
+    os.makedirs(_side_path(""), exist_ok=True)
+    try:
+        decoder = FFdecoder(
+            return_testvideo_path(fmt="av"),
+            frame_format="bgr24",
+            custom_ffmpeg=return_static_ffmpeg(),
+            **{"-extra_outputs": ["-y", "-map", "0:v", "-c:v", "libx264", side]},
+        ).formulate()
+        for num, frame in enumerate(decoder.generateFrame()):
+            if frame is None or num == 9:
+                break
+        decoder.terminate()
+        assert actual_frame_count_n_frame_size(side)[0] >= 10, (
+            "Test failed - side output not finalized"
+        )
+    except Exception as e:
+        pytest.fail(str(e))
+    finally:
+        decoder is not None and decoder.terminate()
+        remove_file_safe(side)
+
+
+@pytest.mark.parametrize("value", ["foo", [["-map", "0"]], {"a": 1}])
+def test_extra_outputs_invalid(value: Any) -> None:
+    """
+    Invalid `-extra_outputs` values must be discarded, leaving normal decoding untouched
+    """
+    decoder = None
+    source = return_testvideo_path(fmt="vo")
+    actual_count, actual_shape = actual_frame_count_n_frame_size(source)
+    try:
+        decoder = FFdecoder(
+            source,
+            frame_format="bgr24",
+            custom_ffmpeg=return_static_ffmpeg(),
+            **{"-extra_outputs": value},
+        ).formulate()
+        frames = [f for f in decoder.generateFrame() if f is not None]
+        assert len(frames) == actual_count and frames[0].shape == actual_shape
+    except Exception as e:
+        pytest.fail(str(e))
+    finally:
+        decoder is not None and decoder.terminate()

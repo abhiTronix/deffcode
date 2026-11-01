@@ -42,7 +42,7 @@ Its valid input can be one of the following:
     decoder = FFdecoder('/home/foo.mp4').formulate()
     ```
 
-    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-video-files/#decoding-video-files)"
+    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../recipes/basic/decode-video-files/#decoding-video-files)"
 
 - [x] **Image Sequence:** _Valid image sequence such as sequential(`'img%03d.png'`) or glob pattern(`'*.png'`) or single (looping) image as input:_
 
@@ -90,7 +90,7 @@ Its valid input can be one of the following:
         decoder = FFdecoder('img.jpg', verbose=True, **ffparams).formulate()
         ```
 
-    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-image-sequences/#decoding-image-sequences)"
+    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../recipes/basic/decode-image-sequences/#decoding-image-sequences)"
 
 - [x] **Network Address:** _Valid (`http(s)`, `rtp`, `rstp`, `rtmp`, `mms`, etc.) incoming network stream address such as `'rtsp://xx:yy@192.168.1.ee:fd/av0_0'` as input:_
 
@@ -102,9 +102,9 @@ Its valid input can be one of the following:
     decoder = FFdecoder('rtsp://xx:yy@192.168.1.ee:fd/av0_0', verbose=True, **ffparams).formulate()
     ```
 
-    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-network-streams/#decoding-network-streams)"
+    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../recipes/basic/decode-network-streams/#decoding-network-streams)"
 
-- [x] **Camera Device Index:** Valid "device index" or "camera index" of the connected Camera Device. One can easily Capture desired Camera Device in FFdecoder API by specifying its matching index value _(use Sourcer API's [`enumerate_devices`](../../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) to list them)_ either as **integer** or **string of integer** type to its `source` parameter. For example, for capturing `"0"` index device on :fontawesome-brands-windows: Windows, we can do as follows in FFdecoder API: 
+- [x] **Camera Device Index:** Valid "device index" or "camera index" of the connected Camera Device. One can easily Capture desired Camera Device in FFdecoder API by specifying its matching index value _(use Sourcer API's [`enumerate_devices`](../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) to list them)_ either as **integer** or **string of integer** type to its `source` parameter. For example, for capturing `"0"` index device on :fontawesome-brands-windows: Windows, we can do as follows in FFdecoder API: 
 
     ??? danger "Requirement for Index based Camera Device Capturing in FFdecoder API"
 
@@ -119,7 +119,7 @@ Its valid input can be one of the following:
             | :material-apple: Mac OS | [`avfoundation`](https://ffmpeg.org/ffmpeg-devices.html#avfoundation) |
 
             **:warning: Important:** Kindly make sure your FFmpeg binaries support these platform specific demuxers as well as system have the appropriate video drivers and related softwares installed.
-        - [x] The [`source`](#source) parameter value **MUST be exactly the probed Camera Device index** _(use Sourcer API's [`enumerate_devices`](../../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) to list them)_.
+        - [x] The [`source`](#source) parameter value **MUST be exactly the probed Camera Device index** _(use Sourcer API's [`enumerate_devices`](../../reference/sourcer/#deffcode.sourcer.Sourcer.enumerate_devices) to list them)_.
         - [x] The [`source_demuxer`](#source_demuxer) parameter value  **MUST be either `None`_(also means empty)_ or `"auto"`**. 
 
     ??? tip "Important Facts related to Camera Device Indexing"
@@ -145,7 +145,7 @@ Its valid input can be one of the following:
     decoder = FFdecoder("0", frame_format="bgr24", verbose=True).formulate()
     ```
 
-    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-camera-devices)"
+    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../recipes/basic/decode-camera-devices)"
 
 - [x] **Video Capture Device Name/Path:** Valid video capture device's name _(e.g. `"USB2.0 Camera"`)_ or its path _(e.g. `"/dev/video0"` on linux)_ or its index _(e.g. `"0"`)_ as input  w.r.t [`source_demuxer`](#source_demuxer) parameter value in use. For example, for capturing `"USB2.0 Camera"` named device with `dshow` source demuxer on :fontawesome-brands-windows: Windows, we can do as follows in FFdecoder API: 
 
@@ -293,7 +293,7 @@ Its valid input can be one of the following:
     decoder = FFdecoder("USB2.0 Camera", source_demuxer="dshow", frame_format="bgr24", verbose=True).formulate()
     ```
 
-    !!! example "Related usage recipe :material-pot-mix: can found [here ➶](../../../recipes/basic/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam)"
+    !!! example "Related usage recipe :material-pot-mix: can found [here ➶](../../recipes/advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-a-webcam)"
 
 - [x] **Screen Capturing/Recording:** Valid screen capture device's name _(e.g. `"desktop"`)_ or its index _(e.g. `":0.0"`)_ as input w.r.t [`source_demuxer`](#source_demuxer) parameter value in use. You can also specify additional specifications _(such as limiting capture area to a region, setting capturing coordinates, whether to capture mouse pointer and clicks etc.)_. For example, for capturing `"0:"` indexed device with `avfoundation` source demuxer on :material-apple: MacOS along with mouse pointer and clicks, we can do as follows in FFdecoder API: 
 
@@ -424,7 +424,7 @@ Its valid input can be one of the following:
     decoder = FFdecoder("0:", source_demuxer="avfoundation", frame_format="bgr24", verbose=True, **ffparams).formulate()
     ```
 
-    !!! example "Related usage recipe :material-pot-mix: can found [here ➶](../../../recipes/basic/decode-live-feed-devices/#capturing-and-previewing-frames-from-your-desktop)"
+    !!! example "Related usage recipe :material-pot-mix: can found [here ➶](../../recipes/advanced/decode-live-feed-devices/#capturing-and-previewing-frames-from-your-desktop)"
 
 
 - [x] **Virtual Sources:** Valid filtergraph to use as input with [`lavfi`](http://underpop.online.fr/f/ffmpeg/help/lavfi.htm.gz) _(**Libavfilter** input virtual device)_ source that reads data from the open output pads of a libavfilter filtergraph. For example, for generating and decoding [Mandelbrot](https://en.wikipedia.org/wiki/Mandelbrot_set) graph of `1280x720` frame size and `30` framerate using `lavfi` input virtual device, we can do as follows in FFdecoder API: 
@@ -439,7 +439,7 @@ Its valid input can be one of the following:
     ).formulate()
     ```
 
-    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/advanced/decode-live-virtual-sources/#decoding-live-virtual-sources)"
+    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../recipes/advanced/decode-live-virtual-sources/#decoding-live-virtual-sources)"
 
 
 &nbsp;
@@ -468,7 +468,7 @@ This parameter specifies the demuxer(`-f`) for the input source _(such as `dshow
         decoder = FFdecoder("0", source_demuxer="auto, frame_format="bgr24").formulate()
         ```
 
-    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-camera-devices)"
+    !!! example "Related usage recipes :material-pot-steam: can found [here ➶](../../recipes/basic/decode-camera-devices)"
 
 
 **Data-Type:** String or List of Strings (if `source` is a list, you can pass a list of identical length mapping demuxers to corresponding sources).
@@ -513,7 +513,7 @@ decoder = FFdecoder("foo.mp4", frame_format="gray").formulate()
 
 !!! tip "Use `#!sh ffmpeg -pix_fmts` terminal command to lists all FFmpeg supported pixel formats."
 
-!!! example "Various Pixel formats related usage recipes :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file)"
+!!! example "Various Pixel formats related usage recipes :material-pot-steam: can found [here ➶](../../recipes/basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file)"
 
 &nbsp; 
 
@@ -523,11 +523,11 @@ This parameter can be used to manually assigns the system _file-path/directory_ 
 
 ??? info "Behavior on Windows :fontawesome-brands-windows:"
     
-    If custom FFmpeg executable binary _file-path/directory_ is not assigned through `custom_ffmpeg` parameter on Windows machine, then FFdecoder API will ==automatically attempt to download and extract suitable Static FFmpeg binaries at suitable location on your windows machine==. More information can be found [here ➶](../ffmpeg_install/#a-auto-installation).
+    If custom FFmpeg executable binary _file-path/directory_ is not assigned through `custom_ffmpeg` parameter on Windows machine, then FFdecoder API will ==automatically attempt to download and extract suitable Static FFmpeg binaries at suitable location on your windows machine==. More information can be found [here ➶](../../installation/ffmpeg_install/#a-auto-installation).
 
     ??? question "How to change FFmpeg Static Binaries download directory?"
 
-        You can use `-ffmpeg_download_path` _(via. [`-custom_sourcer_params`](#b-exclusive-parameters))_ exclusive parameter in FFdecoder API to set the custom directory for downloading FFmpeg Static Binaries during the [Auto-Installation](../../../installation/ffmpeg_install/#a-auto-installation) step on Windows Machines. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows in FFdecoder API:
+        You can use `-ffmpeg_download_path` _(via. [`-custom_sourcer_params`](#b-exclusive-parameters))_ exclusive parameter in FFdecoder API to set the custom directory for downloading FFmpeg Static Binaries during the [Auto-Installation](../../installation/ffmpeg_install/#a-auto-installation) step on Windows Machines. If this parameter is not altered, then these binaries will auto-save to the default temporary directory (for e.g. `C:/User/temp`) on your windows machine. It can be used as follows in FFdecoder API:
 
         ```python
         # # define suitable parameter to download at "C:/User/foo/foo1"
@@ -673,7 +673,7 @@ These parameters are discussed below:
         The `-clones` and `-ffprefixes` parameters even tho fundamentally work the same, they're meant to serve at different positions in the FFmpeg command. Normally, FFdecoder API pipeline looks something like following with these parameters in place:
 
         ```sh
-        ffmpeg {{-ffprefixes FFmpeg params}} -vcodec h264 -i foo.mp4 -pix_fmt rgb24 -s 1280x720 -framerate 25.0 {{-clones FFmpeg params}} -f rawvideo -
+        ffmpeg {{-ffprefixes FFmpeg params}} -vcodec h264 -i foo.mp4 -pix_fmt rgb24 -s 1280x720 -framerate 25.0 {{-clones FFmpeg params}} -f rawvideo - {{-extra_outputs FFmpeg params}}
         ```
 
     !!! tip "Turn on [`verbose`](#verbose) parameter _(`verbose = True`)_ to see the FFmpeg command that is being executed in FFdecoder's pipeline. This helps you debug/address any issues and make adjustments accordingly."
@@ -694,7 +694,7 @@ These parameters are discussed below:
         }
         ```
 
-        Use an empty inner list (`[]`) for any input that needs no prefix. See the [Multi-Input Source Configurations recipe ➶](../../../recipes/advanced/multi_input/#multi-input-source-configurations) for full examples.
+        Use an empty inner list (`[]`) for any input that needs no prefix. See the [Multi-Input Source Configurations recipe ➶](../../recipes/advanced/multi_input/#multi-input-source-configurations) for full examples.
 
 &ensp;
 
@@ -711,7 +711,32 @@ These parameters are discussed below:
 
 &ensp;
 
-* **`-custom_sourcer_params`** _(dict)_ :  This attribute assigns all [**Exclusive Parameter**](../../sourcer/params/#b-exclusive-parameters) meant for Sourcer API's `sourcer_params` dictionary parameter directly through FFdecoder API. Its usage is as follows: 
+* **`-extra_outputs`** _(list)_: This attribute sets additional FFmpeg outputs _(files, network streams, `tee` muxer, etc.)_ that are generated from the **same** FFmpeg pipeline alongside the decoded frames. Its values are appended verbatim **after** the rawvideo pipe output (`-f rawvideo -`), so its output options never affect the frames delivered to Python. Its value can be of datatype **`list`** only _(nested lists/dicts are discarded with a warning)_, and its usage is as follows:
+
+    ```sh
+    ffmpeg ... -i foo.mp4 -pix_fmt rgb24 -s 1280x720 -framerate 25.0 -f rawvideo - {{-extra_outputs FFmpeg params}}
+    ```
+
+    !!! tip "Turn on [`verbose`](#verbose) parameter _(`verbose = True`)_ to see the FFmpeg command that is being executed in FFdecoder's pipeline. This helps you debug/address any issues and make adjustments accordingly."
+
+    !!! warning "Always add `-y` _(overwrite)_ to `-extra_outputs`, otherwise an existing output file makes FFmpeg exit on its overwrite prompt, and **no frames** are decoded."
+
+    !!! danger "If any extra output fails _(e.g. invalid path or unreachable server)_, FFmpeg aborts the **whole** pipeline including frame decoding. Use the `tee` muxer with `[onfail=ignore]` for fragile outputs."
+
+    ```python
+    # define suitable parameter
+    ffparams = {
+        "-filter_complex": "[0:v]split=2[main][rec];[main]scale=640:-2[main]",
+        "-map": "[main]",  # decoded frames
+        "-extra_outputs": ["-y", "-map", "[rec]", "-map", "0:a?", "-c:v", "libx264", "-c:a", "aac", "recording.mp4"],
+    }
+    ```
+
+    See the [Multi-Outputs Configurations recipe ➶](../../recipes/advanced/multi_output/#multi-outputs-configurations) for more examples.
+
+&ensp;
+
+* **`-custom_sourcer_params`** _(dict)_ :  This attribute assigns all [**Exclusive Parameter**](../sourcer/params/#b-exclusive-parameters) meant for Sourcer API's `sourcer_params` dictionary parameter directly through FFdecoder API. Its usage is as follows: 
     
     ```python
     # define suitable parameter meant for `sourcer_params`
@@ -720,7 +745,7 @@ These parameters are discussed below:
 
 &ensp;
 
-* **`-default_stream_indexes`** _(list/tuple)_ : This attribute assign value directly to `default_stream_indexes` parameter in Sourcer API's [`probe_stream()`](../../../reference/sourcer/#deffcode.sourcer.Sourcer.probe_stream) method for selecting specific video and audio stream index in case of multiple ones. Value can be of format: `(int,int)` or `[int,int]` as follows:
+* **`-default_stream_indexes`** _(list/tuple)_ : This attribute assign value directly to `default_stream_indexes` parameter in Sourcer API's [`probe_stream()`](../../reference/sourcer/#deffcode.sourcer.Sourcer.probe_stream) method for selecting specific video and audio stream index in case of multiple ones. Value can be of format: `(int,int)` or `[int,int]` as follows:
     
     ```python
     # define suitable parameter meant for `probe_stream()` method
@@ -738,7 +763,7 @@ These parameters are discussed below:
     ffparams = {"-enforce_cv_patch": True} # enables OpenCV patch for YUV frames
     ```
 
-    !!! example "YUV pixel-formats usage recipe :material-pot-steam: can found [here ➶](../../../recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats)"
+    !!! example "YUV pixel-formats usage recipe :material-pot-steam: can found [here ➶](../../recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats)"
 
 &ensp;
 
@@ -746,7 +771,7 @@ These parameters are discussed below:
 
     !!! warning "As of now, this flag is only applied when `frame_format` resolves to a pixel-format starting with `yuv` or `nv`. For other pixel-formats, the flag is ignored and the default reshape path is used."
 
-    !!! tip "Pair with [Performance Mode ➶](../../../recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats) via `frame_format=\"yuv420p\"` for the fastest RAW-to-grayscale pipeline. Takes precedence over `-enforce_cv_patch` when both are enabled."
+    !!! tip "Pair with [Performance Mode ➶](../../recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats) via `frame_format=\"yuv420p\"` for the fastest RAW-to-grayscale pipeline. Takes precedence over `-enforce_cv_patch` when both are enabled."
 
     ```python
     # define suitable parameter
@@ -755,7 +780,7 @@ These parameters are discussed below:
 
 &ensp;
 
-* **`-extract_metadata`** _(bool)_: This attribute can be enabled(`True`) to activate **asynchronous per-frame metadata extraction** via FFmpeg's [`showinfo`](https://ffmpeg.org/ffmpeg-filters.html#showinfo) filter. When enabled, the [`generateFrame()`](../../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.generateFrame) generator yields `(frame, metadata)` tuples instead of plain ndarrays, where `metadata` is a dict with the following keys:
+* **`-extract_metadata`** _(bool)_: This attribute can be enabled(`True`) to activate **asynchronous per-frame metadata extraction** via FFmpeg's [`showinfo`](https://ffmpeg.org/ffmpeg-filters.html#showinfo) filter. When enabled, the [`generateFrame()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.generateFrame) generator yields `(frame, metadata)` tuples instead of plain ndarrays, where `metadata` is a dict with the following keys:
 
     - **`frame_num`** _(int)_: monotonic frame index as emitted by FFmpeg.
     - **`pts_time`** _(float)_: presentation timestamp in seconds — the exact millisecond the frame is meant to appear, crucial for VFR (Variable-Frame-Rate) sources.
@@ -782,6 +807,25 @@ These parameters are discussed below:
         if not meta["is_keyframe"]:
             continue
         results = heavy_ai_model.predict(frame)  # runs on ~1-2 frames per second
+    ```
+
+&ensp;
+
+* **`-capture_stderr`** _(bool)_: This attribute can be enabled(`True`) to capture the last 50 lines of FFmpeg's stderr output for diagnosing pipeline failures. When enabled, captured lines are available via the [`stderr_tail`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.stderr_tail) property, and if FFmpeg exits with a non-zero code mid-stream, they are logged at error level as the [`generateFrame()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.generateFrame) generator ends. Its default value is `False`. It can be used as follows:
+
+    !!! info "With `verbose=True`, captured stderr is still echoed to the console, so log output stays unchanged."
+
+    !!! tip "FFmpeg exit code is returned by [`terminate()`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.terminate) and also available via the [`returncode`](../../reference/ffdecoder/#deffcode.ffdecoder.FFdecoder.returncode) property, regardless of this flag."
+
+    ```python
+    # define suitable parameter
+    ffparams = {"-capture_stderr": True} # captures FFmpeg stderr tail
+
+    decoder = FFdecoder("input.mp4", **ffparams).formulate()
+    for frame in decoder.generateFrame():
+        ...
+    if decoder.terminate():  # non-zero exit code
+        print("\n".join(decoder.stderr_tail))
     ```
 
 &ensp;

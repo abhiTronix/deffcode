@@ -19,12 +19,12 @@
 {% block announce %}
 <!-- Add announcement here, including arbitrary HTML -->
 {% set announcement_link_1 = config.site_url ~
-'/recipes/advanced/multi_input/#decoding-multiple-inputs-as-2x2-video-grid-mosaic' %}
+'/recipes/advanced/multi_output/#recording-while-decoding' %}
 {% set announcement_link_2 = config.site_url ~
-'/recipes/advanced/multi_input/#decoding-crossfade-transition-between-multiple-inputs' %}
+'/recipes/advanced/multi_output/#encode-once-duplicate-to-file-and-stream' %}
 
 
-<b><span class="twemoji"> {% include ".icons/material/rocket-launch.svg" %} </span> <code>v0.2.8</code> is out! <a href="{{ announcement_link_1 }}">Build 2x2 video grids ➶</a> and <a href="{{ announcement_link_2 }}">crossfade between inputs ➶</a> with multi-input <code>-filter_complex</code> support!</b>
+<b><span class="twemoji"> {% include ".icons/material/rocket-launch.svg" %} </span> <code>v0.2.9</code> is out! <a href="{{ announcement_link_1 }}">Record while decoding ➶</a> and <a href="{{ announcement_link_2 }}">stream to multiple outputs ➶</a> with new <code>-extra_outputs</code> support!</b>
 {% endblock %}
 {% block outdated %}
 You're not viewing the latest version.
