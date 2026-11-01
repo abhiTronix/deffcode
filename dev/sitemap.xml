@@ -1,111 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/changelog/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/changelog/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/contribution/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/contribution/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/contribution/PR/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/contribution/PR/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/contribution/issue/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/contribution/issue/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/help/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/help/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/help/get_help/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/help/get_help/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/installation/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/installation/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/installation/ffmpeg_install/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/installation/ffmpeg_install/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/license/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/license/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/decode-hw-acceleration/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/decode-hw-acceleration/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/decode-live-feed-devices/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/decode-live-feed-devices/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/decode-live-virtual-sources/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/decode-live-virtual-sources/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/extract-frame-metadata/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/extract-frame-metadata/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/multi_input/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/multi_input/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/multi_output/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/multi_output/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/transcode-art-filtergraphs/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/transcode-art-filtergraphs/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/transcode-hw-acceleration/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/transcode-hw-acceleration/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/transcode-live-frames-complexgraphs/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/transcode-live-frames-complexgraphs/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/advanced/update-metadata/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/advanced/update-metadata/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/basic/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/decode-camera-devices/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/basic/decode-camera-devices/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/decode-image-sequences/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/basic/decode-image-sequences/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/decode-network-streams/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/basic/decode-network-streams/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/decode-video-files/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/basic/decode-video-files/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/extract-video-metadata/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/basic/extract-video-metadata/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/save-keyframe-image/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/basic/save-keyframe-image/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/transcode-live-frames-simplegraphs/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/basic/transcode-live-frames-simplegraphs/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/recipes/basic/transcode-live-frames/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/recipes/basic/transcode-live-frames/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/ffdecoder/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/reference/ffdecoder/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/ffdecoder/params/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/reference/ffdecoder/params/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/ffhelper/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/reference/ffhelper/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/sourcer/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/reference/sourcer/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/sourcer/params/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/reference/sourcer/params/</loc>
       </url>
       <url>
-        <loc>https://abhitronix.github.io/deffcode/v0.2.9-dev/reference/utils/</loc>
+        <loc>https://abhitronix.github.io/deffcode/v0.3.0-dev/reference/utils/</loc>
       </url>
 </urlset>
