@@ -1031,8 +1031,9 @@ def test_extra_outputs(ffparams: dict[str, Any], side_files: list[str], width: i
             f"Test failed - unexpected frame shape {frames[0].shape}"
         )
         for side in side_files:
-            # count via FFmpeg, since OpenCV on macOS (AVFoundation) can't read `.mkv`
-            side_decoder = FFdecoder(side, custom_ffmpeg=return_static_ffmpeg()).formulate()
+            # count via FFmpeg, since OpenCV on macOS (AVFoundation) can't read `.mkv`; use
+            # default FFmpeg, as the pinned 2022 static build dies silently probing `.ts` on CI
+            side_decoder = FFdecoder(side).formulate()
             side_count = sum(f is not None for f in side_decoder.generateFrame())
             side_decoder.terminate()
             assert side_count > 0, f"Test failed - empty {side}"
