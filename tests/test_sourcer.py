@@ -29,6 +29,7 @@ from typing import Any
 import pytest
 
 from deffcode import Sourcer
+from deffcode import sourcer as sourcer_module
 from deffcode.utils import logger_handler
 
 from .essentials import (
@@ -223,6 +224,30 @@ def test_multi_input_primary_metadata() -> None:
         [320, 240],
         [160, 120],
     ]
+
+
+def test_multi_stream_indexes(monkeypatch: Any) -> None:
+    """
+    Stream indexes are per type (`0:v:N`); out-of-range ones warn and fall back to stream 0.
+    Stream count is reported, and nothing warns for index 0.
+    """
+    src = "color=c=red:s=320x240:r=25:d=2[out0];color=c=blue:s=160x120:r=30:d=2[out1]"
+    warnings: list[str] = []
+    monkeypatch.setattr(sourcer_module.logger, "warning", warnings.append)
+    for indexes, resolution, framerate, n_warnings in [
+        ((1, 0), [160, 120], 30.0, 0),
+        ((5, 0), [320, 240], 25.0, 1),
+        ((0, 0), [320, 240], 25.0, 1),
+    ]:
+        metadata = (
+            Sourcer(src, source_demuxer="lavfi")
+            .probe_stream(default_stream_indexes=indexes)
+            .retrieve_metadata()
+        )
+        assert metadata["source_video_resolution"] == resolution
+        assert metadata["source_video_framerate"] == framerate
+        assert len(warnings) == n_warnings
+        assert metadata["source_video_streams"] == 2
 
 
 @pytest.mark.parametrize("label", ["displaymatrix", "Display Matrix"])  # FFmpeg < 8.1, >= 8.1
