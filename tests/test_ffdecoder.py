@@ -25,6 +25,8 @@ import json
 import logging
 import os
 import platform
+import struct
+import subprocess
 import tempfile
 from typing import Any
 
@@ -34,6 +36,8 @@ import pytest
 from PIL import Image
 
 from deffcode import FFdecoder
+from deffcode import ffdecoder as ffdecoder_module
+from deffcode import sourcer as sourcer_module
 from deffcode.utils import logger_handler
 
 from .essentials import (
@@ -959,8 +963,198 @@ def test_multi_input_composites(
     assert abs(len(frames) - n_frames) <= 1
 
 
+# one `lavfi` input carrying two embedded video streams: v0 red 320x240, v1 blue 160x120
+_MULTI_STREAM = "color=c=red:s=320x240:r=25:d=2[out0];color=c=blue:s=160x120:r=30:d=2[out1]"
+
+
+def _color(frame: np.ndarray) -> str:
+    return "red" if frame[..., 0].mean() > frame[..., 2].mean() else "blue"
+
+
+test_data = [
+    ({}, (240, 320), "red"),
+    ({"-default_stream_indexes": (1, 0)}, (120, 160), "blue"),
+    ({"-map": "0:v:1"}, (120, 160), "blue"),
+    ({"-default_stream_indexes": (1, 0), "-map": "0:v:1"}, (120, 160), "blue"),
+    ({"-default_stream_indexes": (1, 0), "-vf": "scale=80:-2"}, (60, 80), "blue"),
+    ({"-default_stream_indexes": (1, 0), "-filter_complex": "[0:v:1]null"}, (120, 160), "blue"),
+    # index inferred from a filtergraph using only `[0:v:N]`
+    ({"-filter_complex": "[0:v:1]hflip"}, (120, 160), "blue"),
+    ({"-filter_complex": "[0:v:1]hflip[out]", "-map": "[out]"}, (120, 160), "blue"),
+    # out-of-range index falls back to stream 0, also with `-vf`
+    ({"-default_stream_indexes": (5, 0)}, (240, 320), "red"),
+    ({"-default_stream_indexes": (5, 0), "-vf": "scale=80:-2"}, (60, 80), "red"),
+    # mixed-rate composite: output has no fps; size still probed, frames not duplicated
+    ({"-filter_complex": "[0:v:1]scale=320:240[b];[0:v:0][b]hstack"}, (240, 640), None),
+]
+
+
+@pytest.mark.parametrize("ffparams, shape, color", test_data)
+def test_multi_stream_source(
+    ffparams: dict[str, Any], shape: tuple[int, int], color: str | None
+) -> None:
+    """
+    Testing selecting an embedded video stream decodes THAT stream at its own size
+    """
+    with FFdecoder(
+        _MULTI_STREAM, source_demuxer="lavfi", frame_format="rgb24", **ffparams
+    ) as decoder:
+        frames = [f for f in decoder.generateFrame() if f is not None]
+    assert frames and frames[0].shape == (*shape, 3)
+    assert color is None or _color(frames[0]) == color
+    # 2 seconds at the selected stream's (or v0's) rate
+    assert abs(len(frames) - (60 if color == "blue" else 50)) <= 1
+
+
+# v1 is bigger, so FFmpeg alone would auto-select it
+_MULTI_STREAM_REV = "color=c=red:s=160x120:r=25:d=2[out0];color=c=blue:s=320x240:r=30:d=2[out1]"
+
+test_data = [
+    (_MULTI_STREAM_REV, {}, (120, 160), 1),
+    (_MULTI_STREAM_REV, {"-vf": "scale=80:-2"}, (60, 80), 1),
+    ("testsrc=size=320x240:rate=25:duration=2", {}, (240, 320), 0),
+]
+
+
+@pytest.mark.parametrize("source, ffparams, shape, n_warnings", test_data)
+def test_multi_stream_unselected(
+    monkeypatch: Any,
+    source: str,
+    ffparams: dict[str, Any],
+    shape: tuple[int, int],
+    n_warnings: int,
+) -> None:
+    """
+    Testing multi-stream sources without a selection decode stream 0 (with a warning),
+    while single-stream sources stay unmapped and silent
+    """
+    warnings: list[str] = []
+    monkeypatch.setattr(ffdecoder_module.logger, "warning", warnings.append)
+    with FFdecoder(source, source_demuxer="lavfi", frame_format="rgb24", **ffparams) as decoder:
+        frames = [f for f in decoder.generateFrame() if f is not None]
+    assert frames and frames[0].shape == (*shape, 3)
+    assert not n_warnings or _color(frames[0]) == "red"
+    assert sum("video streams" in w for w in warnings) == n_warnings
+
+
+test_data = [
+    ({}, 0),
+    ({"-default_stream_indexes": (1, 0)}, 0),
+    ({"-map": "0:v:1"}, 0),
+    ({"-default_stream_indexes": (1, 0), "-vf": "scale=80:-2"}, 1),
+    ({"-default_stream_indexes": (5, 0), "-vf": "scale=80:-2"}, 2),
+]
+
+
+@pytest.mark.parametrize("ffparams, decode_probes", test_data)
+def test_multi_stream_probes(
+    monkeypatch: Any, ffparams: dict[str, Any], decode_probes: int
+) -> None:
+    """
+    Testing stream selection adds no decoding probe (`-f null`) unless `-vf` needs one,
+    plus one re-probe for an out-of-range index with `-vf`
+    """
+    probes: list[list[str]] = []
+    check = sourcer_module.check_sp_output
+    monkeypatch.setattr(
+        sourcer_module,
+        "check_sp_output",
+        lambda cmd, **kw: (probes.append(cmd), check(cmd, **kw))[1],
+    )
+    FFdecoder(_MULTI_STREAM, source_demuxer="lavfi", **ffparams)  # probes on init
+    assert sum("null" in cmd for cmd in probes) == decode_probes
+
+
+@pytest.mark.parametrize(
+    "ffparams",
+    [{"-map": "0:v:1"}, {"-default_stream_indexes": (1, 0)}, {"-filter_complex": "[0:v:1]null"}],
+)
+def test_multi_stream_mixed_codecs(ffparams: dict[str, Any]) -> None:
+    """
+    Testing selecting an embedded video stream with a different codec than v0
+    uses the right decoder and frame count (file-based: has a `Duration`)
+    """
+    path = _side_path("multi_stream_mixed.mkv")
+    if not os.path.isfile(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        cmd = [return_static_ffmpeg(), "-y", "-f", "lavfi", "-i", _MULTI_STREAM]
+        cmd += ["-map", "0:v:0", "-map", "0:v:1", "-c:v:0", "mpeg4", "-c:v:1", "mpeg2video", path]
+        subprocess.run(cmd, check=True, capture_output=True)
+    with FFdecoder(path, frame_format="rgb24", **ffparams) as decoder:
+        frames = [f for f in decoder.generateFrame() if f is not None]
+    assert frames and frames[0].shape == (120, 160, 3)
+    assert _color(frames[0]) == "blue"
+    assert abs(len(frames) - 60) <= 1
+
+
 def _side_path(name: str) -> str:
     return os.path.join(tempfile.gettempdir(), "temp_write", name)
+
+
+def _cover_mp4(first: bool) -> str:
+    """
+    MP4 with red video + green cover art (attached pic). FFmpeg muxes cover art last;
+    moving `udta` before `trak` inside `moov` (after `mdat`, so offsets stay valid)
+    makes the demuxer expose it as stream 0, as some taggers do.
+    """
+    path = _side_path("cover_{}.mp4".format("first" if first else "last"))
+    if not os.path.isfile(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        cmd = [return_static_ffmpeg(), "-y", "-f", "lavfi", "-i", "color=c=red:s=320x240:r=25:d=1"]
+        cmd += ["-f", "lavfi", "-i", "color=c=green:s=64x64:r=1:d=1", "-map", "0", "-map", "1"]
+        cmd += ["-c:v:0", "mpeg4", "-c:v:1", "png", "-frames:v:1", "1"]
+        cmd += ["-disposition:v:1", "attached_pic", path]
+        subprocess.run(cmd, check=True, capture_output=True)
+
+        def boxes(buf: bytes) -> list[tuple[bytes, bytes]]:
+            out, i = [], 0
+            while i < len(buf):
+                size, kind = struct.unpack(">I4s", buf[i : i + 8])
+                out.append((kind, buf[i : i + (size or len(buf) - i)]))
+                i += size or len(buf) - i
+            return out
+
+        if first:
+            with open(path, "rb") as f:
+                top = boxes(f.read())
+            assert [k for k, _ in top][-1] == b"moov"
+            order = {b"mvhd": 0, b"udta": 1}
+            moov = sorted(boxes(top[-1][1][8:]), key=lambda k: order.get(k[0], 2))
+            with open(path, "wb") as f:
+                f.write(b"".join(b for _, b in top[:-1]) + top[-1][1][:8])
+                f.write(b"".join(b for _, b in moov))
+    return path
+
+
+test_data = [
+    (True, {}, (240, 320), [0]),
+    (True, {"-vf": "scale=160:-2"}, (120, 160), [0]),
+    (False, {}, (240, 320), [1]),
+]
+
+
+@pytest.mark.parametrize("first, ffparams, shape, pics", test_data)
+def test_multi_stream_cover_art(
+    monkeypatch: Any,
+    first: bool,
+    ffparams: dict[str, Any],
+    shape: tuple[int, int],
+    pics: list[int],
+) -> None:
+    """
+    Testing unselected sources skip cover art (attached pic) wherever it is, silently,
+    since only one real video stream remains
+    """
+    path = _cover_mp4(first)
+    warnings: list[str] = []
+    monkeypatch.setattr(ffdecoder_module.logger, "warning", warnings.append)
+    with FFdecoder(path, frame_format="rgb24", **ffparams) as decoder:
+        metadata = json.loads(decoder.metadata)
+        frames = [f for f in decoder.generateFrame() if f is not None]
+    assert metadata["source_video_attached_pics"] == pics
+    assert frames and frames[0].shape == (*shape, 3) and _color(frames[0]) == "red"
+    assert abs(len(frames) - 25) <= 1
+    assert not [w for w in warnings if "video streams" in w]
 
 
 test_data = [
