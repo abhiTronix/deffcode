@@ -757,7 +757,7 @@ These parameters are discussed below:
     - A video index `N` decodes that stream via `-map 0:v:N` _(unless `-map` or `-filter_complex` is defined)_.
     - A plain `-map 0:v:N` sets the video index to `N` as well.
     - A `-filter_complex` using a single `[0:v:N]` input _(e.g. `[0:v:1]hflip`)_ sets the video index to `N` as well, so framerate, frame count and decoder follow that stream.
-    - If the source has several video streams and none is selected, the **first real video stream** is decoded, instead of the stream FFmpeg would auto-select _(e.g. the highest HLS rendition, or the one with `default` disposition)_. Cover art _(attached pictures)_ is skipped. A warning is logged if more than one real video stream remains.
+    - If the source has several video streams and none is selected, the **first real video stream** is decoded, instead of the stream FFmpeg would auto-select _(e.g. the highest HLS rendition, or the one with `default` disposition)_. Cover art _(attached pictures)_ is skipped. A warning is logged if more than one real video stream remains. An explicit `(0, x)` index can't be told apart from the default and still warns; use `-map 0:v:0` to select stream `0` silently.
     - Single-stream sources are left unmapped. Selecting a stream costs no extra probing, except with `-vf`, where the probe must measure the filtered size of the selected stream.
 
     !!! tip "The number of embedded video streams is available as the `source_video_streams` metadata key, and the indexes of cover art streams among them as `source_video_attached_pics`."
