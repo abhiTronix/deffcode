@@ -317,11 +317,12 @@ class FFdecoder:
                 (self.__sourcer_metadata, self.__missing_prop) = probe(default_stream_indexes)
             if count > 1:
                 self.__extra_params["-map"] = f"0:v:{index}"
-                len(videos) > 1 and logger.warning(
-                    "Source has {} video streams but none is selected. Decoding video stream {}; select another via `-default_stream_indexes` or `-map 0:v:N`.".format(
-                        len(videos), index
+                if len(videos) > 1:
+                    logger.warning(
+                        "Source has {} video streams but none is selected. Decoding video stream {}; select another via `-default_stream_indexes` or `-map 0:v:N`.".format(
+                            len(videos), index
+                        )
                     )
-                )
             else:
                 self.__extra_params.pop("-map", None)
 
