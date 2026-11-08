@@ -282,6 +282,8 @@ class Sourcer:
 
         # handle various stream flags
         self.__contains_video = False  # contains video
+        self.__video_streams = 0  # number of embedded video streams
+        self.__video_attached_pics = []  # per-type indexes of attached pictures
         self.__contains_audio = False  # contains audio
         self.__contains_images = False  # contains image-sequence
 
@@ -300,7 +302,7 @@ class Sourcer:
         This method Parses/Probes FFmpeg `subprocess` pipe's Standard Output for given input source and Populates the information in private class variables.
 
         Parameters:
-            default_stream_indexes (list, tuple): selects specific video and audio stream index in case of multiple ones. Value can be of format: `(int,int)`. For example `(0,1)` is ("0th video stream", "1st audio stream").
+            default_stream_indexes (list, tuple): selects specific video and audio stream index in case of multiple ones. Value can be of format: `(int,int)`. For example `(0,1)` is ("0th video stream", "1st audio stream"). Indexes are per stream type (same as FFmpeg's `0:v:N`/`0:a:N` specifiers), not the absolute `Stream #0:N`. Out-of-range values fall back to stream `0` with a warning.
 
         **Returns:** Reference to the instance object.
         """
@@ -349,6 +351,26 @@ class Sourcer:
             source_demuxer=self.__source_demuxer,
             forced_validate=(self.__forcevalidatesource if self.__source_demuxer is None else True),
         )
+        # count video streams; warn on out-of-range indexes (extractors fall back to stream 0)
+        for kind, index in zip(("Video:", "Audio:"), default_stream_indexes, strict=True):
+            lines = [
+                line
+                for line in self.__ffsp_output.split("\n")
+                if "Stream #" in line and kind in line
+            ]
+            count = len(lines)
+            if count and not 0 <= index < count:
+                logger.warning(
+                    "Invalid {} stream index `{}` ({} available). Falling back to stream 0.".format(
+                        kind[:-1].lower(), index, count
+                    )
+                )
+            if kind == "Video:":
+                self.__video_streams = count
+                # cover art / thumbnails are single still images, not video
+                self.__video_attached_pics = [
+                    i for i, line in enumerate(lines) if "(attached pic)" in line
+                ]
         # parse resolution and framerate
         video_rfparams = self.__extract_resolution_framerate(
             default_stream=default_stream_indexes[0]
@@ -398,19 +420,21 @@ class Sourcer:
             # parse video duration
             self.__default_source_duration = self.__extract_duration()
             # calculate all flags
-            if (
+            selected = default_stream_indexes[0]
+            selected = selected if 0 <= selected < self.__video_streams else 0
+            self.__contains_video = bool(
                 self.__default_video_bitrate
                 or (self.__default_video_framerate and self.__default_video_resolution)
-            ) and (self.__default_audio_bitrate or self.__default_audio_samplerate):
-                self.__contains_video = True
-                self.__contains_audio = True
-            elif self.__default_video_bitrate or (
-                self.__default_video_framerate and self.__default_video_resolution
-            ):
-                self.__contains_video = True
-            elif self.__default_audio_bitrate or self.__default_audio_samplerate:
-                self.__contains_audio = True
-            else:
+                # selected cover art has no usable metadata, but real video streams exist
+                or (
+                    selected in self.__video_attached_pics
+                    and len(self.__video_attached_pics) < self.__video_streams
+                )
+            )
+            self.__contains_audio = bool(
+                self.__default_audio_bitrate or self.__default_audio_samplerate
+            )
+            if not (self.__contains_video or self.__contains_audio):
                 raise ValueError(
                     "Invalid source with no decodable audio or video stream provided. Aborting!"
                 )
@@ -492,6 +516,8 @@ class Sourcer:
                 "source_audio_bitrate": self.__default_audio_bitrate,
                 "source_audio_samplerate": self.__default_audio_samplerate,
                 "source_has_video": self.__contains_video,
+                "source_video_streams": self.__video_streams,
+                "source_video_attached_pics": self.__video_attached_pics,
                 "source_has_audio": self.__contains_audio,
                 "source_has_image_sequence": self.__contains_images,
             }
@@ -900,6 +926,9 @@ class Sourcer:
             elif filtered_tbr:
                 # guess from TBR(if fps unavailable)
                 result["framerate"] = float(re.findall(r"[\d\.\d]+", filtered_tbr[0])[0])
+            else:
+                # unknown (e.g. mixed-rate filtergraph output); keep resolution usable
+                result["framerate"] = 0.0
 
             # extract resolution metadata
             if filtered_resolution:

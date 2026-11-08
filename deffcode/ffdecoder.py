@@ -233,19 +233,42 @@ class FFdecoder:
             if not isinstance(default_stream_indexes, (list, tuple))
             else default_stream_indexes
         )
+        # single source with multiple embedded video streams: keep the probed
+        # stream and the decoded stream in sync.
+        auto_map = False  # map selected video stream after probing
+        probe_map = True  # forward `-map` to Sourcer probe
+        if not self.__is_multi:
+            _map = self.__extra_params.get("-map")
+            _graph = self.__extra_params.get("-filter_complex")
+            # plain `-map 0:v:N`, or a filtergraph using only `[0:v:N]` (output left
+            # unmapped or mapped by `[label]`), selects the video index too
+            _selected = set()
+            if isinstance(_map, str) and re.fullmatch(r"0:v:\d+", _map):
+                _selected = {_map}
+                # index already describes it; probe needs the map only to measure filters
+                probe_map = bool({"-vf", "-filter_complex"}.intersection(self.__extra_params))
+            elif isinstance(_graph, str) and (_map is None or str(_map).startswith("[")):
+                _selected = set(re.findall(r"\[(0:v:\d+)\]", _graph))
+            if len(_selected) == 1 and default_stream_indexes[0] == 0:
+                index = int(_selected.pop().rsplit(":", 1)[1])
+                default_stream_indexes = (index, default_stream_indexes[1])
+            elif not {"-map", "-filter_complex"}.intersection(self.__extra_params):
+                auto_map = True
+                # `-vf` probe decodes anyway, so map there too: its output size must
+                # describe the selected stream, not FFmpeg's own pick
+                if "-vf" in self.__extra_params:
+                    self.__extra_params["-map"] = f"0:v:{default_stream_indexes[0]}"
 
         # pass FFmpeg filter to Sourcer API params for processing
         if {"-vf", "-filter_complex"}.intersection(self.__extra_params.keys()):
             key = "-vf" if "-vf" in self.__extra_params else "-filter_complex"
             sourcer_params[key] = self.__extra_params[key]
-        # multi-input output streams are selected via `-map`, so probe with it too
-        if self.__is_multi and "-map" in self.__extra_params:
+        # output streams are selected via `-map`, so probe with it too
+        if "-map" in self.__extra_params and probe_map:
             sourcer_params["-map"] = self.__extra_params["-map"]
         # filtergraph labels consumed only by `-extra_outputs` must also be consumed while
         # probing, otherwise FFmpeg aborts with "unconnected output"; map all into the probe sink.
         if self.__extra_outputs and "-filter_complex" in sourcer_params:
-            if "-map" in self.__extra_params:
-                sourcer_params["-map"] = self.__extra_params["-map"]
             sourcer_params["-clones"] = [
                 arg
                 for key, val in pairwise(self.__extra_outputs)
@@ -255,18 +278,52 @@ class FFdecoder:
 
         # define dict to store user-defined parameters
         self.__user_metadata = {}
+
         # extract and assign source metadata as dict
-        (self.__sourcer_metadata, self.__missing_prop) = (
-            Sourcer(
-                source=source,
-                source_demuxer=source_demuxer,
-                verbose=verbose,
-                custom_ffmpeg=custom_ffmpeg if isinstance(custom_ffmpeg, str) else "",
-                **sourcer_params,
+        def probe(indexes: tuple[int, int]) -> Any:
+            return (
+                Sourcer(
+                    source=source,
+                    source_demuxer=source_demuxer,
+                    verbose=verbose,
+                    custom_ffmpeg=custom_ffmpeg if isinstance(custom_ffmpeg, str) else "",
+                    **sourcer_params,
+                )
+                .probe_stream(default_stream_indexes=indexes)
+                .retrieve_metadata(force_retrieve_missing=True)
             )
-            .probe_stream(default_stream_indexes=default_stream_indexes)
-            .retrieve_metadata(force_retrieve_missing=True)
-        )
+
+        (self.__sourcer_metadata, self.__missing_prop) = probe(default_stream_indexes)
+
+        # with multiple video streams, FFmpeg would auto-select its own (e.g. highest
+        # HLS rendition) instead of the one metadata describes, so map it. Single
+        # stream sources are left unmapped (no extra decoding probe either).
+        if auto_map:
+            count = self.__sourcer_metadata["source_video_streams"]
+            selected = default_stream_indexes[0]
+            # out-of-range index: Sourcer falls back to stream 0 too
+            index = probed = selected if 0 <= selected < count else 0
+            videos = []  # real video streams (no cover art) of a multi-stream source
+            if selected == 0 and count > 1:
+                pics = self.__sourcer_metadata["source_video_attached_pics"]
+                videos = [i for i in range(count) if i not in pics]
+                index = videos[0] if videos else 0
+            # re-probe if metadata describes another stream, or `-vf` probe mapped
+            # an out-of-range one (fails, losing output size)
+            if index != probed or ("-vf" in sourcer_params and index != selected):
+                if "-vf" in sourcer_params:
+                    sourcer_params["-map"] = f"0:v:{index}"
+                default_stream_indexes = (index, default_stream_indexes[1])
+                (self.__sourcer_metadata, self.__missing_prop) = probe(default_stream_indexes)
+            if count > 1:
+                self.__extra_params["-map"] = f"0:v:{index}"
+                len(videos) > 1 and logger.warning(
+                    "Source has {} video streams but none is selected. Decoding video stream {}; select another via `-default_stream_indexes` or `-map 0:v:N`.".format(
+                        len(videos), index
+                    )
+                )
+            else:
+                self.__extra_params.pop("-map", None)
 
         # handle valid FFmpeg assets location
         self.__ffmpeg = self.__sourcer_metadata["ffmpeg_binary_path"]
@@ -636,10 +693,8 @@ class FFdecoder:
                         str(self.__inputframerate)
                     )
                 )
-            elif (
-                "output_framerate" in self.__sourcer_metadata  # means `fps` filter is defined
-                and self.__sourcer_metadata["output_framerate"] > 0.0
-            ):
+            # means `fps` filter is defined; `""` if output has no fps (e.g. mixed-rate filtergraph)
+            elif (self.__sourcer_metadata.get("output_framerate") or 0.0) > 0.0:
                 # special mode to discard `-framerate/-r` FFmpeg parameter completely
                 if self.__inputframerate == "null":
                     logger.critical(
@@ -662,6 +717,10 @@ class FFdecoder:
                     output_params["-framerate"] = str(
                         self.__sourcer_metadata["source_video_framerate"]
                     )
+                    # filtergraph output without fixed rate (e.g. mixed-rate composite):
+                    # FFmpeg would duplicate frames at its timebase rate, so force source rate.
+                    if self.__sourcer_metadata.get("output_framerate") == 0.0:
+                        output_params["-r"] = output_params["-framerate"]
                 self.__verbose_logs and logger.info(
                     "Default source framerate will be used for this pipeline for defining output framerate."
                 )
