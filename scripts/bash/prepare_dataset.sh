@@ -63,36 +63,40 @@ download() { curl -fL --retry 3 "$@"; }
 cd "$TMPFOLDER/Downloads/FFmpeg_static"
 
 # Clean residual artifacts from previous runs
-rm -rf ffmpeg ffmpeg-git* ffmpeg-latest*
+rm -rf ffmpeg ffmpeg-*
 
 BASE_URL="https://github.com/abhiTronix/ffmpeg-static-builds/raw/master/$ALTBINARIES_DATE"
 
 if [ "$OS_NAME" = "linux" ]; then
-
   echo "Downloading Linux Static FFmpeg Binaries..."
   download -O "$BASE_URL/linux/ffmpeg-git-amd64-static.tar.xz"
-  # extracted dir name is read from the archive instead of globbing
-  EXTRACTED_DIR=$(tar -tf ffmpeg-git-amd64-static.tar.xz | head -n 1 | cut -d/ -f1)
-  tar -xJf ffmpeg-git-amd64-static.tar.xz
-  rm ffmpeg-git-amd64-static.tar.xz
-  mv "$EXTRACTED_DIR" ffmpeg
-
 elif [ "$OS_NAME" = "windows" ]; then
-
   echo "Downloading Windows Static FFmpeg Binaries..."
-  download -O "$BASE_URL/windows/ffmpeg-latest-win64-static.zip"
-  unzip -qq ffmpeg-latest-win64-static.zip
-  rm ffmpeg-latest-win64-static.zip
-  mv ffmpeg-latest-win64-static ffmpeg
-
+  download -O "$BASE_URL/windows/ffmpeg-latest-win64-static.7z"
 else
-
   echo "Downloading MacOS64 Static FFmpeg Binary..."
   download -O "$BASE_URL/macOS/ffmpeg-latest-macos64-static.zip"
-  unzip -qq ffmpeg-latest-macos64-static.zip
-  rm ffmpeg-latest-macos64-static.zip
-  mv ffmpeg-latest-macos64-static ffmpeg
+fi
 
+# Extract by archive type (zip, 7z, tar.*), then rename extracted dir
+for ARCHIVE in ffmpeg-*; do
+  case "$ARCHIVE" in
+  *.zip) unzip -qq "$ARCHIVE" ;;
+  *.7z) "$(command -v 7z || command -v 7zz || command -v 7za)" x -y "$ARCHIVE" >/dev/null ;; # 7z name varies by platform
+  *.tar.*) tar -xf "$ARCHIVE" ;;
+  *)
+    echo "Error: unsupported archive type: $ARCHIVE" >&2
+    exit 1
+    ;;
+  esac
+  rm "$ARCHIVE"
+done
+mv ffmpeg-* ffmpeg # only the extracted dir is left
+
+# Tests expect ffmpeg/bin/ffmpeg on Windows/macOS; some builds ship binaries at the top level
+if [ "$OS_NAME" != "linux" ] && [ ! -d ffmpeg/bin ]; then
+  mkdir ffmpeg/bin
+  mv ffmpeg/ffmpeg ffmpeg/ffprobe ffmpeg/ffplay ffmpeg/bin/
 fi
 
 # Downloading Test Data
