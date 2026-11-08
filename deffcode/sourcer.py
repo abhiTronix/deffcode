@@ -659,7 +659,8 @@ class Sourcer:
             )
             self.__source = source
         elif os.path.isfile(source):
-            self.__source = os.path.abspath(source)
+            # FFmpeg demuxers (e.g. dash) can't resolve relative manifest paths
+            self.__source = source = os.path.abspath(source)
         elif is_valid_image_seq(self.__ffmpeg, source=source, verbose=self.__verbose_logs):
             self.__source = source
             self.__contains_images = True
@@ -864,42 +865,28 @@ class Sourcer:
 
         **Returns:** Default Video resolution and framerate as dictionary value.
         """
-        identifiers = ["Video:", "Stream #"]
         # use output metadata if available
-        meta_text = (
-            [
-                line.strip()
-                for line in self.__ffsp_output.split("\n")
-                if all(x in line for x in identifiers)
-            ]
-            if not extract_output
-            else [
-                line.strip()
-                for line in self.__metadata_output.split("\n")
-                if all(x in line for x in identifiers)
-            ]
-        )
-        # extract video orientation metadata if available
-        identifiers_orientation = ["displaymatrix:", "rotation"]
-        meta_text_orientation = (
-            [
-                line.strip()
-                for line in self.__ffsp_output.split("\n")
-                if all(x in line for x in identifiers_orientation)
-            ]
-            if not extract_output
-            else [
-                line.strip()
-                for line in self.__metadata_output.split("\n")
-                if all(x in line for x in identifiers_orientation)
-            ]
-        )
+        metadata = self.__metadata_output if extract_output else self.__ffsp_output
+        # collect video stream lines, pairing each with the rotation found in its
+        # own side-data block (label is `displaymatrix:` before FFmpeg 8.1,
+        # `Display Matrix:` since), so indexes never drift between the two lists.
+        meta_text, orientations = [], []
+        in_video = False
+        for line in metadata.split("\n"):
+            if "Stream #" in line:
+                in_video = "Video:" in line
+                if in_video:
+                    meta_text.append(line.strip())
+                    orientations.append(0.0)
+            elif in_video and (
+                rotation := re.search(r"rotation of (-?\d+(?:\.\d+)?) degrees", line, re.I)
+            ):
+                orientations[-1] = float(rotation.group(1))
         # use metadata if available
         result = {}
         if meta_text:
-            selected_stream = meta_text[
-                (default_stream if default_stream > 0 and default_stream < len(meta_text) else 0)
-            ]
+            index = default_stream if 0 < default_stream < len(meta_text) else 0
+            selected_stream = meta_text[index]
 
             # filter data
             filtered_resolution = re.findall(r"([1-9]\d+)x([1-9]\d+)", selected_stream.strip())
@@ -919,18 +906,7 @@ class Sourcer:
                 result["resolution"] = [int(x) for x in filtered_resolution[0]]
 
             # extract video orientation metadata
-            if meta_text_orientation:
-                selected_stream = meta_text_orientation[
-                    (
-                        default_stream
-                        if default_stream > 0 and default_stream < len(meta_text)
-                        else 0
-                    )
-                ]
-                filtered_orientation = re.findall(r"[-]?\d+\.\d+", selected_stream.strip())
-                result["orientation"] = float(filtered_orientation[0])
-            else:
-                result["orientation"] = 0.0
+            result["orientation"] = orientations[index]
 
         return result if result and (len(result) == 3) else {}
 
