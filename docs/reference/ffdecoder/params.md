@@ -752,6 +752,22 @@ These parameters are discussed below:
     ffparams = {"-default_stream_indexes": (0,1)} # ("0th video stream", "1st audio stream")
     ```
 
+    Indexes are **per stream type** _(same as FFmpeg's `0:v:N`/`0:a:N` specifiers)_, not the absolute `Stream #0:N`. Out-of-range values fall back to stream `0` with a warning. For a single source, FFdecoder keeps the **decoded** stream in sync with the stream its metadata describes:
+
+    - A video index `N` decodes that stream via `-map 0:v:N` _(unless `-map` or `-filter_complex` is defined)_.
+    - A plain `-map 0:v:N` sets the video index to `N` as well.
+    - A `-filter_complex` using a single `[0:v:N]` input _(e.g. `[0:v:1]hflip`)_ sets the video index to `N` as well, so framerate, frame count and decoder follow that stream.
+    - If the source has several video streams and none is selected, the **first real video stream** is decoded, instead of the stream FFmpeg would auto-select _(e.g. the highest HLS rendition, or the one with `default` disposition)_. Cover art _(attached pictures)_ is skipped. A warning is logged if more than one real video stream remains.
+    - Single-stream sources are left unmapped. Selecting a stream costs no extra probing, except with `-vf`, where the probe must measure the filtered size of the selected stream.
+
+    !!! tip "The number of embedded video streams is available as the `source_video_streams` metadata key, and the indexes of cover art streams among them as `source_video_attached_pics`."
+
+    !!! warning "Before `v0.3.0`, this parameter only changed the reported metadata, and FFmpeg decoded the stream it auto-selected. There, pass both `-default_stream_indexes` and `-map 0:v:N`."
+
+    !!! danger "A thumbnail stored as a regular video **track** _(not flagged as attached picture)_ is indistinguishable from video. If it comes first, unselected sources decode just that image, so select the real video stream explicitly."
+
+    !!! example "Multi-stream usage recipe :material-pot-steam: can found [here ➶](../../recipes/basic/decode-video-files/#decoding-a-specific-video-stream-from-a-multi-stream-file)"
+
 &ensp;
 
 * **`-enforce_cv_patch`** _(bool)_ : This attribute can be enabled(`True`) for patching YUV pixel-formats _(such as `YUV420p`, `yuv444p`, `NV12`, `NV21` etc.)_ frames to be seamless compatibility with OpenCV APIs such as `imshow()`, `write()` etc. It can be used as follows:

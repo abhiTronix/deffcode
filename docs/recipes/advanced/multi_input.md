@@ -439,3 +439,53 @@ print(json.dumps(metadata["sources"], indent=4))
 ```
 
 &nbsp;
+
+## Decoding embedded streams of a single input as side-by-side composite
+
+> A single input can carry **several embedded video streams** _(such as an `.mkv` with two camera angles)_. No list `source` is needed here: FFmpeg's stream specifiers `[0:v:0]`, `[0:v:1]` select them inside `-filter_complex`.
+
+In this example we will place both embedded video streams of one input side by side. To keep it runnable anywhere, the source is a [`lavfi`](https://ffmpeg.org/ffmpeg-devices.html#lavfi) graph producing **one input with two video streams** _(red `320x240@25fps` and blue `160x120@30fps`)_. A file path such as `foo.mkv` works the same way.
+
+!!! info "Streams with different rates give a filtergraph output without a fixed framerate. FFdecoder then outputs frames at the framerate of the selected stream _(stream `0` by default)_, to avoid FFmpeg duplicating them. To pick another rate, add e.g. `fps=30` to the graph."
+
+!!! tip "To decode just one embedded stream, see [Decoding a specific video stream from a multi-stream file ➶](../../recipes/basic/decode-video-files/#decoding-a-specific-video-stream-from-a-multi-stream-file)"
+
+```python
+# import the necessary packages
+from deffcode import FFdecoder
+import cv2
+
+# one input with two embedded video streams (or use e.g. "foo.mkv")
+source = "color=c=red:s=320x240:r=25:d=5[out0];color=c=blue:s=160x120:r=30:d=5[out1]"
+
+# scale second stream to first one's size, then stack both horizontally (at 25 fps)
+ffparams = {"-filter_complex": "[0:v:1]scale=320:240[b];[0:v:0][b]hstack"}
+
+# initialize and formulate the decoder for BGR24 output (640x240 frames)
+decoder = FFdecoder(source, source_demuxer="lavfi", frame_format="bgr24", **ffparams).formulate()
+
+# grab the BGR24 frames from decoder
+for frame in decoder.generateFrame():
+
+    # check if frame is None
+    if frame is None:
+        break
+
+    # {do something with the frame here}
+
+    # Show output window
+    cv2.imshow("Output", frame)
+
+    # check for 'q' key if pressed
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        break
+
+# close output window
+cv2.destroyAllWindows()
+
+# terminate the decoder
+decoder.terminate()
+```
+
+&nbsp;

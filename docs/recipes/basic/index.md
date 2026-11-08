@@ -53,6 +53,7 @@ The following recipes should be reasonably accessible to beginners of any skill 
 
 - [x] **[:material-file-eye: Decoding Video files](../basic/decode-video-files/#decoding-video-files)**
     - [Accessing RGB frames from a video file](../basic/decode-video-files/#accessing-rgb-frames-from-a-video-file)
+    - [Decoding a specific video stream from a multi-stream file](../basic/decode-video-files/#decoding-a-specific-video-stream-from-a-multi-stream-file)
     - [Capturing and Previewing BGR frames from a video file](../basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file) _(OpenCV Support)_
     - [Playing with any other FFmpeg pixel formats](../basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats)
     - [Capturing and Previewing frames from a Looping Video](../basic/decode-video-files/#capturing-and-previewing-frames-from-a-looping-video)
@@ -61,6 +62,7 @@ The following recipes should be reasonably accessible to beginners of any skill 
     - [Capturing and Previewing frames from a Camera using Indexes](../basic/decode-camera-devices/#capturing-and-previewing-frames-from-a-camera-using-indexes)
 - [x] **[:fontawesome-solid-cloud-arrow-down: Decoding Network Streams](../basic/decode-network-streams/#decoding-network-streams)**
     - [Capturing and Previewing frames from a HTTPs Stream](../basic/decode-network-streams/#capturing-and-previewing-frames-from-a-https-stream)
+    - [Decoding a specific rendition from a HLS Stream](../basic/decode-network-streams/#decoding-a-specific-rendition-from-a-hls-stream)
     - [Capturing and Previewing frames from a RTSP/RTP Stream](../basic/decode-network-streams/#capturing-and-previewing-frames-from-a-rtsprtp-stream)
 - [x] **[:material-image-multiple: Decoding Image sequences](../basic/decode-image-sequences/#decoding-image-sequences)**
     - [Capturing and Previewing frames from Sequence of images](../basic/decode-image-sequences/#capturing-and-previewing-frames-from-sequence-of-images)
