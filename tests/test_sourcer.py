@@ -22,6 +22,8 @@ limitations under the License.
 from __future__ import annotations
 
 import logging
+import os
+import subprocess
 from typing import Any
 
 import pytest
@@ -221,3 +223,47 @@ def test_multi_input_primary_metadata() -> None:
         [320, 240],
         [160, 120],
     ]
+
+
+@pytest.mark.parametrize("label", ["displaymatrix", "Display Matrix"])  # FFmpeg < 8.1, >= 8.1
+def test_orientation_parsing(label: str) -> None:
+    """
+    Rotation must parse with either side-data label and stay paired with its
+    own video stream (audio streams and unrotated streams in between).
+    """
+    banner = f"""Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'multi.mp4':
+  Stream #0:0[0x1](und): Video: h264 (Main), yuv420p, 1280x720, 25 fps, 25 tbr, 12800 tbn
+  Stream #0:1[0x2](und): Audio: aac (LC), 44100 Hz, stereo, fltp, 128 kb/s
+  Stream #0:2[0x3](und): Video: h264 (Main), yuv420p, 640x360, 30 fps, 30 tbr, 15360 tbn
+    Side data:
+      {label}: rotation of -90.00 degrees"""
+    sourcer = Sourcer(return_testvideo_path(), custom_ffmpeg=return_static_ffmpeg())
+    sourcer._Sourcer__ffsp_output = banner
+    extract = sourcer._Sourcer__extract_resolution_framerate
+    assert extract(default_stream=0)["orientation"] == 0.0
+    assert extract(default_stream=1) == {
+        "framerate": 30.0,
+        "resolution": [640, 360],
+        "orientation": -90.0,
+    }
+
+
+def test_orientation_and_relative_path(tmp_path: Any, monkeypatch: Any) -> None:
+    """
+    Real rotated clip reports its rotation, and a relative DASH manifest path
+    (which FFmpeg's dash demuxer can't open) probes fine.
+    """
+    ffmpeg = return_static_ffmpeg()
+    monkeypatch.chdir(tmp_path)
+    os.makedirs("dash")
+    for cmd in (
+        ["-display_rotation", "90", "-i", return_testvideo_path(fmt="vo"), "-c", "copy", "rot.mp4"],
+        ["-i", return_testvideo_path(fmt="vo"), "-c", "copy", "-f", "dash", "dash/a.mpd"],
+    ):
+        subprocess.run([ffmpeg, "-hide_banner", "-loglevel", "error", "-y", *cmd], check=True)
+
+    rot = Sourcer("rot.mp4", custom_ffmpeg=ffmpeg).probe_stream().retrieve_metadata()
+    assert rot["source_video_orientation"] == 90.0
+
+    dash = Sourcer("dash/a.mpd", custom_ffmpeg=ffmpeg).probe_stream().retrieve_metadata()
+    assert dash["source_video_resolution"] == [1280, 720]
