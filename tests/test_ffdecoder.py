@@ -1157,6 +1157,33 @@ def test_multi_stream_cover_art(
     assert not [w for w in warnings if "video streams" in w]
 
 
+@pytest.mark.parametrize(
+    "ffparams, n_warnings", [({}, 0), ({"-default_stream_indexes": (1, 0)}, 1)]
+)
+def test_multi_stream_programs(monkeypatch: Any, ffparams: dict[str, Any], n_warnings: int) -> None:
+    """
+    Testing a video stream shared by two MPEG-TS programs (printed twice in the banner)
+    counts once: no false "video streams" warning, and an index 1 falls back to stream 0
+    """
+    path = _side_path("programs.ts")
+    if not os.path.isfile(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        cmd = [return_static_ffmpeg(), "-y", "-f", "lavfi", "-i", "color=c=red:s=320x240:r=25:d=2"]
+        cmd += ["-f", "lavfi", "-i", "sine=d=2", "-f", "lavfi", "-i", "sine=f=880:d=2"]
+        cmd += ["-map", "0", "-map", "1", "-map", "2", "-c:v", "mpeg2video", "-c:a", "mp2"]
+        cmd += ["-program", "title=A:st=0:st=1", "-program", "title=B:st=0:st=2", path]
+        subprocess.run(cmd, check=True, capture_output=True)
+    warnings: list[str] = []
+    for mod in (ffdecoder_module, sourcer_module):
+        monkeypatch.setattr(mod.logger, "warning", warnings.append)
+    with FFdecoder(path, frame_format="rgb24", **ffparams) as decoder:
+        metadata = json.loads(decoder.metadata)
+        frames = [f for f in decoder.generateFrame() if f is not None]
+    assert metadata["source_video_streams"] == 1
+    assert frames and _color(frames[0]) == "red" and abs(len(frames) - 50) <= 1
+    assert len([w for w in warnings if "stream" in w]) == n_warnings
+
+
 test_data = [
     (
         {"-extra_outputs": ["-y", "-map", "0", "-c", "copy", _side_path("side_copy.mkv")]},
