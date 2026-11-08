@@ -86,6 +86,53 @@ decoder.terminate()
 
 &thinsp;
 
+## Decoding one embedded stream while recording another
+
+> In this example we will decode the **second** embedded video stream of one input in Python, while the same pipeline records the **first** one into a `.mp4` file. FFdecoder auto-maps the selected stream to the frames output _(`-map 0:v:1`)_, and the extra output maps its own stream.
+
+!!! info "Stream indexes are per type, see [`-default_stream_indexes` ➶](../../reference/ffdecoder/params/#b-exclusive-parameters). To record an embedded audio stream too, add e.g. `-map 0:a:1` to the extra output."
+
+```python
+# import the necessary packages
+from deffcode import FFdecoder
+import cv2
+
+ffparams = {
+    # decode second video stream into Python
+    "-default_stream_indexes": (1, 0),
+    # record first video stream into `angle0.mp4`
+    "-extra_outputs": ["-y", "-map", "0:v:0", "-c:v", "libx264", "angle0.mp4"],
+}
+
+# initialize and formulate the decoder (say `foo.mkv` with two video streams)
+decoder = FFdecoder("foo.mkv", frame_format="bgr24", **ffparams).formulate()
+
+# grab the BGR24 frames from decoder
+for frame in decoder.generateFrame():
+
+    # check if frame is None
+    if frame is None:
+        break
+
+    # {do something with the frame here}
+
+    # Show output window
+    cv2.imshow("Output", frame)
+
+    # check for 'q' key if pressed
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        break
+
+# close output window
+cv2.destroyAllWindows()
+
+# terminate the decoder
+decoder.terminate()
+```
+
+&thinsp;
+
 ## Same filtering for all outputs
 
 > In this example we will deinterlace the source once with `yadif`, then `split` it: frames scaled to 720p go to Python, while a 480p copy is encoded into a `.mp4` file.

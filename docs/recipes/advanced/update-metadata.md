@@ -158,6 +158,8 @@ decoder.terminate()
     |`"source_audio_bitrate"`|`string`| None |
     |`"source_audio_samplerate"`|`string`| None |
     |`"source_has_video"`|`bool`| Direct |
+    |`"source_video_streams"`|`integer`| None |
+    |`"source_video_attached_pics"`|`list of integers`| None |
     |`"source_has_audio"`|`bool`| None |
     |`"source_has_image_sequence"`|`bool`| Direct |
     |`"ffdecoder_operational_mode"`|`str`| None |

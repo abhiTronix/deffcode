@@ -80,8 +80,10 @@ The following challenging recipes will take your skills to the next level and wi
     - [Decoding Picture-in-Picture overlay with per-input configuration](../advanced/multi_input/#decoding-picture-in-picture-overlay-with-per-input-configuration)
     - [Decoding mixed sources with different demuxers](../advanced/multi_input/#decoding-mixed-sources-with-different-demuxers)
     - [Probing multiple inputs with Sourcer API](../advanced/multi_input/#probing-multiple-inputs-with-sourcer-api)
+    - [Decoding embedded streams of a single input as side-by-side composite](../advanced/multi_input/#decoding-embedded-streams-of-a-single-input-as-side-by-side-composite)
 - [x] **[:material-call-split: Multi-Outputs Configurations](../advanced/multi_output/#multi-outputs-configurations)**
     - [Recording while decoding](../advanced/multi_output/#recording-while-decoding)
+    - [Decoding one embedded stream while recording another](../advanced/multi_output/#decoding-one-embedded-stream-while-recording-another)
     - [Same filtering for all outputs](../advanced/multi_output/#same-filtering-for-all-outputs)
     - [Different filtering for each output](../advanced/multi_output/#different-filtering-for-each-output)
     - [Encode once, duplicate to file and stream](../advanced/multi_output/#encode-once-duplicate-to-file-and-stream)
