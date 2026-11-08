@@ -31,7 +31,7 @@ mkdir -p "$TMPFOLDER/temp_images" \
   "$TMPFOLDER/Downloads/Test_videos"
 
 # Defining alternate ffmpeg static binaries date/version
-ALTBINARIES_DATE="${1:-"12-07-2022"}"
+ALTBINARIES_DATE="${1:-"08-11-2026"}"
 
 # If the date/version is empty, exit
 if [ -z "$ALTBINARIES_DATE" ]; then
