@@ -746,8 +746,23 @@ class Sourcer:
             metadata, self.__metadata_output = metadata.split("Output #")
         # primary `source_*` metadata must only describe input 0
         metadata = re.split(r"^Input #1\b", metadata, maxsplit=1, flags=re.M)[0]
+        # FFmpeg prints a stream once per program it belongs to, but `0:v:N` counts
+        # unique streams: drop repeated `Stream #` lines with their indented blocks
+        seen, skip, lines = set(), None, []
+        for line in metadata.split("\n"):
+            indent = len(line) - len(line.lstrip())
+            if skip is not None and indent > skip:
+                continue
+            skip = None
+            stream = re.match(r"\s*Stream #(\d+:\d+)", line)
+            if stream:
+                if stream.group(1) in seen:
+                    skip = indent
+                    continue
+                seen.add(stream.group(1))
+            lines.append(line)
         # return metadata based on params
-        return metadata
+        return "\n".join(lines)
 
     def __extract_video_bitrate(self, default_stream: int = 0) -> str:
         """
