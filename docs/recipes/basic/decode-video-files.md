@@ -154,6 +154,72 @@ In this example we will decode the default **RGB24** video frames from a given V
     ```
 
 
+
+&nbsp;
+
+## Decoding a specific video stream from a multi-stream file
+
+> Some sources carry **several embedded video streams** in a single input _(such as an `.mkv` with two video tracks, or an HLS playlist with several renditions)_. By default, FFdecoder decodes the **first** video stream _(skipping cover art)_ and logs a warning, instead of the one [FFmpeg would pick automatically](https://ffmpeg.org/ffmpeg.html#Automatic-stream-selection) _(`default` disposition, otherwise the highest resolution)_.
+
+In this example we will first inspect the second video stream of a source with Sourcer API, and then decode only that stream with FFdecoder API's [`-default_stream_indexes`](../../reference/ffdecoder/params/#b-exclusive-parameters) exclusive parameter. To keep it runnable anywhere, the source is a [`lavfi`](https://ffmpeg.org/ffmpeg-devices.html#lavfi) graph that produces **one input with two video streams** _(red `320x240` and blue `160x120`)_. A file path such as `foo.mkv` works the same way.
+
+!!! info "Stream indexes are **per type**: `1` means the second **video** stream _(same as FFmpeg's `0:v:1` specifier)_, not the absolute `Stream #0:1`. So audio streams placed before the video ones don't shift it."
+
+!!! tip "Per-stream details can be listed with `ffprobe -show_streams foo.mkv`, or with Sourcer API's `verbose=True`."
+
+```python
+# import the necessary packages
+from deffcode import FFdecoder, Sourcer
+import cv2
+
+# one input with two embedded video streams (or use e.g. "foo.mkv")
+source = "color=c=red:s=320x240:r=25:d=5[out0];color=c=blue:s=160x120:r=30:d=5[out1]"
+
+# inspect second video stream (and first audio stream) metadata
+metadata = (
+    Sourcer(source, source_demuxer="lavfi")
+    .probe_stream(default_stream_indexes=(1, 0))
+    .retrieve_metadata()
+)
+print(metadata["source_video_streams"])  # 2
+print(metadata["source_video_resolution"])  # [160, 120]
+
+# select second video stream (`-map 0:v:1` is applied automatically)
+ffparams = {"-default_stream_indexes": (1, 0)}
+
+# initialize and formulate the decoder for BGR24 output
+decoder = FFdecoder(
+    source, source_demuxer="lavfi", frame_format="bgr24", **ffparams
+).formulate()
+
+# grab the BGR24 frames from decoder
+for frame in decoder.generateFrame():
+
+    # check if frame is None
+    if frame is None:
+        break
+
+    # {do something with the frame here}
+
+    # Show output window
+    cv2.imshow("Output", frame)
+
+    # check for 'q' key if pressed
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        break
+
+# close output window
+cv2.destroyAllWindows()
+
+# terminate the decoder
+decoder.terminate()
+```
+
+!!! tip "A plain `-map 0:v:1`, or a `-filter_complex` using only `[0:v:1]` _(e.g. `[0:v:1]hflip`)_, selects the stream too. When a filtergraph uses several streams, frame count and framerate follow `-default_stream_indexes` _(stream `0` by default)_."
+
+!!! note "The number of decoded frames may differ by ±1 between FFmpeg versions _(FFmpeg < 8.1 repeats the last frame)_, so treat `approx_video_nframes` as approximate."
+
 &nbsp;
 
 ## Capturing and Previewing BGR frames from a video file

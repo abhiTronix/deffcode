@@ -20,6 +20,42 @@ limitations under the License.
 
 # Release Notes
 
+## v0.3.0 (In Progress)
+
+??? new "New Features"
+    - [x] **Sourcer:**
+        * Added `source_video_streams` metadata key, reporting the number of embedded video streams.
+        * Added `source_video_attached_pics` metadata key, listing per-type indexes of cover art _(attached picture)_ streams.
+
+??? success "Updates/Improvements"
+    - [x] **FFdecoder:**
+        * ⚠️ Multi-stream sources without a selection now decode the first real video stream _(with a warning)_, instead of the stream FFmpeg auto-selects _(e.g. highest HLS rendition)_, so frames match metadata.
+            * 💬 Cover art _(attached pictures)_ is skipped, wherever it is placed; no warning when only one real video stream remains.
+            * 💬 Single-stream sources stay unmapped, and stream selection adds no extra probing except with `-vf`.
+        * `-filter_complex` using a single `[0:v:N]` input now sets the video stream index to `N`.
+        * Filtergraph outputs without fixed framerate _(e.g. mixed-rate composites)_ are now output at the selected stream's framerate _(`-r`)_, instead of FFmpeg duplicating frames at its timebase rate.
+
+??? bug "Bug-fixes"
+    - [x] **FFdecoder:**
+        * Fixed `-default_stream_indexes` only changing reported metadata; its video index now also selects the decoded stream via auto `-map 0:v:N` for single sources.
+        * Fixed plain `-map 0:v:N` decoding stream `N` with stream `0`'s size, framerate, decoder and frame count; it now sets the video index too.
+        * Fixed wrong output size with `-vf` on multi-stream sources; probe now measures the selected stream.
+        * Fixed out-of-range video index with `-vf` losing the filtered size; it falls back to stream `0` like Sourcer.
+        * Fixed `TypeError` crash when filtergraph output has no fixed framerate _(e.g. mixed-rate composites)_.
+    - [x] **Sourcer:**
+        * Added warning on out-of-range `default_stream_indexes` _(still falls back to stream `0`)_.
+        * Fixed video resolution discarded when stream has no `fps`/`tbr` _(e.g. mixed-rate filtergraph output)_; framerate now `0.0`.
+        * Fixed `ValueError` on sources whose first video stream is cover art, while real video streams exist.
+    - [x] **Tests:**
+        * Added coverage for multi-stream sources: stream selection via index, `-map` and `-filter_complex`, mixed codecs, out-of-range indexes, unselected-stream fallback, cover art first/last, mixed-rate composites and probe count.
+    - [x] **Docs:**
+        * Added multi-stream recipes: decoding a specific video stream from a file, a specific HLS rendition, embedded streams as side-by-side composite, and decoding one embedded stream while recording another.
+        * Documented per-type indexing and stream selection of `-default_stream_indexes`, and `source_video_streams`/`source_video_attached_pics` metadata keys.
+
+&nbsp;
+
+&nbsp;
+
 ## v0.2.9 (2026-11-01) :material-new-box:
 
 ???+ new "New Features"

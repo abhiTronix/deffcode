@@ -100,6 +100,63 @@ decoder.terminate()
 
 &nbsp;
 
+## Decoding a specific rendition from a HLS Stream
+
+> A HLS **master playlist** _(`.m3u8`)_ usually carries several renditions of the same video at different resolutions, which FFmpeg exposes as **embedded video streams of one input**. Without a selection, FFdecoder decodes the **first** rendition in playlist order _(often the lowest quality)_ and logs a warning. So ==select the rendition explicitly== with FFdecoder API's [`-default_stream_indexes`](../../reference/ffdecoder/params/#b-exclusive-parameters) exclusive parameter.
+
+In this example we will list the renditions of a HLS master playlist _(say `https://example.com/master.m3u8`)_ with Sourcer API, and then decode **BGR24** frames from the second one.
+
+!!! info "Renditions are counted in playlist order: `(1, 0)` selects the second video stream _(FFmpeg's `0:v:1`)_, and `source_video_streams` metadata gives their number."
+
+```python
+# import the necessary packages
+from deffcode import FFdecoder, Sourcer
+import cv2
+
+# define HLS master playlist URL
+source = "https://example.com/master.m3u8"
+
+# list each rendition's resolution
+sourcer = Sourcer(source)
+count = sourcer.probe_stream().retrieve_metadata()["source_video_streams"]
+for index in range(count):
+    metadata = sourcer.probe_stream(default_stream_indexes=(index, 0)).retrieve_metadata()
+    print(index, metadata["source_video_resolution"])
+
+# select the second rendition (applies `-map 0:v:1` automatically)
+ffparams = {"-default_stream_indexes": (1, 0)}
+
+# initialize and formulate the decoder for BGR24 pixel format output
+decoder = FFdecoder(source, frame_format="bgr24", **ffparams).formulate()
+
+# grab the BGR24 frames from decoder
+for frame in decoder.generateFrame():
+
+    # check if frame is None
+    if frame is None:
+        break
+
+    # {do something with the frame here}
+
+    # Show output window
+    cv2.imshow("Output", frame)
+
+    # check for 'q' key if pressed
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        break
+
+# close output window
+cv2.destroyAllWindows()
+
+# terminate the decoder
+decoder.terminate()
+```
+
+!!! tip "Sourcer API logs a warning when an index is out of range _(and falls back to the first stream)_, so you'll know when you've run past the last rendition. FFdecoder also warns when a multi-rendition source is decoded without selecting one."
+
+&nbsp;
+
 ## Capturing and Previewing frames from a RTSP/RTP Stream
 
 In this example we will decode live **BGR24** video frames from RTSP/RTP protocol Streams in FFdecoder API, and preview them using OpenCV Library's `cv2.imshow()` method.
