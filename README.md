@@ -122,6 +122,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 
 - [Accessing RGB frames from a video file][accessing-rgb-frames-from-a-video-file]
 - [Decoding a specific video stream from a multi-stream file][decoding-a-specific-video-stream-from-a-multi-stream-file]
+- [Decoding anamorphic and HDR video files][decoding-anamorphic-and-hdr-video-files]
 - [Capturing and Previewing BGR frames from a video file][capturing-and-previewing-bgr-frames-from-a-video-file] _(OpenCV Support)_
 - [Playing with any other FFmpeg pixel formats][playing-with-any-other-ffmpeg-pixel-formats]
 - [Capturing and Previewing frames from a Looping Video][capturing-and-previewing-frames-from-a-looping-video]
@@ -284,7 +285,20 @@ print(sourcer.retrieve_metadata(pretty_json=True))
   "source_video_framerate": 60.0,
   "source_video_pixfmt": "yuv420p",
   "source_video_decoder": "h264",
+  "source_video_sar": [
+    1,
+    1
+  ],
+  "source_video_dar": [
+    16,
+    9
+  ],
+  "source_video_color_range": "",
+  "source_video_color_space": "",
+  "source_video_color_primaries": "",
+  "source_video_color_transfer": "",
   "source_duration_sec": 10.0,
+  "source_start_sec": 0.0,
   "approx_video_nframes": 600,
   "source_video_bitrate": "832k",
   "source_audio_bitrate": "",
@@ -393,6 +407,7 @@ Basic Recipes
 [basic-recipes]: https://abhitronix.github.io/deffcode/latest/recipes/basic/
 [decoding-video-files]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#decoding-video-files
 [decoding-a-specific-video-stream-from-a-multi-stream-file]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#decoding-a-specific-video-stream-from-a-multi-stream-file
+[decoding-anamorphic-and-hdr-video-files]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#decoding-anamorphic-and-hdr-video-files
 [decoding-a-specific-rendition-from-a-hls-stream]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-network-streams/#decoding-a-specific-rendition-from-a-hls-stream
 [decoding-camera-devices-using-indexes]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-camera-devices/#decoding-camera-devices-using-indexes
 [decoding-network-streams]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-network-streams/#decoding-network-streams

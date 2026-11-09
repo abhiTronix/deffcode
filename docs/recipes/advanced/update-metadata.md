@@ -152,7 +152,14 @@ decoder.terminate()
     |`"source_video_framerate"`|`float`| Direct |
     |`"source_video_pixfmt"`|`string`| Direct |
     |`"source_video_decoder"`|`string`| Direct |
+    |`"source_video_sar"`|`list of integers` _e.g. `[4,3]`_| None |
+    |`"source_video_dar"`|`list of integers` _e.g. `[16,9]`_| None |
+    |`"source_video_color_range"`|`string`| None |
+    |`"source_video_color_space"`|`string`| None |
+    |`"source_video_color_primaries"`|`string`| None |
+    |`"source_video_color_transfer"`|`string`| None |
     |`"source_duration_sec"`|`float`| None |
+    |`"source_start_sec"`|`float`| None |
     |`"approx_video_nframes"`|`integer`| Direct |
     |`"source_video_bitrate"`|`string`| None |
     |`"source_audio_bitrate"`|`string`| None |
