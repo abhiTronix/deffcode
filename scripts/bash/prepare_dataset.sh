@@ -23,6 +23,9 @@ TMPFOLDER=$(python3 -c 'import tempfile; print(tempfile.gettempdir())' 2>/dev/nu
 [ -z "$TMPFOLDER" ] && TMPFOLDER="${TMPDIR:-/tmp}"
 TMPFOLDER="${TMPFOLDER%/}"
 
+# Print the resolved path
+echo "The resolved temporary folder path is: $TMPFOLDER"
+
 # Creating necessary directories
 mkdir -p "$TMPFOLDER/temp_images" \
   "$TMPFOLDER/temp_write" \
@@ -122,7 +125,7 @@ if [ $OS_NAME = "linux" ]; then
   ffmpeg -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 "$TMPFOLDER"/temp_images/out%d.png
   echo "Setting up ffmpeg with v4l2loopback"
   sudo modprobe v4l2loopback devices=1 video_nr=0 exclusive_caps=1 card_label='VCamera'
-  sudo usermod -aG video "$USER"
+  sudo usermod -aG video "$USER" && ls -l /dev/video0
   nohup sudo ffmpeg -hide_banner -loglevel error -re -stream_loop -1 -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 -f v4l2 -pix_fmt yuv420p /dev/video0 &
   echo "$USER ALL=NOPASSWD:$(which v4l2-ctl)" | (sudo su -c 'EDITOR="tee" visudo -f /etc/sudoers.d/v4l2ctl')
   v4l2-ctl --list-devices
