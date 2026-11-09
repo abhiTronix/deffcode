@@ -28,6 +28,7 @@ import os
 import platform
 import re
 import shutil
+from fractions import Fraction
 from typing import Any, Self
 
 import numpy as np
@@ -275,6 +276,10 @@ class Sourcer:
         self.__default_video_bitrate = ""  # handles stream's video bitrate
         self.__default_video_pixfmt = ""  # handles stream's video pixfmt
         self.__default_video_decoder = ""  # handles stream's video decoder
+        self.__default_video_sar = ""  # handles stream's sample aspect ratio
+        self.__default_video_dar = ""  # handles stream's display aspect ratio
+        self.__default_video_color = {}  # handles stream's color range/space/primaries/transfer
+        self.__default_source_start = 0.0  # handles stream's start time
         self.__default_source_duration = ""  # handles stream's video duration
         self.__approx_video_nframes = ""  # handles approx stream frame number
         self.__default_audio_bitrate = ""  # handles stream's audio bitrate
@@ -400,6 +405,16 @@ class Sourcer:
             default_stream=default_stream_indexes[0]
         )
 
+        # parse sample/display aspect ratio and color properties
+        video_props = self.__extract_video_sar_nd_color(default_stream=default_stream_indexes[0])
+        if video_props:
+            self.__default_video_sar = video_props.pop("sar")
+            self.__default_video_color = video_props
+            if self.__default_video_resolution:
+                w, h = self.__default_video_resolution
+                dar = Fraction(w * self.__default_video_sar[0], h * self.__default_video_sar[1])
+                self.__default_video_dar = [dar.numerator, dar.denominator]
+
         # parse video decoder
         self.__default_video_decoder = self.__extract_video_decoder(
             default_stream=default_stream_indexes[0]
@@ -419,6 +434,9 @@ class Sourcer:
                 self.__default_audio_samplerate = audio_params["samplerate"]
             # parse video duration
             self.__default_source_duration = self.__extract_duration()
+            # parse start time (Duration may or may not include it, depending on demuxer)
+            start = re.search(r"Duration:.*?start:\s(-?\d+(?:\.\d+)?)", self.__ffsp_output)
+            self.__default_source_start = float(start[1]) if start else 0.0
             # calculate all flags
             selected = default_stream_indexes[0]
             selected = selected if 0 <= selected < self.__video_streams else 0
@@ -500,7 +518,14 @@ class Sourcer:
                 "source_video_framerate": self.__default_video_framerate,
                 "source_video_orientation": self.__default_video_orientation,
                 "source_video_decoder": self.__default_video_decoder,
+                "source_video_sar": self.__default_video_sar,
+                "source_video_dar": self.__default_video_dar,
+                **{
+                    "source_video_color_" + k: self.__default_video_color.get(k, "")
+                    for k in ("range", "space", "primaries", "transfer")
+                },
                 "source_duration_sec": self.__default_source_duration,
+                "source_start_sec": self.__default_source_start,
                 "approx_video_nframes": (
                     int(self.__approx_video_nframes)
                     if self.__approx_video_nframes
@@ -853,6 +878,48 @@ class Sourcer:
             if filtered_pixfmt:
                 return filtered_pixfmt[0].split(" ")[-1]
         return ""
+
+    def __extract_video_sar_nd_color(self, default_stream: int = 0) -> dict[str, Any]:
+        """
+        This Internal method parses default video-stream sample aspect ratio and color properties from metadata.
+
+        Parameters:
+            default_stream (int): selects specific video-stream in case of multiple ones.
+
+        **Returns:** Default Video SAR(defaults `[1, 1]`) and color range/space/primaries/transfer(`""` if unknown) as dictionary value.
+        """
+        identifiers = ["Video:", "Stream #"]
+        meta_text = [
+            line.strip()
+            for line in self.__ffsp_output.split("\n")
+            if all(x in line for x in identifiers)
+        ]
+        if not meta_text:
+            return {}
+        selected_stream = meta_text[default_stream if 0 < default_stream < len(meta_text) else 0]
+        # codec SAR is `[SAR 1:1 DAR 4:3]`; a differing container SAR follows it
+        # unbracketed (`, SAR 4:3 DAR 16:9`) and is the one FFmpeg uses, so take the last
+        sar = re.findall(r"SAR\s(\d+):(\d+)", selected_stream)
+        result: dict[str, Any] = {
+            "sar": [int(x) for x in sar[-1]] if sar else [1, 1],
+            "range": "",
+            "space": "",
+            "primaries": "",
+            "transfer": "",
+        }
+        # pixfmt details, e.g. `yuv420p10le(tv, bt2020nc/bt2020/smpte2084, progressive)`,
+        # `yuvj420p(pc, top coded first (swapped))` or `yuv420p(tv, bt709, progressive)`
+        details = re.search(
+            r"Video:.*?,\s[a-z][a-z0-9_]*\(((?:[^()]|\([^()]*\))*)\)", selected_stream
+        )
+        for token in details[1].split(", ") if details else []:
+            if token in ("tv", "pc"):
+                result["range"] = token
+            elif token != "progressive" and "first" not in token:  # skip field order
+                # `space/primaries/transfer`, or a single name when all three match
+                parts = ["" if x == "unknown" else x for x in token.split("/")]
+                result["space"], result["primaries"], result["transfer"] = (parts * 3)[:3]
+        return result
 
     def __extract_audio_bitrate_nd_samplerate(self, default_stream: int = 0) -> dict[str, str]:
         """
