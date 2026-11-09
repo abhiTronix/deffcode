@@ -136,5 +136,4 @@ fi
 sudo chmod -R a+rw "$TMPFOLDER/temp_images" \
   "$TMPFOLDER/temp_write" \
   "$TMPFOLDER/temp_ffmpeg" \
-  "$TMPFOLDER/Downloads/FFmpeg_static" \
-  "$TMPFOLDER/Downloads/Test_videos"
+  "$TMPFOLDER/Downloads/FFmpeg_static"
