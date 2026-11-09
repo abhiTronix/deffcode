@@ -1315,3 +1315,31 @@ def test_extra_outputs_invalid(value: Any) -> None:
         pytest.fail(str(e))
     finally:
         decoder is not None and decoder.terminate()
+
+
+def test_sar_hdr_warnings(monkeypatch: Any) -> None:
+    """
+    Testing anamorphic HDR source warns about squeezed and washed out frames (not with
+    filters), and the suggested `-vf` outputs display aspect ratio
+    """
+    path = _side_path("sar_hdr.mkv")
+    if not os.path.isfile(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        cmd = [return_static_ffmpeg(), "-y", "-f", "lavfi", "-i", "testsrc2=s=144x108:r=25:d=1"]
+        cmd += ["-vf", "setsar=4/3", "-c:v", "libx264", "-x264-params"]
+        cmd += ["colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc", path]
+        subprocess.run(cmd, check=True, capture_output=True)
+    warnings: list[str] = []
+    monkeypatch.setattr(ffdecoder_module.logger, "warning", warnings.append)
+    for ffparams, shape, n_warnings in [
+        ({}, (108, 144, 3), 2),
+        ({"-vf": "scale=iw*sar:ih,setsar=1,format=rgb24"}, (108, 192, 3), 0),
+    ]:
+        warnings.clear()
+        with FFdecoder(path, **ffparams) as decoder:
+            metadata = json.loads(decoder.metadata)
+            frames = [f for f in decoder.generateFrame() if f is not None]
+        assert metadata["source_video_sar"] == [4, 3]
+        assert metadata["source_video_color_transfer"] == "smpte2084"
+        assert frames and frames[0].shape == shape
+        assert len([w for w in warnings if "SAR" in w or "HDR" in w]) == n_warnings
