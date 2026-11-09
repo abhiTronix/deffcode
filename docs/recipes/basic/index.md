@@ -54,6 +54,7 @@ The following recipes should be reasonably accessible to beginners of any skill 
 - [x] **[:material-file-eye: Decoding Video files](../basic/decode-video-files/#decoding-video-files)**
     - [Accessing RGB frames from a video file](../basic/decode-video-files/#accessing-rgb-frames-from-a-video-file)
     - [Decoding a specific video stream from a multi-stream file](../basic/decode-video-files/#decoding-a-specific-video-stream-from-a-multi-stream-file)
+    - [Decoding anamorphic and HDR video files](../basic/decode-video-files/#decoding-anamorphic-and-hdr-video-files)
     - [Capturing and Previewing BGR frames from a video file](../basic/decode-video-files/#capturing-and-previewing-bgr-frames-from-a-video-file) _(OpenCV Support)_
     - [Playing with any other FFmpeg pixel formats](../basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats)
     - [Capturing and Previewing frames from a Looping Video](../basic/decode-video-files/#capturing-and-previewing-frames-from-a-looping-video)

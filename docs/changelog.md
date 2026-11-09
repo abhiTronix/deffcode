@@ -26,6 +26,12 @@ limitations under the License.
     - [x] **Sourcer:**
         * Added `source_video_streams` metadata key, reporting the number of embedded video streams.
         * Added `source_video_attached_pics` metadata key, listing per-type indexes of cover art _(attached picture)_ streams.
+        * Added `source_video_sar` and `source_video_dar` metadata keys, reporting sample and display aspect ratios _(e.g. `[4, 3]` and `[16, 9]` for anamorphic `1440x1080`)_.
+        * Added `source_video_color_range`, `source_video_color_space`, `source_video_color_primaries` and `source_video_color_transfer` metadata keys _(`""` when untagged or `unknown`)_.
+        * Added `source_start_sec` metadata key, reporting source start time _(e.g. MPEG-TS captures)_.
+            * 💬 Whether `source_duration_sec` includes it depends on the demuxer _(Matroska does, MPEG-TS doesn't)_, so `approx_video_nframes` is unchanged.
+    - [x] **FFdecoder:**
+        * Added warnings for sources with non-square pixels _(squeezed frames)_ or HDR transfer _(washed out frames)_, suggesting `-vf` filters. Not logged when `-vf`/`-filter_complex` is defined.
 
 ??? success "Updates/Improvements"
     - [x] **FFdecoder:**
@@ -44,11 +50,16 @@ limitations under the License.
         * Fixed `TypeError` crash when filtergraph output has no fixed framerate _(e.g. mixed-rate composites)_.
     - [x] **Sourcer:**
         * Added warning on out-of-range `default_stream_indexes` _(still falls back to stream `0`)_.
+        * Fixed empty `source_audio_bitrate` for audio sample formats other than `fltp` _(e.g. PCM `s16`, FLAC, ALAC)_.
+        * Fixed `source_duration_sec` of `0` for sources of 24 hours or longer.
         * Fixed video resolution discarded when stream has no `fps`/`tbr` _(e.g. mixed-rate filtergraph output)_; framerate now `0.0`.
         * Fixed `ValueError` on sources whose first video stream is cover art, while real video streams exist.
     - [x] **Tests:**
+        * Added coverage for aspect ratio, color, start time, non-`fltp` audio bitrate and 24h+ duration parsing, and FFdecoder anamorphic/HDR warnings.
         * Added coverage for multi-stream sources: stream selection via index, `-map` and `-filter_complex`, mixed codecs, out-of-range indexes, unselected-stream fallback, cover art first/last, mixed-rate composites and probe count.
     - [x] **Docs:**
+        * Added recipe for decoding anamorphic and HDR video files.
+        * Documented new aspect ratio, color and start time metadata keys.
         * Added multi-stream recipes: decoding a specific video stream from a file, a specific HLS rendition, embedded streams as side-by-side composite, and decoding one embedded stream while recording another.
         * Documented per-type indexing and stream selection of `-default_stream_indexes`, and `source_video_streams`/`source_video_attached_pics` metadata keys.
 
