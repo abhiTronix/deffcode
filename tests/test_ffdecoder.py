@@ -1345,6 +1345,17 @@ def test_sar_hdr_warnings(monkeypatch: Any) -> None:
         assert len([w for w in warnings if "SAR" in w or "HDR" in w]) == n_warnings
 
 
+def _testsrc(pixfmt: str) -> str:
+    """320x240 ffv1 `testsrc` video with 25 frames in given pixel-format"""
+    path = _side_path(f"pixfmt_{pixfmt}.mkv")
+    if not os.path.isfile(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        cmd = [return_static_ffmpeg(), "-y", "-f", "lavfi", "-i", "testsrc=s=320x240:r=25:d=1"]
+        cmd += ["-pix_fmt", pixfmt, "-c:v", "ffv1", path]
+        subprocess.run(cmd, check=True, capture_output=True)
+    return path
+
+
 @pytest.mark.parametrize(
     "src_pixfmt, ffparams, pixfmt, shape",
     [
@@ -1365,12 +1376,7 @@ def test_filter_output_pixfmt(
     Testing filters' output pixel-format is used only when frames can be reshaped as-is,
     and every frame matches FFmpeg's own output (no planar data in packed frames)
     """
-    path = _side_path(f"pixfmt_{src_pixfmt}.mkv")
-    if not os.path.isfile(path):
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        cmd = [return_static_ffmpeg(), "-y", "-f", "lavfi", "-i", "testsrc=s=320x240:r=25:d=1"]
-        cmd += ["-pix_fmt", src_pixfmt, "-c:v", "ffv1", path]
-        subprocess.run(cmd, check=True, capture_output=True)
+    path = _testsrc(src_pixfmt)
     with FFdecoder(path, **ffparams) as decoder:
         metadata = json.loads(decoder.metadata)
         frames = [f for f in decoder.generateFrame() if f is not None]
@@ -1380,3 +1386,36 @@ def test_filter_output_pixfmt(
     cmd += ["-vf", ffparams["-vf"]] if "-vf" in ffparams else []
     cmd += ["-pix_fmt", pixfmt, "-f", "rawvideo", "-"]
     assert b"".join(f.tobytes() for f in frames) == subprocess.run(cmd, capture_output=True).stdout
+
+
+@pytest.mark.parametrize(
+    "pixfmt, ratio, dtype",
+    [
+        ("yuv420p", 1.5, "u1"),
+        ("nv21", 1.5, "u1"),
+        ("yuv422p", 2, "u1"),
+        ("yuv444p", 3, "u1"),
+        ("yuva420p", 2.5, "u1"),
+        ("yuv410p", 1.125, "u1"),
+        ("yuv420p10le", 1.5, "<u2"),
+        ("yuv444p10le", 3, "<u2"),
+        ("p010le", 1.5, "<u2"),
+    ],
+)
+@pytest.mark.parametrize("patch", ["-extract_luma", "-enforce_cv_patch"])
+def test_yuv_patches_layouts(pixfmt: str, ratio: float, dtype: str, patch: str) -> None:
+    """
+    Testing `-extract_luma`/`-enforce_cv_patch` read whole frames of any YUV subsampling and
+    bit-depth: Y-plane or stacked planes must match FFmpeg's own output, for every frame
+    """
+    path = _testsrc("yuv444p")
+    with FFdecoder(path, frame_format=pixfmt, **{patch: True}) as decoder:
+        metadata = json.loads(decoder.metadata)
+        frames = [f for f in decoder.generateFrame() if f is not None]
+    cmd = [metadata["ffmpeg_binary_path"], "-v", "error", "-i", path, "-pix_fmt", pixfmt]
+    raw = subprocess.run([*cmd, "-f", "rawvideo", "-"], capture_output=True)
+    shape = (240, 320) if patch == "-extract_luma" else (int(240 * ratio), 320)
+    assert len(frames) == 25 and frames[0].shape == shape and frames[0].dtype == dtype
+    size = len(raw.stdout) // 25  # frame size, Y-plane comes first
+    expected = [raw.stdout[i : i + frames[0].nbytes] for i in range(0, len(raw.stdout), size)]
+    assert [f.tobytes() for f in frames] == expected

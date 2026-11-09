@@ -49,6 +49,23 @@ from .utils import dict2Args, logger_handler
 # example: "n: 0 pts:0 pts_time:0 ... iskey:1 type:I checksum:..."
 _SHOWINFO_REGEX = re.compile(r"n:\s*(\d+).*?pts_time:\s*([-0-9.]+).*?iskey:(\d).*?type:([IPB?])")
 
+# chroma plane size (per luma sample) of planar/semi-planar YUV pixel-formats, by subsampling
+_YUV_CHROMA = {"420": 1 / 4, "411": 1 / 4, "410": 1 / 16, "422": 1 / 2, "440": 1 / 2, "444": 1}
+_YUV_CHROMA |= {"nv12": 1 / 4, "nv21": 1 / 4, "nv16": 1 / 2, "nv20": 1 / 2, "nv24": 1, "nv42": 1}
+_YUV_CHROMA |= {"p0": 1 / 4, "p2": 1 / 2, "p4": 1}  # e.g. `p010le`, `p210le`, `p416le`
+
+
+def _yuv_samples_per_pixel(pixfmt: str) -> float:
+    """
+    Returns samples per pixel of planar/semi-planar YUV pixel-format (e.g. `1.5` for `yuv420p`,
+    `3` for `yuv444p10le`, `2.5` for `yuva420p`), or `0` if not one.
+    """
+    # ponytail: subsampling parsed from FFmpeg's pixfmt names, extend `_YUV_CHROMA` for new ones
+    key = re.search(r"^(?:yuv.*?(4\d\d)|(nv\d\d)|(p[024])\d)", pixfmt)
+    chroma = _YUV_CHROMA.get("".join(filter(None, key.groups()))) if key else None
+    return 0 if chroma is None else 1 + 2 * chroma + pixfmt.startswith("yuva")
+
+
 # define FFdecoder logger
 logger = logging.getLogger("FFdecoder")
 logger.propagate = False
@@ -141,6 +158,7 @@ class FFdecoder:
         self.__raw_frame_dtype = None  # raw-frame dtype
         self.__raw_frame_depth = None  # raw-frame depth
         self.__raw_frame_resolution = None  # raw-frame resolution/dimension
+        self.__raw_frame_yuv_ratio = 0  # raw-frame YUV samples per pixel (patches only)
 
         # define supported mode of operation
         self.__supported_opmodes = {
@@ -588,10 +606,7 @@ class FFdecoder:
                     and bpp % (8 * depth) == 0
                 )
                 # or YUV frames are expected anyway
-                or (
-                    (self.__cv_patch or self.__extract_luma)
-                    and out_pixfmt.startswith(("yuv", "nv"))
-                )
+                or ((self.__cv_patch or self.__extract_luma) and _yuv_samples_per_pixel(out_pixfmt))
             ):
                 # assign if valid and supported
                 rawframe_pixfmt = out_pixfmt.strip()
@@ -629,7 +644,20 @@ class FFdecoder:
             raw_bit_per_component = (
                 rawframesbpp // self.__raw_frame_depth if self.__raw_frame_depth else 0
             )
-            if 4 <= raw_bit_per_component <= 8:
+            # planar/semi-planar YUV frames are patched as whole, with actual size and dtype
+            self.__raw_frame_yuv_ratio = (
+                _yuv_samples_per_pixel(rawframe_pixfmt)
+                if self.__cv_patch or self.__extract_luma
+                else 0
+            )
+            if self.__raw_frame_yuv_ratio:
+                # bits per sample (e.g. `10` for `yuv420p10le`), with `-pix_fmts` bpp sans padding
+                self.__raw_frame_dtype = np.dtype(
+                    "u1"
+                    if rawframesbpp / self.__raw_frame_yuv_ratio <= 8
+                    else ("<u2" if rawframe_pixfmt.endswith("le") else ">u2")
+                )
+            elif 4 <= raw_bit_per_component <= 8:
                 self.__raw_frame_dtype = np.dtype("u1")
             elif 8 < raw_bit_per_component <= 16 and rawframe_pixfmt.endswith(("le", "be")):
                 if rawframe_pixfmt.endswith("le"):
@@ -827,9 +855,12 @@ class FFdecoder:
 
         # formulated raw frame size and apply YUV pixel formats patch(if applicable)
         raw_frame_size = (
-            (self.__raw_frame_resolution[0] * (self.__raw_frame_resolution[1] * 3 // 2))
-            if self.__raw_frame_pixfmt.startswith(("yuv", "nv"))
-            and (self.__cv_patch or self.__extract_luma)
+            int(
+                self.__raw_frame_resolution[0]
+                * self.__raw_frame_resolution[1]
+                * self.__raw_frame_yuv_ratio
+            )
+            if self.__raw_frame_yuv_ratio
             else (
                 self.__raw_frame_depth
                 * self.__raw_frame_resolution[0]
@@ -857,7 +888,7 @@ class FFdecoder:
         # check if empty
         if frame is None:
             return frame
-        elif self.__extract_luma and self.__raw_frame_pixfmt.startswith(("yuv", "nv")):
+        elif self.__extract_luma and self.__raw_frame_yuv_ratio:
             # Extract pure Luma (Y channel) - sits uncompressed at the top of the YUV bytestream
             # Slice the first W*H bytes and reshape to 2D
             luma_size = self.__raw_frame_resolution[1] * self.__raw_frame_resolution[0]
@@ -876,12 +907,9 @@ class FFdecoder:
                     self.__raw_frame_depth,
                 )
             )[:, :, 0]
-        elif self.__raw_frame_pixfmt.startswith(("yuv", "nv")) and self.__cv_patch:
-            # reconstruct exclusive YUV formats frames for OpenCV APIs
-            frame = frame.reshape(
-                self.__raw_frame_resolution[1] * 3 // 2,
-                self.__raw_frame_resolution[0],
-            )
+        elif self.__raw_frame_yuv_ratio and self.__cv_patch:
+            # reconstruct exclusive YUV formats frames (stacked planes) for OpenCV APIs
+            frame = frame.reshape(-1, self.__raw_frame_resolution[0])
         else:
             # reconstruct default frames
             frame = frame.reshape(
