@@ -81,7 +81,7 @@ else
   download -O "$BASE_URL/macOS/ffmpeg-latest-macos64-static.zip"
 fi
 
-# Extract by archive type (zip, 7z, tar.*), then rename extracted dir
+# Extract by archive type (zip, 7z, tar.*); every archive unpacks to ffmpeg/bin/
 for ARCHIVE in ffmpeg-*; do
   case "$ARCHIVE" in
   *.zip) unzip -qq "$ARCHIVE" ;;
@@ -94,13 +94,6 @@ for ARCHIVE in ffmpeg-*; do
   esac
   rm "$ARCHIVE"
 done
-mv ffmpeg-* ffmpeg # only the extracted dir is left
-
-# Tests expect ffmpeg/bin/ffmpeg on Windows/macOS; some builds ship binaries at the top level
-if [ "$OS_NAME" != "linux" ] && [ ! -d ffmpeg/bin ]; then
-  mkdir ffmpeg/bin
-  mv ffmpeg/ffmpeg ffmpeg/ffprobe ffmpeg/ffplay ffmpeg/bin/
-fi
 
 # Downloading Test Data
 cd "$TMPFOLDER/Downloads/Test_videos"

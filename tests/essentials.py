@@ -46,14 +46,13 @@ def return_static_ffmpeg() -> str:
     """
     returns system specific FFmpeg static path
     """
-    path = ""
-    if platform.system() == "Windows":
-        path += os.path.join(tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/bin/ffmpeg.exe")
-    elif platform.system() == "Darwin":
-        path += os.path.join(tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/bin/ffmpeg")
-    else:
-        path += os.path.join(tempfile.gettempdir(), "Downloads/FFmpeg_static/ffmpeg/ffmpeg")
-    return os.path.abspath(path)
+    return os.path.abspath(
+        os.path.join(
+            tempfile.gettempdir(),
+            "Downloads/FFmpeg_static/ffmpeg/bin",
+            "ffmpeg.exe" if is_windows else "ffmpeg",
+        )
+    )
 
 
 def remove_file_safe(path: str) -> None:
