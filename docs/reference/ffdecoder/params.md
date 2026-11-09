@@ -772,9 +772,9 @@ These parameters are discussed below:
 
 &ensp;
 
-* **`-enforce_cv_patch`** _(bool)_ : This attribute can be enabled(`True`) for patching YUV pixel-formats _(such as `YUV420p`, `yuv444p`, `NV12`, `NV21` etc.)_ frames to be seamless compatibility with OpenCV APIs such as `imshow()`, `write()` etc. It can be used as follows:
+* **`-enforce_cv_patch`** _(bool)_ : This attribute can be enabled(`True`) for patching YUV pixel-formats _(such as `YUV420p`, `yuv444p`, `NV12`, `NV21` etc.)_ frames to be seamless compatibility with OpenCV APIs such as `imshow()`, `write()` etc. Frames are 2D ndarrays of all planes stacked vertically, i.e. `(H*3/2, W)` for 4:2:0 _(e.g. `yuv420p`, `nv12`)_, `(H*2, W)` for 4:2:2 and `(H*3, W)` for 4:4:4 ones, with `uint16` dtype for 9 to 16-bit ones _(e.g. `yuv420p10le`)_. It can be used as follows:
 
-    !!! warning "As of now, YUV pixel-formats starting with `YUV` and `NV` are only supported."
+    !!! warning "As of now, only planar and semi-planar YUV pixel-formats _(starting with `yuv`, `nv`, or `p0`/`p2`/`p4` such as `p010le`)_ are supported. OpenCV's `cvtColor()` converts 8-bit 4:2:0 ones only _(e.g. `cv2.COLOR_YUV2BGR_I420` for `yuv420p`)_, other ones need splitting the planes manually."
     
     ```python
     # define suitable parameter
@@ -785,9 +785,9 @@ These parameters are discussed below:
 
 &ensp;
 
-* **`-extract_luma`** _(bool)_ : This attribute can be enabled(`True`) to directly extract the **Luma (Y) plane** as a 2D grayscale `(H, W)` ndarray from YUV/NV pixel-format streams _(such as `yuv420p`, `yuv422p`, `yuv444p`, `nv12`, `nv21` etc.)_. This is the **fastest path to grayscale** available in FFdecoder — the Y plane sits uncompressed at the top of every YUV/NV bytestream, so no colorspace conversion runs either in FFmpeg or in Python; the decoder just slices it out. It can be used as follows:
+* **`-extract_luma`** _(bool)_ : This attribute can be enabled(`True`) to directly extract the **Luma (Y) plane** as a 2D grayscale `(H, W)` ndarray from planar and semi-planar YUV pixel-format streams of any chroma subsampling and bit-depth _(such as `yuv420p`, `yuv422p`, `yuv444p`, `nv12`, `nv21`, `yuv420p10le`, `p010le` etc.)_, with `uint16` dtype for 9 to 16-bit ones. This is the **fastest path to grayscale** available in FFdecoder — the Y plane sits uncompressed at the top of every YUV/NV bytestream, so no colorspace conversion runs either in FFmpeg or in Python; the decoder just slices it out. It can be used as follows:
 
-    !!! warning "As of now, this flag is only applied when `frame_format` resolves to a pixel-format starting with `yuv` or `nv`. For other pixel-formats, the flag is ignored and the default reshape path is used."
+    !!! warning "As of now, this flag is only applied when `frame_format` resolves to a pixel-format starting with `yuv`, `nv`, or `p0`/`p2`/`p4` _(such as `p010le`, whose 10-bit values are stored in high bits, i.e. `frame >> 6` gives them)_. For other pixel-formats, the flag is ignored and the default reshape path is used."
 
     !!! tip "Pair with [Performance Mode ➶](../../recipes/basic/decode-video-files/#playing-with-any-other-ffmpeg-pixel-formats) via `frame_format=\"yuv420p\"` for the fastest RAW-to-grayscale pipeline. Takes precedence over `-enforce_cv_patch` when both are enabled."
 
