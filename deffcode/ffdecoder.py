@@ -413,7 +413,7 @@ class FFdecoder:
         if not {"-vf", "-filter_complex"}.intersection(self.__extra_params):
             sar = self.__sourcer_metadata["source_video_sar"]
             sar and sar != [1, 1] and logger.warning(
-                "Source has non-square pixels (SAR {}:{}), so frames will look squeezed. Use `-vf scale=iw*sar:ih,setsar=1,format=rgb24` to output display aspect ratio.".format(
+                "Source has non-square pixels (SAR {}:{}), so frames will look squeezed. Use `-vf scale=iw*sar:ih,setsar=1` to output display aspect ratio.".format(
                     *sar
                 )
             )
@@ -560,6 +560,12 @@ class FFdecoder:
                 if "rgb24" in supported_pixfmts and self.__frame_format != "null"
                 else self.__sourcer_metadata["source_video_pixfmt"]
             )
+            # filters' output pixel-format, with its depth and bpp (`0` if none or unsupported)
+            out_pixfmt = self.__sourcer_metadata.get("output_frames_pixfmt", "")
+            depth, bpp = next(
+                ((int(x[1]), int(x[2])) for x in self.__ff_pixfmt_metadata if x[0] == out_pixfmt),
+                (0, 0),
+            )
             # assign output raw-frames pixel format
             rawframe_pixfmt = None
             if self.__frame_format is not None and self.__frame_format in supported_pixfmts:
@@ -570,13 +576,25 @@ class FFdecoder:
                         rawframe_pixfmt
                     )
                 )
-            elif (
-                "output_frames_pixfmt"
-                in self.__sourcer_metadata  # means `format` filter is defined
-                and self.__sourcer_metadata["output_frames_pixfmt"] in supported_pixfmts
+            elif depth and (
+                # filters' output pixel-format (often the source's, e.g. `yuv420p` with `hflip`)
+                # is used only if frames can be reshaped as-is: gray, or packed RGB with
+                # whole-byte components (e.g. `bgr24`, `rgba64le`), not planar (e.g. `yuv420p`),
+                # padded (e.g. `bgr0`) or bit-packed (e.g. `rgb565le`) ones
+                out_pixfmt.startswith(("gray", "ya"))
+                or (
+                    out_pixfmt.startswith(("rgb", "bgr", "argb", "abgr"))
+                    and "0" not in out_pixfmt
+                    and bpp % (8 * depth) == 0
+                )
+                # or YUV frames are expected anyway
+                or (
+                    (self.__cv_patch or self.__extract_luma)
+                    and out_pixfmt.startswith(("yuv", "nv"))
+                )
             ):
                 # assign if valid and supported
-                rawframe_pixfmt = self.__sourcer_metadata["output_frames_pixfmt"].strip()
+                rawframe_pixfmt = out_pixfmt.strip()
                 self.__verbose_logs and logger.info(
                     "FFmpeg filter values will be used for this pipeline for defining output pixel-format."
                 )
@@ -634,9 +652,11 @@ class FFdecoder:
                 output_params["-pix_fmt"] = rawframe_pixfmt
             # assign to global parameter further usage
             self.__raw_frame_pixfmt = rawframe_pixfmt
-            # also override as metadata(if available)
+            # also report it as metadata (read-only missing property without filters)
             if "output_frames_pixfmt" in self.__sourcer_metadata:
                 self.__sourcer_metadata["output_frames_pixfmt"] = self.__raw_frame_pixfmt
+            else:
+                self.__missing_prop["output_frames_pixfmt"] = self.__raw_frame_pixfmt
 
             # handle raw-frame resolution
             # notify FFmpeg `-s` parameter cannot be assigned directly
