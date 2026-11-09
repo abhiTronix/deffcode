@@ -120,8 +120,9 @@ if [ $OS_NAME = "linux" ]; then
   lsattr "$TMPFOLDER"/Downloads/Test_videos/undelete.txt
   echo "Preparing images from video"
   ffmpeg -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 "$TMPFOLDER"/temp_images/out%d.png
-  echo "Setting up ffmpeg v4l2loopback"
+  echo "Setting up ffmpeg with v4l2loopback"
   sudo modprobe v4l2loopback devices=1 video_nr=0 exclusive_caps=1 card_label='VCamera'
+  sudo usermod -aG video "$USER"
   nohup sudo ffmpeg -hide_banner -loglevel error -re -stream_loop -1 -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 -f v4l2 -pix_fmt yuv420p /dev/video0 &
   echo "$USER ALL=NOPASSWD:$(which v4l2-ctl)" | (sudo su -c 'EDITOR="tee" visudo -f /etc/sudoers.d/v4l2ctl')
   v4l2-ctl --list-devices
