@@ -875,9 +875,7 @@ class Sourcer:
                 (default_stream if default_stream > 0 and default_stream < len(meta_text) else 0)
             ]
             # filter data
-            filtered_audio_bitrate = re.findall(
-                r"fltp,\s[0-9]+\s\w\w[\/]s", selected_stream.strip()
-            )
+            filtered_audio_bitrate = re.findall(r",\s[0-9]+\s\w\w[\/]s", selected_stream.strip())
             filtered_audio_samplerate = re.findall(r",\s[0-9]+\sHz", selected_stream.strip())
             # get audio bitrate metadata
             if filtered_audio_bitrate:
@@ -971,7 +969,7 @@ class Sourcer:
         ]
         if stripped_data:
             t_duration = re.findall(
-                r"(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d+(?:\.\d+)?)",
+                r"\d+:[0-5]\d:[0-5]\d(?:\.\d+)?",
                 stripped_data[0],
             )
             if t_duration:
