@@ -121,12 +121,14 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
   <summary><b>Basic Decoding Recipes</b></summary>
 
 - [Accessing RGB frames from a video file][accessing-rgb-frames-from-a-video-file]
+- [Decoding a specific video stream from a multi-stream file][decoding-a-specific-video-stream-from-a-multi-stream-file]
 - [Capturing and Previewing BGR frames from a video file][capturing-and-previewing-bgr-frames-from-a-video-file] _(OpenCV Support)_
 - [Playing with any other FFmpeg pixel formats][playing-with-any-other-ffmpeg-pixel-formats]
 - [Capturing and Previewing frames from a Looping Video][capturing-and-previewing-frames-from-a-looping-video]
 - [Enumerating all Camera Devices with Indexes][enumerating-all-camera-devices-with-indexes]
 - [Capturing and Previewing frames from a Camera using Indexes][capturing-and-previewing-frames-from-a-camera-using-indexes]
 - [Capturing and Previewing frames from a HTTPs Stream][capturing-and-previewing-frames-from-a-https-stream]
+- [Decoding a specific rendition from a HLS Stream][decoding-a-specific-rendition-from-a-hls-stream]
 - [Capturing and Previewing frames from a RTSP/RTP Stream][capturing-and-previewing-frames-from-a-rtsprtp-stream]
 - [Capturing and Previewing frames from Sequence of images][capturing-and-previewing-frames-from-sequence-of-images]
 - [Capturing and Previewing frames from Single looping image][capturing-and-previewing-frames-from-single-looping-image]
@@ -196,10 +198,19 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 - [CUDA-NVENC-accelerated Video Transcoding with WriteGear API][cuda-nvenc-accelerated-video-transcoding-with-writegear-api]
 - [CUDA-NVENC-accelerated End-to-end Lossless Video Transcoding with WriteGear API][cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api]
 - [Multi-Input Source Configurations][multi-input-source-configurations]
+  - [Decoding multiple inputs as side-by-side composite][decoding-multiple-inputs-as-side-by-side-composite]
+  - [Decoding multiple RTSP streams in parallel][decoding-multiple-rtsp-streams-in-parallel]
+  - [Decoding Picture-in-Picture overlay with per-input configuration][decoding-picture-in-picture-overlay-with-per-input-configuration]
+  - [Decoding mixed sources with different demuxers][decoding-mixed-sources-with-different-demuxers]
   - [Decoding multiple inputs as 2x2 video grid _(mosaic)_][decoding-multiple-inputs-as-2x2-video-grid-mosaic]
   - [Decoding crossfade transition between multiple inputs][decoding-crossfade-transition-between-multiple-inputs]
+  - [Probing multiple inputs with Sourcer API][probing-multiple-inputs-with-sourcer-api]
+  - [Decoding embedded streams of a single input as side-by-side composite][decoding-embedded-streams-of-a-single-input-as-side-by-side-composite]
 - [Multi-Outputs Configurations][multi-outputs-configurations]
   - [Recording while decoding][recording-while-decoding]
+  - [Decoding one embedded stream while recording another][decoding-one-embedded-stream-while-recording-another]
+  - [Same filtering for all outputs][same-filtering-for-all-outputs]
+  - [Different filtering for each output][different-filtering-for-each-output]
   - [Encode once, duplicate to file and stream][encode-once-duplicate-to-file-and-stream]
 
 </details>
@@ -207,7 +218,7 @@ Once you have DeFFcode installed, checkout our Well-Documented **[Recipes 🍱][
 <details open>
   <summary><b>Advanced Metadata Recipes</b></summary>
 
-- [Added new attributes to metadata in FFdecoder API][added-new-attributes-to-metadata-in-ffdecoder-api]
+- [Added new properties to metadata in FFdecoder API][added-new-properties-to-metadata-in-ffdecoder-api]
 - [Overriding source video metadata in FFdecoder API][overriding-source-video-metadata-in-ffdecoder-api]
 - [Smart Keyframe-only decoding for heavy AI inference][smart-keyframe-only-decoding-for-heavy-ai-inference]
 - [Variable-Frame-Rate (VFR) synchronization via pts_time][variable-frame-rate-vfr-synchronization-via-pts_time]
@@ -381,6 +392,8 @@ Basic Recipes
 
 [basic-recipes]: https://abhitronix.github.io/deffcode/latest/recipes/basic/
 [decoding-video-files]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#decoding-video-files
+[decoding-a-specific-video-stream-from-a-multi-stream-file]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-video-files/#decoding-a-specific-video-stream-from-a-multi-stream-file
+[decoding-a-specific-rendition-from-a-hls-stream]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-network-streams/#decoding-a-specific-rendition-from-a-hls-stream
 [decoding-camera-devices-using-indexes]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-camera-devices/#decoding-camera-devices-using-indexes
 [decoding-network-streams]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-network-streams/#decoding-network-streams
 [decoding-image-sequences]: https://abhitronix.github.io/deffcode/latest/recipes/basic/decode-image-sequences/#decoding-image-sequences
@@ -440,7 +453,7 @@ Advanced Recipes
 [cuda-accelerated-video-transcoding-with-opencvs-videowriter-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#cuda-accelerated-video-transcoding-with-opencvs-videowriter-api
 [cuda-nvenc-accelerated-video-transcoding-with-writegear-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#cuda-nvenc-accelerated-video-transcoding-with-writegear-api
 [cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/transcode-hw-acceleration/#cuda-nvenc-accelerated-end-to-end-lossless-video-transcoding-with-writegear-api
-[added-new-attributes-to-metadata-in-ffdecoder-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#added-new-attributes-to-metadata-in-ffdecoder-api
+[added-new-properties-to-metadata-in-ffdecoder-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#added-new-properties-to-metadata-in-ffdecoder-api
 [overriding-source-video-metadata-in-ffdecoder-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/update-metadata/#overriding-source-video-metadata-in-ffdecoder-api
 [smart-keyframe-only-decoding-for-heavy-ai-inference]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/extract-frame-metadata/#smart-keyframe-only-decoding-for-heavy-ai-inference
 [variable-frame-rate-vfr-synchronization-via-pts_time]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/extract-frame-metadata/#variable-frame-rate-vfr-synchronization-via-pts_time
@@ -450,6 +463,15 @@ Advanced Recipes
 [multi-outputs-configurations]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#multi-outputs-configurations
 [recording-while-decoding]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#recording-while-decoding
 [encode-once-duplicate-to-file-and-stream]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#encode-once-duplicate-to-file-and-stream
+[decoding-multiple-inputs-as-side-by-side-composite]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-multiple-inputs-as-side-by-side-composite
+[decoding-multiple-rtsp-streams-in-parallel]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-multiple-rtsp-streams-in-parallel
+[decoding-picture-in-picture-overlay-with-per-input-configuration]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-picture-in-picture-overlay-with-per-input-configuration
+[decoding-mixed-sources-with-different-demuxers]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-mixed-sources-with-different-demuxers
+[probing-multiple-inputs-with-sourcer-api]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#probing-multiple-inputs-with-sourcer-api
+[decoding-embedded-streams-of-a-single-input-as-side-by-side-composite]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_input/#decoding-embedded-streams-of-a-single-input-as-side-by-side-composite
+[decoding-one-embedded-stream-while-recording-another]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#decoding-one-embedded-stream-while-recording-another
+[same-filtering-for-all-outputs]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#same-filtering-for-all-outputs
+[different-filtering-for-each-output]: https://abhitronix.github.io/deffcode/latest/recipes/advanced/multi_output/#different-filtering-for-each-output
 
 <!--
 CI Apps URLs
