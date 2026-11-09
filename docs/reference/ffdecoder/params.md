@@ -492,7 +492,9 @@ This parameter select the pixel format for output video frames _(such as `gray` 
 
 ??? note "Any invalid or unsupported value to `frame_format` parameter will discarded!"
 
-    Any improper `frame_format` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-pix_fmt` FFmpeg parameter value in Decoding pipeline uses `output_frames_pixfmt` metadata property extracted from Output Stream. Thereby, in case if no valid `output_frames_resolution`  metadata property is found, then API finally defaults to **Default pixel-format**[^1] _(calculated variably)_.
+    Any improper `frame_format` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-pix_fmt` FFmpeg parameter value in Decoding pipeline uses `output_frames_pixfmt` metadata property extracted from Output Stream _(only available when filters are defined)_, if its frames can be used as-is: gray or packed RGB formats _(such as `gray`, `bgr24`, `rgba`)_, or YUV/NV formats with `-enforce_cv_patch`/`-extract_luma` enabled. Otherwise, API finally defaults to **Default pixel-format**[^1] _(calculated variably)_.
+
+    !!! info "Most filters _(such as `hflip`, `scale`)_ output the source pixel-format _(e.g. planar `yuv420p`)_, so frames stay `rgb24` with them. Use a `format` filter _(e.g. `-vf format=gray`)_ or `frame_format` parameter to choose another one."
 
 ??? info "Use `#!py3 frame_format="null"` to manually discard `-pix_fmt` FFmpeg parameter entirely from Decoding pipeline."
 

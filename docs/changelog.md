@@ -43,6 +43,10 @@ limitations under the License.
 
 ??? bug "Bug-fixes"
     - [x] **FFdecoder:**
+        * ⚠️ Fixed corrupt frames with filters _(e.g. `-vf hflip`)_ and no `frame_format`: filters' passed-through planar pixel-format _(e.g. `yuv420p`)_ was reshaped as packed `(H, W, 3)` frames, with half the frame count for 4:2:0 sources. Frames now stay `rgb24` unless the filters' output pixel-format is gray or packed RGB _(e.g. `format=gray`, `format=bgr24`)_, or YUV/NV with `-enforce_cv_patch`/`-extract_luma`.
+            * 💬 Gray and packed RGB sources _(e.g. `gray`, `bgra`)_ with filters keep their pixel-format, as before. Padded ones _(e.g. `bgr0`)_ now output `rgb24` instead of misaligned frames.
+            * 💬 SAR warning's suggested `-vf scale=iw*sar:ih,setsar=1` filter no longer needs a trailing `format=rgb24`.
+        * Fixed `output_frames_pixfmt` metadata reporting the source pixel-format instead of the decoded one when no filters are defined.
         * Fixed `-default_stream_indexes` only changing reported metadata; its video index now also selects the decoded stream via auto `-map 0:v:N` for single sources.
         * Fixed plain `-map 0:v:N` decoding stream `N` with stream `0`'s size, framerate, decoder and frame count; it now sets the video index too.
         * Fixed wrong output size with `-vf` on multi-stream sources; probe now measures the selected stream.
@@ -56,6 +60,7 @@ limitations under the License.
         * Fixed `ValueError` on sources whose first video stream is cover art, while real video streams exist.
     - [x] **Tests:**
         * Added coverage for aspect ratio, color, start time, non-`fltp` audio bitrate and 24h+ duration parsing, and FFdecoder anamorphic/HDR warnings.
+        * Added coverage for filters' output pixel-format selection across planar, padded, gray and packed RGB sources, checking frames byte-for-byte against FFmpeg.
         * Added coverage for multi-stream sources: stream selection via index, `-map` and `-filter_complex`, mixed codecs, out-of-range indexes, unselected-stream fallback, cover art first/last, mixed-rate composites and probe count.
     - [x] **Docs:**
         * Added recipe for decoding anamorphic and HDR video files.

@@ -1333,7 +1333,7 @@ def test_sar_hdr_warnings(monkeypatch: Any) -> None:
     monkeypatch.setattr(ffdecoder_module.logger, "warning", warnings.append)
     for ffparams, shape, n_warnings in [
         ({}, (108, 144, 3), 2),
-        ({"-vf": "scale=iw*sar:ih,setsar=1,format=rgb24"}, (108, 192, 3), 0),
+        ({"-vf": "scale=iw*sar:ih,setsar=1"}, (108, 192, 3), 0),  # as suggested
     ]:
         warnings.clear()
         with FFdecoder(path, **ffparams) as decoder:
@@ -1343,3 +1343,40 @@ def test_sar_hdr_warnings(monkeypatch: Any) -> None:
         assert metadata["source_video_color_transfer"] == "smpte2084"
         assert frames and frames[0].shape == shape
         assert len([w for w in warnings if "SAR" in w or "HDR" in w]) == n_warnings
+
+
+@pytest.mark.parametrize(
+    "src_pixfmt, ffparams, pixfmt, shape",
+    [
+        ("yuv420p", {}, "rgb24", (240, 320, 3)),  # metadata reports decoded pixfmt
+        ("yuv420p", {"-vf": "hflip"}, "rgb24", (240, 320, 3)),  # planar passthrough
+        ("yuv444p", {"-vf": "hflip"}, "rgb24", (240, 320, 3)),
+        ("bgr0", {"-vf": "hflip"}, "rgb24", (240, 320, 3)),  # padded passthrough
+        ("yuv420p", {"-vf": "format=gray"}, "gray", (240, 320)),  # requested packed
+        ("gray", {"-vf": "hflip"}, "gray", (240, 320)),  # packed passthrough
+        ("bgra", {"-vf": "hflip"}, "bgra", (240, 320, 4)),
+        ("yuv420p", {"-vf": "hflip", "-enforce_cv_patch": True}, "yuv420p", (360, 320)),
+    ],
+)
+def test_filter_output_pixfmt(
+    src_pixfmt: str, ffparams: dict[str, Any], pixfmt: str, shape: tuple[int, ...]
+) -> None:
+    """
+    Testing filters' output pixel-format is used only when frames can be reshaped as-is,
+    and every frame matches FFmpeg's own output (no planar data in packed frames)
+    """
+    path = _side_path(f"pixfmt_{src_pixfmt}.mkv")
+    if not os.path.isfile(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        cmd = [return_static_ffmpeg(), "-y", "-f", "lavfi", "-i", "testsrc=s=320x240:r=25:d=1"]
+        cmd += ["-pix_fmt", src_pixfmt, "-c:v", "ffv1", path]
+        subprocess.run(cmd, check=True, capture_output=True)
+    with FFdecoder(path, **ffparams) as decoder:
+        metadata = json.loads(decoder.metadata)
+        frames = [f for f in decoder.generateFrame() if f is not None]
+    assert metadata["output_frames_pixfmt"] == pixfmt
+    assert len(frames) == 25 and frames[0].shape == shape
+    cmd = [metadata["ffmpeg_binary_path"], "-v", "error", "-i", path]
+    cmd += ["-vf", ffparams["-vf"]] if "-vf" in ffparams else []
+    cmd += ["-pix_fmt", pixfmt, "-f", "rawvideo", "-"]
+    assert b"".join(f.tobytes() for f in frames) == subprocess.run(cmd, capture_output=True).stdout
