@@ -409,6 +409,20 @@ class FFdecoder:
         else:
             # raise if unknown mode
             raise ValueError("Unable to find any usable video stream in the given source!")
+        # warn about source properties raw frames silently lose (unless filters handle them)
+        if not {"-vf", "-filter_complex"}.intersection(self.__extra_params):
+            sar = self.__sourcer_metadata["source_video_sar"]
+            sar and sar != [1, 1] and logger.warning(
+                "Source has non-square pixels (SAR {}:{}), so frames will look squeezed. Use `-vf scale=iw*sar:ih,setsar=1,format=rgb24` to output display aspect ratio.".format(
+                    *sar
+                )
+            )
+            transfer = self.__sourcer_metadata["source_video_color_transfer"]
+            transfer in ("smpte2084", "arib-std-b67") and logger.warning(
+                "Source is HDR (`{}` transfer), so frames will look washed out. Use `zscale` and `tonemap` filters via `-vf` to tone-map it.".format(
+                    transfer
+                )
+            )
         # store as metadata
         self.__missing_prop["ffdecoder_operational_mode"] = self.__supported_opmodes[self.__opmode]
 
