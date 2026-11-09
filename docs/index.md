@@ -151,7 +151,20 @@ print(sourcer.retrieve_metadata(pretty_json=True))
         "source_video_framerate": 60.0,
         "source_video_pixfmt": "yuv420p",
         "source_video_decoder": "h264",
+        "source_video_sar": [
+          1,
+          1
+        ],
+        "source_video_dar": [
+          16,
+          9
+        ],
+        "source_video_color_range": "",
+        "source_video_color_space": "",
+        "source_video_color_primaries": "",
+        "source_video_color_transfer": "",
         "source_duration_sec": 10.0,
+        "source_start_sec": 0.0,
         "approx_video_nframes": 600,
         "source_video_bitrate": "832k",
         "source_audio_bitrate": "",

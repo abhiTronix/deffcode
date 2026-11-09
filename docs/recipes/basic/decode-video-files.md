@@ -222,6 +222,70 @@ decoder.terminate()
 
 &nbsp;
 
+## Decoding anamorphic and HDR video files
+
+> Some sources store **non-square pixels** _(anamorphic DVD, HDV or broadcast video, e.g. `1440x1080` shown as `1920x1080`)_ or **HDR** video _(PQ/HLG transfer)_. FFdecoder decodes their pixels as stored, so frames look **squeezed** or **washed out**, and it logs a warning about each.
+
+In this example we will check a video file _(say `foo.mkv`)_ for both, using Sourcer API's `source_video_sar` and `source_video_color_transfer` metadata, and add the matching FFmpeg filters through FFdecoder API's `-vf` parameter, before previewing BGR24 frames with OpenCV.
+
+!!! warning "Tone-mapping uses the `zscale` filter, so it needs FFmpeg built with `libzimg` _(included in most static builds)_."
+
+!!! info "Color metadata is `\"\"` when the source doesn't tag it, and some FFmpeg versions report `unknown` _(also `\"\"`)_ for tags other versions print."
+
+```python
+# import the necessary packages
+from deffcode import FFdecoder, Sourcer
+import cv2
+
+# probe source metadata
+metadata = Sourcer("foo.mkv").probe_stream().retrieve_metadata()
+print(metadata["source_video_resolution"])  # [1440, 1080]
+print(metadata["source_video_sar"], metadata["source_video_dar"])  # [4, 3] [16, 9]
+print(metadata["source_video_color_transfer"])  # smpte2084
+
+filters = []
+# tone-map HDR (PQ or HLG) to SDR BT.709
+if metadata["source_video_color_transfer"] in ("smpte2084", "arib-std-b67"):
+    filters.append(
+        "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,"
+        "tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv"
+    )
+# stretch non-square pixels to display aspect ratio (here 1920x1080)
+if metadata["source_video_sar"] != [1, 1]:
+    filters.append("scale=iw*sar:ih,setsar=1")
+ffparams = {"-vf": ",".join(filters)} if filters else {}
+
+# initialize and formulate the decoder for BGR24 output
+decoder = FFdecoder("foo.mkv", frame_format="bgr24", **ffparams).formulate()
+
+# grab the BGR24 frames from decoder
+for frame in decoder.generateFrame():
+
+    # check if frame is None
+    if frame is None:
+        break
+
+    # {do something with the frame here}
+
+    # Show output window
+    cv2.imshow("Output", frame)
+
+    # check for 'q' key if pressed
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        break
+
+# close output window
+cv2.destroyAllWindows()
+
+# terminate the decoder
+decoder.terminate()
+```
+
+!!! tip "Keep `frame_format` defined when using `-vf`, otherwise frames use the filter's output pixel format instead of `rgb24`."
+
+&nbsp;
+
 ## Capturing and Previewing BGR frames from a video file
 
 In this example we will decode **OpenCV supported** live **BGR24** video frames from a given Video file _(say `foo.mp4`)_ in FFdecoder API, and preview them using OpenCV Library's `cv2.imshow()` method.
