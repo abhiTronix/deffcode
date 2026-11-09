@@ -113,13 +113,13 @@ download https://github.com/abhiTronix/Imbakup/releases/download/vid-001/jellyfi
 echo "Done Downloading Test-Data!"
 
 if [ "$OS_NAME" = "linux" ]; then
+  echo "Preparing images from video"
+  ffmpeg -y -i "$TMPFOLDER/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4" "$TMPFOLDER/temp_images/out%d.png"
   echo "Create undeleteable file for testing"
   # clear immutable flag from previous run, else touch fails
   sudo chattr -i undelete.txt 2>/dev/null || true
   touch undelete.txt
   sudo chattr +i undelete.txt
-  echo "Preparing images from video"
-  ffmpeg -y -i "$TMPFOLDER/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4" "$TMPFOLDER/temp_images/out%d.png"
   echo "Setting up ffmpeg v4l2loopback"
   sudo modprobe v4l2loopback devices=1 video_nr=0 exclusive_caps=1 card_label='VCamera'
   nohup sudo ffmpeg -hide_banner -loglevel error -re -stream_loop -1 -i "$TMPFOLDER/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4" -f v4l2 -pix_fmt yuv420p /dev/video0 >/dev/null 2>&1 &
