@@ -1366,6 +1366,8 @@ def _testsrc(pixfmt: str) -> str:
         ("yuv420p", {"-vf": "format=gray"}, "gray", (240, 320)),  # requested packed
         ("gray", {"-vf": "hflip"}, "gray", (240, 320)),  # packed passthrough
         ("bgra", {"-vf": "hflip"}, "bgra", (240, 320, 4)),
+        ("yuv420p", {"-vf": "scale=160:90"}, "rgb24", (90, 160, 3)),  # no 2nd scaler
+        ("yuv420p", {"-vf": "crop=160:120,scale=200:150"}, "rgb24", (150, 200, 3)),
         ("yuv420p", {"-vf": "hflip", "-enforce_cv_patch": True}, "yuv420p", (360, 320)),
     ],
 )

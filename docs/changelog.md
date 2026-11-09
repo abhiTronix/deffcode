@@ -47,6 +47,7 @@ limitations under the License.
             * 💬 Gray and packed RGB sources _(e.g. `gray`, `bgra`)_ with filters keep their pixel-format, as before. Padded ones _(e.g. `bgr0`)_ now output `rgb24` instead of misaligned frames.
             * 💬 SAR warning's suggested `-vf scale=iw*sar:ih,setsar=1` filter no longer needs a trailing `format=rgb24`.
         * Fixed `output_frames_pixfmt` metadata reporting the source pixel-format instead of the decoded one when no filters are defined.
+        * Fixed degraded quality of frames resized by filters _(e.g. `-vf scale`)_: FFdecoder's added `-s` FFmpeg parameter made FFmpeg insert a second scaler after them, so chroma was resampled twice. `-s` is now only added for `-custom_resolution` or without filters, and frames match FFmpeg's own output.
         * Fixed misaligned frames with `-extract_luma`/`-enforce_cv_patch` on YUV pixel-formats other than 8-bit 4:2:0 _(e.g. `yuv422p`, `yuv444p`, `yuv420p10le`, `p010le`)_: frames were read as 8-bit 4:2:0 sized. Frame size and dtype now follow pixel-format's chroma subsampling and bit-depth, and `p0xx` ones are supported too.
         * Fixed `-default_stream_indexes` only changing reported metadata; its video index now also selects the decoded stream via auto `-map 0:v:N` for single sources.
         * Fixed plain `-map 0:v:N` decoding stream `N` with stream `0`'s size, framerate, decoder and frame count; it now sets the video index too.
@@ -62,6 +63,7 @@ limitations under the License.
     - [x] **Tests:**
         * Added coverage for aspect ratio, color, start time, non-`fltp` audio bitrate and 24h+ duration parsing, and FFdecoder anamorphic/HDR warnings.
         * Added coverage for filters' output pixel-format selection across planar, padded, gray and packed RGB sources, checking frames byte-for-byte against FFmpeg.
+        * Added coverage for filters' resized frames matching FFmpeg's own output.
         * Added coverage for `-extract_luma`/`-enforce_cv_patch` across YUV chroma subsamplings, alpha and bit-depths, checking frames byte-for-byte against FFmpeg.
         * Added coverage for multi-stream sources: stream selection via index, `-map` and `-filter_complex`, mixed codecs, out-of-range indexes, unselected-stream fallback, cover art first/last, mixed-rate composites and probe count.
     - [x] **Docs:**
