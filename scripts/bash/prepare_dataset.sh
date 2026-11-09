@@ -133,7 +133,9 @@ if [ $OS_NAME = "linux" ]; then
 fi
 
 # Set permissions for the testing directory
-sudo chmod -R a+rw "$TMPFOLDER/temp_images" \
-  "$TMPFOLDER/temp_write" \
-  "$TMPFOLDER/temp_ffmpeg" \
-  "$TMPFOLDER/Downloads/FFmpeg_static"
+if [ "$OS_NAME" != "windows" ]; then
+  sudo chmod -R a+rw "$TMPFOLDER/temp_images" \
+    "$TMPFOLDER/temp_write" \
+    "$TMPFOLDER/temp_ffmpeg" \
+    "$TMPFOLDER/Downloads/FFmpeg_static"
+fi
