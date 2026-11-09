@@ -22,7 +22,7 @@ limitations under the License.
 
 ## v0.3.0 (In Progress)
 
-??? new "New Features"
+???+ new "New Features"
     - [x] **Sourcer:**
         * Added `source_video_streams` metadata key, reporting the number of embedded video streams.
         * Added `source_video_attached_pics` metadata key, listing per-type indexes of cover art _(attached picture)_ streams.
@@ -40,6 +40,29 @@ limitations under the License.
             * 💬 Single-stream sources stay unmapped, and stream selection adds no extra probing except with `-vf`.
         * `-filter_complex` using a single `[0:v:N]` input now sets the video stream index to `N`.
         * Filtergraph outputs without fixed framerate _(e.g. mixed-rate composites)_ are now output at the selected stream's framerate _(`-r`)_, instead of FFmpeg duplicating frames at its timebase rate.
+    - [x] **Sourcer:**
+        * Added warning on out-of-range `default_stream_indexes` _(still falls back to stream `0`)_.
+    - [x] **Maintenance:**
+        * Hardened `scripts/bash/prepare_dataset.sh`: aborts on first error, fails on unsupported OS _(cygwin/mingw treated as windows)_, downloads via `curl -fL` with retries, and accepts optional `ALTBINARIES_DATE` first argument.
+        * Added 7z, zip and `tar.*` archives support for FFmpeg download in `prepare_dataset.sh`; Windows now uses `.7z` static builds.
+        * Bumped default FFmpeg alt binaries date to `08-11-2026`.
+        * Bumped version to `0.3.0`.
+    - [x] **Tests:**
+        * Added coverage for aspect ratio, color, start time, non-`fltp` audio bitrate and 24h+ duration parsing, and FFdecoder anamorphic/HDR warnings.
+        * Added coverage for filters' output pixel-format selection across planar, padded, gray and packed RGB sources, checking frames byte-for-byte against FFmpeg.
+        * Added coverage for filters' resized frames matching FFmpeg's own output.
+        * Added coverage for `-extract_luma`/`-enforce_cv_patch` across YUV chroma subsamplings, alpha and bit-depths, checking frames byte-for-byte against FFmpeg.
+        * Added coverage for multi-stream sources: stream selection via index, `-map` and `-filter_complex`, mixed codecs, out-of-range indexes, unselected-stream fallback, cover art first/last, mixed-rate composites and probe count.
+        * Added coverage for orientation parsing with both side-data labels, rotated second stream pairing, and relative DASH manifest probing.
+        * Added coverage for video stream shared by two MPEG-TS programs.
+    - [x] **Docs:**
+        * Added recipe for decoding anamorphic and HDR video files.
+        * Documented new aspect ratio, color and start time metadata keys.
+        * Added multi-stream recipes: decoding a specific video stream from a file, a specific HLS rendition, embedded streams as side-by-side composite, and decoding one embedded stream while recording another.
+        * Documented per-type indexing and stream selection of `-default_stream_indexes`, and `source_video_streams`/`source_video_attached_pics` metadata keys.
+        * Synced README recipe links with docs recipe indexes, adding missing multi-stream, Multi-Input and Multi-Outputs recipes.
+        * Noted explicit `(0, x)` index still warns on multi-stream sources in `-default_stream_indexes` docs.
+        * Updated Citation to v0.2.9 release and Zenodo DOI.
 
 ??? bug "Bug-fixes"
     - [x] **FFdecoder:**
@@ -55,22 +78,24 @@ limitations under the License.
         * Fixed out-of-range video index with `-vf` losing the filtered size; it falls back to stream `0` like Sourcer.
         * Fixed `TypeError` crash when filtergraph output has no fixed framerate _(e.g. mixed-rate composites)_.
     - [x] **Sourcer:**
-        * Added warning on out-of-range `default_stream_indexes` _(still falls back to stream `0`)_.
         * Fixed empty `source_audio_bitrate` for audio sample formats other than `fltp` _(e.g. PCM `s16`, FLAC, ALAC)_.
         * Fixed `source_duration_sec` of `0` for sources of 24 hours or longer.
         * Fixed video resolution discarded when stream has no `fps`/`tbr` _(e.g. mixed-rate filtergraph output)_; framerate now `0.0`.
         * Fixed `ValueError` on sources whose first video stream is cover art, while real video streams exist.
-    - [x] **Tests:**
-        * Added coverage for aspect ratio, color, start time, non-`fltp` audio bitrate and 24h+ duration parsing, and FFdecoder anamorphic/HDR warnings.
-        * Added coverage for filters' output pixel-format selection across planar, padded, gray and packed RGB sources, checking frames byte-for-byte against FFmpeg.
-        * Added coverage for filters' resized frames matching FFmpeg's own output.
-        * Added coverage for `-extract_luma`/`-enforce_cv_patch` across YUV chroma subsamplings, alpha and bit-depths, checking frames byte-for-byte against FFmpeg.
-        * Added coverage for multi-stream sources: stream selection via index, `-map` and `-filter_complex`, mixed codecs, out-of-range indexes, unselected-stream fallback, cover art first/last, mixed-rate composites and probe count.
+        * Fixed `source_video_orientation` always `0.0` on FFmpeg 8.1+, which renamed `displaymatrix:` side-data label to `Display Matrix:`.
+        * Fixed rotation of a second video stream reported for the first one, and `IndexError` with nonzero video `default_stream_indexes`; each rotation now pairs with its own stream.
+        * Fixed probing relative `.mpd` _(DASH)_ manifest paths, which FFmpeg's dash demuxer fails on; local paths are now passed absolutized.
+        * Fixed streams shared by several programs _(e.g. multi-program MPEG-TS)_ counted once per program, causing duplicate video streams, a false "none is selected" warning, and `0` frames for an index past the real stream count.
+    - [x] **Maintenance:**
+        * Fixed `chattr` typo, and immutable flag not cleared before `touch` on reruns in `prepare_dataset.sh`.
+        * Fixed image-sequence tests failing when `sudo` steps aborted `prepare_dataset.sh` before test images were extracted.
     - [x] **Docs:**
-        * Added recipe for decoding anamorphic and HDR video files.
-        * Documented new aspect ratio, color and start time metadata keys.
-        * Added multi-stream recipes: decoding a specific video stream from a file, a specific HLS rendition, embedded streams as side-by-side composite, and decoding one embedded stream while recording another.
-        * Documented per-type indexing and stream selection of `-default_stream_indexes`, and `source_video_streams`/`source_video_attached_pics` metadata keys.
+        * Fixed stale `added-new-attributes` anchor in advanced recipes index.
+
+??? question "Pull Requests"
+    * PR #87
+    * PR #84
+    * PR #82
 
 &nbsp;
 
@@ -78,7 +103,7 @@ limitations under the License.
 
 ## v0.2.9 (2026-11-01) :material-new-box:
 
-???+ new "New Features"
+??? new "New Features"
     - [x] **FFdecoder:**
         * Added **multiple FFmpeg outputs** support via new `-extra_outputs` exclusive parameter, generating additional outputs _(files, network streams, `tee` muxer, etc.)_ from the **same** FFmpeg pipeline alongside decoded frames.
             * 💬 Values are appended verbatim after the rawvideo pipe output (`-f rawvideo -`), so its output options never affect frames delivered to Python.
