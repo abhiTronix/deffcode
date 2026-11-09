@@ -292,3 +292,54 @@ def test_orientation_and_relative_path(tmp_path: Any, monkeypatch: Any) -> None:
 
     dash = Sourcer("dash/a.mpd", custom_ffmpeg=ffmpeg).probe_stream().retrieve_metadata()
     assert dash["source_video_resolution"] == [1280, 720]
+
+
+@pytest.mark.parametrize(
+    "video, sar, dar, color",
+    [
+        (  # HDR10, anamorphic (FFmpeg >= 5.x adds per-stream `start`)
+            "hevc (Main 10), yuv420p10le(tv, bt2020nc/bt2020/smpte2084, progressive), 1440x1080 [SAR 4:3 DAR 16:9], 25 fps, 25 tbr, 1k tbn, start 10.000000",
+            [4, 3],
+            [16, 9],
+            ["tv", "bt2020nc", "bt2020", "smpte2084"],
+        ),
+        (  # single name when space = primaries = transfer
+            "h264 (High), yuv420p(tv, bt709, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 25 fps, 25 tbr, 1k tbn",
+            [1, 1],
+            [16, 9],
+            ["tv", "bt709", "bt709", "bt709"],
+        ),
+        (  # unknowns, nested field order parens, container SAR overriding codec SAR
+            "h264 (High), yuvj420p(pc, bt709/unknown/unknown, top coded first (swapped)), 720x576 [SAR 1:1 DAR 5:4], SAR 16:15 DAR 4:3, 25 fps, 25 tbr, 1k tbn",
+            [16, 15],
+            [4, 3],
+            ["pc", "bt709", "", ""],
+        ),
+        (  # no details or SAR at all (FFmpeg 4.4 rawvideo)
+            "rawvideo (I420 / 0x30323449), yuv444p, 720x576, 25 fps, 25 tbr, 25 tbn, 25 tbc",
+            [1, 1],
+            [5, 4],
+            ["", "", "", ""],
+        ),
+    ],
+)
+def test_banner_metadata_parsing(
+    monkeypatch: Any, video: str, sar: list[int], dar: list[int], color: list[str]
+) -> None:
+    """
+    SAR/DAR, color, start time, non-`fltp` audio bitrate, and durations >= 24h parse from banner.
+    """
+    banner = f"""Input #0, matroska,webm, from 'x.mkv':
+  Duration: 25:00:01.50, start: 10.000000, bitrate: 251 kb/s
+  Stream #0:0: Video: {video} (default)
+  Stream #0:1: Audio: pcm_s16le, 44100 Hz, stereo, s16, 1411 kb/s"""
+    monkeypatch.setattr(Sourcer, "_Sourcer__validate_source", lambda *args, **kwargs: banner)
+    metadata = Sourcer("x.mkv").probe_stream().retrieve_metadata()
+    assert metadata["source_video_sar"] == sar
+    assert metadata["source_video_dar"] == dar
+    assert [
+        metadata["source_video_color_" + k] for k in ("range", "space", "primaries", "transfer")
+    ] == color
+    assert metadata["source_start_sec"] == 10.0
+    assert metadata["source_duration_sec"] == 90001.5
+    assert metadata["source_audio_bitrate"] == "1411k"
