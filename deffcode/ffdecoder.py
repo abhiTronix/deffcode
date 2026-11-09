@@ -694,6 +694,7 @@ class FFdecoder:
                 )
                 self.__extra_params.pop("-s", None)
             # assign output rawframe resolution
+            filters_resolution = False  # whether filters define it
             if self.__custom_resolution is not None and not isinstance(
                 self.__custom_resolution, str
             ):
@@ -712,6 +713,7 @@ class FFdecoder:
             ):
                 # calculate raw-frame resolution/dimensions based on output.
                 self.__raw_frame_resolution = self.__sourcer_metadata["output_frames_resolution"]
+                filters_resolution = True
             elif (
                 self.__sourcer_metadata["source_video_resolution"]
                 and len(self.__sourcer_metadata["source_video_resolution"]) == 2
@@ -730,6 +732,10 @@ class FFdecoder:
                 logger.critical(
                     "Manually discarding `-size/-s` FFmpeg parameter from this pipeline."
                 )
+            elif filters_resolution:
+                # filters already output this resolution, and `-s` would add a second scaler
+                # after them, degrading chroma (e.g. `-vf scale` downscales in `yuv420p` first)
+                pass
             else:
                 # add to pipeline
                 dimensions = "{}x{}".format(

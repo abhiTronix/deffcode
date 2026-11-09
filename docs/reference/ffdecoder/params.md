@@ -653,7 +653,9 @@ These parameters are discussed below:
 
         !!! alert "The `output_frames_resolution` metadata property is only available when FFmpeg filters via. `-vf` or `-filter_complex` are manually defined."
 
-        Any improper `-custom_resolution` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then `-s/-size` FFmpeg parameter value in Decoding pipeline uses `output_frames_resolution` metadata property extracted from Output Stream. Thereby, in case if no valid `output_frames_resolution`  metadata property is found, then API finally defaults to `source_video_resolution` metadata property extracted from Input Source Stream.
+        Any improper `-custom_resolution` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then output frames resolution in Decoding pipeline uses `output_frames_resolution` metadata property extracted from Output Stream, as filters' own output _(without `-s/-size` FFmpeg parameter, which would add a second scaler degrading quality)_. Thereby, in case if no valid `output_frames_resolution`  metadata property is found, then API finally defaults to `source_video_resolution` metadata property extracted from Input Source Stream, via `-s/-size` FFmpeg parameter.
+
+        !!! warning "For sources changing resolution mid-stream _(e.g. adaptive live streams)_ with filters of relative size _(e.g. `-vf scale=iw/2:-1`)_, define `-custom_resolution` to keep output frames size fixed."
 
         !!! fail "In case neither `output_frames_resolution` nor `source_video_resolution` valid metadata properties are found, then `RuntimeError` is raised."
 
