@@ -282,8 +282,6 @@ cv2.destroyAllWindows()
 decoder.terminate()
 ```
 
-!!! tip "Keep `frame_format` defined when using `-vf`, otherwise frames use the filter's output pixel format instead of `rgb24`."
-
 &nbsp;
 
 ## Capturing and Previewing BGR frames from a video file
