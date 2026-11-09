@@ -114,8 +114,10 @@ echo "Done Downloading Test-Data!"
 
 if [ $OS_NAME = "linux" ]; then
   echo "Create undeleteable file for testing"
-  touch undelete.txt
-  sudo chattr +i - v "$TMPFOLDER"/Downloads/Test_videos/undelete.txt
+  touch "$TMPFOLDER"/Downloads/Test_videos/undelete.txt
+  sudo chattr +i "$TMPFOLDER"/Downloads/Test_videos/undelete.txt
+  echo "Verifying file attributes:"
+  lsattr "$TMPFOLDER"/Downloads/Test_videos/undelete.txt
   echo "Preparing images from video"
   ffmpeg -i "$TMPFOLDER"/Downloads/Test_videos/BigBuckBunny_4sec_VO.mp4 "$TMPFOLDER"/temp_images/out%d.png
   echo "Setting up ffmpeg v4l2loopback"
