@@ -212,18 +212,18 @@ It is something I am doing with my own free time. But so much more needs to be d
 
 Here is a Bibtex entry you can use to cite this project in a publication:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23853534.svg)](https://doi.org/10.5281/zenodo.23853534)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24116020.svg)](https://doi.org/10.5281/zenodo.24116020)
 
 ```BibTeX
 @software{deffcode,
   author       = {Abhishek Thakur},
-  title        = {abhiTronix/deffcode: v0.2.9},
+  title        = {abhiTronix/deffcode: v0.3.0},
   month        = nov,
   year         = 2026,
   publisher    = {Zenodo},
-  version      = {v0.2.9},
-  doi          = {10.5281/zenodo.23853534},
-  url          = {https://doi.org/10.5281/zenodo.23853534},
+  version      = {v0.3.0},
+  doi          = {10.5281/zenodo.24116020},
+  url          = {https://doi.org/10.5281/zenodo.24116020},
 }
 ```
 
