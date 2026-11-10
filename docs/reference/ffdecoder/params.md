@@ -759,8 +759,9 @@ These parameters are discussed below:
     Indexes are **per stream type** _(same as FFmpeg's `0:v:N`/`0:a:N` specifiers)_, not the absolute `Stream #0:N`. Out-of-range values fall back to stream `0` with a warning. For a single source, FFdecoder keeps the **decoded** stream in sync with the stream its metadata describes:
 
     - A video index `N` decodes that stream via `-map 0:v:N` _(unless `-map` or `-filter_complex` is defined)_.
-    - A plain `-map 0:v:N` sets the video index to `N` as well.
-    - A `-filter_complex` using a single `[0:v:N]` input _(e.g. `[0:v:1]hflip`)_ sets the video index to `N` as well, so framerate, frame count and decoder follow that stream.
+    - A plain `-map 0:v:N` _(or optional `0:v:N?`)_ sets the video index to `N` as well.
+    - A `-filter_complex` using a single `[0:v:N]` input _(e.g. `[0:v:1]hflip`, with `[0:v]` as stream `0`)_ sets the video index to `N` as well, so framerate, frame count and decoder follow that stream.
+    - Such a mapped stream wins over a conflicting video index.
     - If the source has several video streams and none is selected, the **first real video stream** is decoded, instead of the stream FFmpeg would auto-select _(e.g. the highest HLS rendition, or the one with `default` disposition)_. Cover art _(attached pictures)_ is skipped. A warning is logged if more than one real video stream remains. An explicit `(0, x)` index can't be told apart from the default and still warns; use `-map 0:v:0` to select stream `0` silently.
     - Single-stream sources are left unmapped. Selecting a stream costs no extra probing, except with `-vf`, where the probe must measure the filtered size of the selected stream.
 
