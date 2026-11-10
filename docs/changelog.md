@@ -20,7 +20,7 @@ limitations under the License.
 
 # Release Notes
 
-## v0.3.0 (In Progress)
+## v0.3.0 (2026-11-10) :material-new-box:
 
 ???+ new "New Features"
     - [x] **Sourcer:**
@@ -38,8 +38,10 @@ limitations under the License.
         * ⚠️ Multi-stream sources without a selection now decode the first real video stream _(with a warning)_, instead of the stream FFmpeg auto-selects _(e.g. highest HLS rendition)_, so frames match metadata.
             * 💬 Cover art _(attached pictures)_ is skipped, wherever it is placed; no warning when only one real video stream remains.
             * 💬 Single-stream sources stay unmapped, and stream selection adds no extra probing except with `-vf`.
-        * `-filter_complex` using a single `[0:v:N]` input now sets the video stream index to `N`.
-        * Filtergraph outputs without fixed framerate _(e.g. mixed-rate composites)_ are now output at the selected stream's framerate _(`-r`)_, instead of FFmpeg duplicating frames at its timebase rate.
+        * `-filter_complex` using a single `[0:v:N]` input now sets the video stream index to `N`. Unindexed `[0:v]` counts as stream `0`.
+        * Optional `-map 0:v:N?` now sets the video stream index to `N` too.
+        * Stream selected by `-map 0:v:N` or `-filter_complex` now wins over a conflicting `-default_stream_indexes` video index.
+        * Filtergraph outputs without fixed framerate _(e.g. mixed-rate composites)_ are now output at the selected stream's framerate, or user-defined `-framerate` _(`-r`)_, instead of FFmpeg duplicating frames at its timebase rate.
     - [x] **Sourcer:**
         * Added warning on out-of-range `default_stream_indexes` _(still falls back to stream `0`)_.
     - [x] **Maintenance:**
@@ -52,7 +54,7 @@ limitations under the License.
         * Added coverage for filters' output pixel-format selection across planar, padded, gray and packed RGB sources, checking frames byte-for-byte against FFmpeg.
         * Added coverage for filters' resized frames matching FFmpeg's own output.
         * Added coverage for `-extract_luma`/`-enforce_cv_patch` across YUV chroma subsamplings, alpha and bit-depths, checking frames byte-for-byte against FFmpeg.
-        * Added coverage for multi-stream sources: stream selection via index, `-map` and `-filter_complex`, mixed codecs, out-of-range indexes, unselected-stream fallback, cover art first/last, mixed-rate composites and probe count.
+        * Added coverage for multi-stream sources: stream selection via index, `-map` _(also optional and conflicting)_ and `-filter_complex`, mixed codecs, out-of-range indexes, unselected-stream fallback, cover art first/last, mixed-rate composites and probe count.
         * Added coverage for orientation parsing with both side-data labels, rotated second stream pairing, and relative DASH manifest probing.
         * Added coverage for video stream shared by two MPEG-TS programs.
     - [x] **Docs:**
@@ -77,6 +79,7 @@ limitations under the License.
         * Fixed wrong output size with `-vf` on multi-stream sources; probe now measures the selected stream.
         * Fixed out-of-range video index with `-vf` losing the filtered size; it falls back to stream `0` like Sourcer.
         * Fixed `TypeError` crash when filtergraph output has no fixed framerate _(e.g. mixed-rate composites)_.
+        * Fixed frames misread when `output_frames_resolution` metadata is updated with filters defined; `-s` is now added back if it differs from filters' probed output size.
     - [x] **Sourcer:**
         * Fixed empty `source_audio_bitrate` for audio sample formats other than `fltp` _(e.g. PCM `s16`, FLAC, ALAC)_.
         * Fixed `source_duration_sec` of `0` for sources of 24 hours or longer.
@@ -85,9 +88,11 @@ limitations under the License.
         * Fixed `source_video_orientation` always `0.0` on FFmpeg 8.1+, which renamed `displaymatrix:` side-data label to `Display Matrix:`.
         * Fixed rotation of a second video stream reported for the first one, and `IndexError` with nonzero video `default_stream_indexes`; each rotation now pairs with its own stream.
         * Fixed probing relative `.mpd` _(DASH)_ manifest paths, which FFmpeg's dash demuxer fails on; local paths are now passed absolutized.
+        * Fixed output metadata _(`output_frames_resolution`, `output_framerate`, `output_frames_pixfmt`)_ read from output stream at input's video index _(e.g. an `-extra_outputs` recording branch)_, instead of the primary output.
         * Fixed streams shared by several programs _(e.g. multi-program MPEG-TS)_ counted once per program, causing duplicate video streams, a false "none is selected" warning, and `0` frames for an index past the real stream count.
     - [x] **Maintenance:**
         * Fixed `chattr` typo, and immutable flag not cleared before `touch` on reruns in `prepare_dataset.sh`.
+        * Fixed audio-only test fixture path pointing at `BigBuckBunny_4sec_AO.mp4` instead of downloaded `.aac`, and its video frame-count check.
         * Fixed image-sequence tests failing when `sudo` steps aborted `prepare_dataset.sh` before test images were extracted.
     - [x] **Docs:**
         * Fixed stale `added-new-attributes` anchor in advanced recipes index.
@@ -101,7 +106,7 @@ limitations under the License.
 
 &nbsp;
 
-## v0.2.9 (2026-11-01) :material-new-box:
+## v0.2.9 (2026-11-01)
 
 ??? new "New Features"
     - [x] **FFdecoder:**
