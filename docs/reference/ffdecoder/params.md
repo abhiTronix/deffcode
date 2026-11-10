@@ -655,6 +655,8 @@ These parameters are discussed below:
 
         Any improper `-custom_resolution` parameter value _(i.e. either `null`(special-case), undefined, or invalid type)_ , then output frames resolution in Decoding pipeline uses `output_frames_resolution` metadata property extracted from Output Stream, as filters' own output _(without `-s/-size` FFmpeg parameter, which would add a second scaler degrading quality)_. Thereby, in case if no valid `output_frames_resolution`  metadata property is found, then API finally defaults to `source_video_resolution` metadata property extracted from Input Source Stream, via `-s/-size` FFmpeg parameter.
 
+        !!! info "For ±90° rotated sources _(e.g. phone portrait videos)_, FFmpeg auto-rotates frames upright, so `source_video_resolution` is swapped _(e.g. `1280x720` → `720x1280`)_ for output frames. Add `-noautorotate` to `-ffprefixes` to keep the coded orientation."
+
         !!! warning "For sources changing resolution mid-stream _(e.g. adaptive live streams)_ with filters of relative size _(e.g. `-vf scale=iw/2:-1`)_, define `-custom_resolution` to keep output frames size fixed."
 
         !!! fail "In case neither `output_frames_resolution` nor `source_video_resolution` valid metadata properties are found, then `RuntimeError` is raised."

@@ -62,6 +62,7 @@ limitations under the License.
         * Added coverage for orientation parsing with both side-data labels, rotated second stream pairing, and relative DASH manifest probing.
         * Added coverage for video stream shared by two MPEG-TS programs.
         * Rotated test clip now falls back to legacy `rotate` metadata tag on FFmpeg < 6.0, which lacks `-display_rotation`.
+        * Added coverage for ±90° rotated sources decoding, with `-custom_resolution` `null` and `-noautorotate`, checking frames byte-for-byte against FFmpeg.
     - [x] **Docs:**
         * Added recipe for decoding anamorphic and HDR video files.
         * Documented new aspect ratio, color and start time metadata keys.
@@ -74,6 +75,7 @@ limitations under the License.
         * Documented `-s` handling with filters, with `-custom_resolution` advice for sources changing resolution mid-stream.
         * Documented optional `-map 0:v:N?`, unindexed `[0:v]` as stream `0`, and `-map`/`-filter_complex` precedence over `-default_stream_indexes` video index.
         * Updated docs announcement banner for v0.3.0 release.
+        * Documented swapped output frames size for ±90° rotated sources, and picking a real video stream index from `source_video_attached_pics` when cover art comes first in Sourcer.
 
 ??? bug "Bug-fixes"
     - [x] **FFdecoder:**
@@ -89,6 +91,7 @@ limitations under the License.
         * Fixed out-of-range video index with `-vf` losing the filtered size; it falls back to stream `0` like Sourcer.
         * Fixed `TypeError` crash when filtergraph output has no fixed framerate _(e.g. mixed-rate composites)_.
         * Fixed frames misread when `output_frames_resolution` metadata is updated with filters defined; `-s` is now added back if it differs from filters' probed output size.
+        * ⚠️ Fixed ±90° rotated sources _(e.g. phone portrait videos)_ without filters squeezed back into coded size: `-s` used unrotated `source_video_resolution` after FFmpeg's auto-rotation. Its width and height are now swapped, unless `-noautorotate` is in `-ffprefixes`, and frames match FFmpeg's own output.
     - [x] **Sourcer:**
         * Fixed empty `source_audio_bitrate` for audio sample formats other than `fltp` _(e.g. PCM `s16`, FLAC, ALAC)_.
         * Fixed `source_duration_sec` of `0` for sources of 24 hours or longer.
