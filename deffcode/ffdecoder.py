@@ -261,13 +261,18 @@ class FFdecoder:
             # plain `-map 0:v:N`, or a filtergraph using only `[0:v:N]` (output left
             # unmapped or mapped by `[label]`), selects the video index too
             _selected = set()
-            if isinstance(_map, str) and re.fullmatch(r"0:v:\d+", _map):
-                _selected = {_map}
+            if isinstance(_map, str) and re.fullmatch(r"0:v:\d+\??", _map):
+                _selected = {_map.rstrip("?")}
                 # index already describes it; probe needs the map only to measure filters
                 probe_map = bool({"-vf", "-filter_complex"}.intersection(self.__extra_params))
             elif isinstance(_graph, str) and (_map is None or str(_map).startswith("[")):
-                _selected = set(re.findall(r"\[(0:v:\d+)\]", _graph))
-            if len(_selected) == 1 and default_stream_indexes[0] == 0:
+                # `[0:v]` is the first video stream
+                _selected = {
+                    ref if ref.count(":") == 2 else ref + ":0"
+                    for ref in re.findall(r"\[(0:v(?::\d+)?)\]", _graph)
+                }
+            # the mapped stream wins over a conflicting `-default_stream_indexes`
+            if len(_selected) == 1:
                 index = int(_selected.pop().rsplit(":", 1)[1])
                 default_stream_indexes = (index, default_stream_indexes[1])
             elif not {"-map", "-filter_complex"}.intersection(self.__extra_params):
@@ -343,6 +348,9 @@ class FFdecoder:
                     )
             else:
                 self.__extra_params.pop("-map", None)
+
+        # filters' probed output size, to tell it from a user-updated one
+        self.__filters_resolution = self.__sourcer_metadata.get("output_frames_resolution")
 
         # handle valid FFmpeg assets location
         self.__ffmpeg = self.__sourcer_metadata["ffmpeg_binary_path"]
@@ -713,7 +721,8 @@ class FFdecoder:
             ):
                 # calculate raw-frame resolution/dimensions based on output.
                 self.__raw_frame_resolution = self.__sourcer_metadata["output_frames_resolution"]
-                filters_resolution = True
+                # unless updated via `metadata`, filters already output this size
+                filters_resolution = self.__raw_frame_resolution == self.__filters_resolution
             elif (
                 self.__sourcer_metadata["source_video_resolution"]
                 and len(self.__sourcer_metadata["source_video_resolution"]) == 2
@@ -786,10 +795,6 @@ class FFdecoder:
                     output_params["-framerate"] = str(
                         self.__sourcer_metadata["source_video_framerate"]
                     )
-                    # filtergraph output without fixed rate (e.g. mixed-rate composite):
-                    # FFmpeg would duplicate frames at its timebase rate, so force source rate.
-                    if self.__sourcer_metadata.get("output_framerate") == 0.0:
-                        output_params["-r"] = output_params["-framerate"]
                 self.__verbose_logs and logger.info(
                     "Default source framerate will be used for this pipeline for defining output framerate."
                 )
@@ -800,6 +805,14 @@ class FFdecoder:
                         "null" if isinstance(self.__inputframerate, str) else "undefined"
                     )
                 )
+
+            # filtergraph output without fixed rate (e.g. mixed-rate composite):
+            # FFmpeg would duplicate frames at its timebase rate, so force the chosen rate.
+            if (
+                self.__sourcer_metadata.get("output_framerate") == 0.0
+                and "-framerate" in output_params
+            ):
+                output_params["-r"] = output_params["-framerate"]
 
             # add rest to output parameters
             output_params.update(self.__extra_params)

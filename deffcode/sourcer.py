@@ -387,9 +387,10 @@ class Sourcer:
 
         # parse output parameters through filters (if available)
         if self.__metadata_output is not None:
-            # parse output resolution and framerate
+            # parse output resolution and framerate (primary output is always first,
+            # input stream index doesn't apply to it)
             out_video_rfparams = self.__extract_resolution_framerate(
-                default_stream=default_stream_indexes[0], extract_output=True
+                default_stream=0, extract_output=True
             )
             if out_video_rfparams:
                 self.__output_frames_resolution = out_video_rfparams["resolution"]
@@ -397,7 +398,7 @@ class Sourcer:
                 self.__output_orientation = out_video_rfparams["orientation"]
             # parse output pixel-format
             self.__output_frames_pixfmt = self.__extract_video_pixfmt(
-                default_stream=default_stream_indexes[0], extract_output=True
+                default_stream=0, extract_output=True
             )
 
         # parse pixel-format
