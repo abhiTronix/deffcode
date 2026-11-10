@@ -181,7 +181,7 @@ def test_probe_stream_n_retrieve_metadata(
         is_skipped = False
         if isinstance(source, list) or (
             source.startswith("http")
-            or source.endswith("png")
+            or source.endswith(("png", "aac"))  # no video frames to count
             or source == "mandelbrot=size=1280x720:rate=30"
         ):
             is_skipped = True

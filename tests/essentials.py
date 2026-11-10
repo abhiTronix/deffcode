@@ -73,7 +73,7 @@ def return_testvideo_path(fmt: str = "av") -> str:
     supported_fmts = {
         "av": "BigBuckBunny_4sec.mp4",
         "vo": "BigBuckBunny_4sec_VO.mp4",
-        "ao": "BigBuckBunny_4sec_AO.mp4",
+        "ao": "BigBuckBunny_4sec_AO.aac",
     }
     req_fmt = fmt if (fmt in supported_fmts) else "av"
     path = "{}/Downloads/Test_videos/{}".format(tempfile.gettempdir(), supported_fmts[req_fmt])

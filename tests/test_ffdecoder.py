@@ -986,6 +986,10 @@ test_data = [
     ({"-default_stream_indexes": (5, 0), "-vf": "scale=80:-2"}, (60, 80), "red"),
     # mixed-rate composite: output has no fps; size still probed, frames not duplicated
     ({"-filter_complex": "[0:v:1]scale=320:240[b];[0:v:0][b]hstack"}, (240, 640), None),
+    ({"-framerate": 25, "-filter_complex": "[0:v:1]scale=320:240[b];[0:v][b]hstack"}, (240, 640), None),
+    # optional map, and map winning over a conflicting index
+    ({"-map": "0:v:1?"}, (120, 160), "blue"),
+    ({"-default_stream_indexes": (1, 0), "-map": "0:v:0"}, (240, 320), "red"),
 ]
 
 
