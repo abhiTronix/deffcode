@@ -49,6 +49,10 @@ limitations under the License.
         * Added 7z, zip and `tar.*` archives support for FFmpeg download in `prepare_dataset.sh`; Windows now uses `.7z` static builds.
         * Bumped default FFmpeg alt binaries date to `08-11-2026`.
         * Bumped version to `0.3.0`.
+        * FFmpeg static archives now unpack to `ffmpeg/bin` on every OS in `prepare_dataset.sh`; simplified `return_static_ffmpeg()` test helper accordingly.
+        * Added user to `video` group and granted read/write access to `/dev/video0` for v4l2loopback setup in `prepare_dataset.sh`.
+        * Made test temp and FFmpeg static directories world-readable/writable in `prepare_dataset.sh` _(skipped on Windows)_.
+        * Ignored `temp` directory.
     - [x] **Tests:**
         * Added coverage for aspect ratio, color, start time, non-`fltp` audio bitrate and 24h+ duration parsing, and FFdecoder anamorphic/HDR warnings.
         * Added coverage for filters' output pixel-format selection across planar, padded, gray and packed RGB sources, checking frames byte-for-byte against FFmpeg.
@@ -57,6 +61,7 @@ limitations under the License.
         * Added coverage for multi-stream sources: stream selection via index, `-map` _(also optional and conflicting)_ and `-filter_complex`, mixed codecs, out-of-range indexes, unselected-stream fallback, cover art first/last, mixed-rate composites and probe count.
         * Added coverage for orientation parsing with both side-data labels, rotated second stream pairing, and relative DASH manifest probing.
         * Added coverage for video stream shared by two MPEG-TS programs.
+        * Rotated test clip now falls back to legacy `rotate` metadata tag on FFmpeg < 6.0, which lacks `-display_rotation`.
     - [x] **Docs:**
         * Added recipe for decoding anamorphic and HDR video files.
         * Documented new aspect ratio, color and start time metadata keys.
@@ -65,16 +70,20 @@ limitations under the License.
         * Synced README recipe links with docs recipe indexes, adding missing multi-stream, Multi-Input and Multi-Outputs recipes.
         * Noted explicit `(0, x)` index still warns on multi-stream sources in `-default_stream_indexes` docs.
         * Updated Citation to v0.2.9 release and Zenodo DOI.
+        * Documented filters' output pixel-format selection rule, and `-extract_luma`/`-enforce_cv_patch` output shapes, dtypes and supported pixel-formats.
+        * Documented `-s` handling with filters, with `-custom_resolution` advice for sources changing resolution mid-stream.
+        * Documented optional `-map 0:v:N?`, unindexed `[0:v]` as stream `0`, and `-map`/`-filter_complex` precedence over `-default_stream_indexes` video index.
+        * Updated docs announcement banner for v0.3.0 release.
 
 ??? bug "Bug-fixes"
     - [x] **FFdecoder:**
         * ⚠️ Fixed corrupt frames with filters _(e.g. `-vf hflip`)_ and no `frame_format`: filters' passed-through planar pixel-format _(e.g. `yuv420p`)_ was reshaped as packed `(H, W, 3)` frames, with half the frame count for 4:2:0 sources. Frames now stay `rgb24` unless the filters' output pixel-format is gray or packed RGB _(e.g. `format=gray`, `format=bgr24`)_, or YUV/NV with `-enforce_cv_patch`/`-extract_luma`.
             * 💬 Gray and packed RGB sources _(e.g. `gray`, `bgra`)_ with filters keep their pixel-format, as before. Padded ones _(e.g. `bgr0`)_ now output `rgb24` instead of misaligned frames.
             * 💬 SAR warning's suggested `-vf scale=iw*sar:ih,setsar=1` filter no longer needs a trailing `format=rgb24`.
-        * Fixed `output_frames_pixfmt` metadata reporting the source pixel-format instead of the decoded one when no filters are defined.
+        * ⚠️ Fixed `output_frames_pixfmt` metadata reporting the source pixel-format instead of the decoded one when no filters are defined.
         * Fixed degraded quality of frames resized by filters _(e.g. `-vf scale`)_: FFdecoder's added `-s` FFmpeg parameter made FFmpeg insert a second scaler after them, so chroma was resampled twice. `-s` is now only added for `-custom_resolution` or without filters, and frames match FFmpeg's own output.
-        * Fixed misaligned frames with `-extract_luma`/`-enforce_cv_patch` on YUV pixel-formats other than 8-bit 4:2:0 _(e.g. `yuv422p`, `yuv444p`, `yuv420p10le`, `p010le`)_: frames were read as 8-bit 4:2:0 sized. Frame size and dtype now follow pixel-format's chroma subsampling and bit-depth, and `p0xx` ones are supported too.
-        * Fixed `-default_stream_indexes` only changing reported metadata; its video index now also selects the decoded stream via auto `-map 0:v:N` for single sources.
+        * ⚠️ Fixed misaligned frames with `-extract_luma`/`-enforce_cv_patch` on YUV pixel-formats other than 8-bit 4:2:0 _(e.g. `yuv422p`, `yuv444p`, `yuv420p10le`, `p010le`)_: frames were read as 8-bit 4:2:0 sized. Frame size and dtype now follow pixel-format's chroma subsampling and bit-depth, and `p0xx` ones are supported too.
+        * ⚠️ Fixed `-default_stream_indexes` only changing reported metadata; its video index now also selects the decoded stream via auto `-map 0:v:N` for single sources.
         * Fixed plain `-map 0:v:N` decoding stream `N` with stream `0`'s size, framerate, decoder and frame count; it now sets the video index too.
         * Fixed wrong output size with `-vf` on multi-stream sources; probe now measures the selected stream.
         * Fixed out-of-range video index with `-vf` losing the filtered size; it falls back to stream `0` like Sourcer.
@@ -91,13 +100,13 @@ limitations under the License.
         * Fixed output metadata _(`output_frames_resolution`, `output_framerate`, `output_frames_pixfmt`)_ read from output stream at input's video index _(e.g. an `-extra_outputs` recording branch)_, instead of the primary output.
         * Fixed streams shared by several programs _(e.g. multi-program MPEG-TS)_ counted once per program, causing duplicate video streams, a false "none is selected" warning, and `0` frames for an index past the real stream count.
     - [x] **Maintenance:**
-        * Fixed `chattr` typo, and immutable flag not cleared before `touch` on reruns in `prepare_dataset.sh`.
+        * Fixed malformed `chattr` call in `prepare_dataset.sh`; undeletable test file is now created inside `Test_videos` directory.
         * Fixed audio-only test fixture path pointing at `BigBuckBunny_4sec_AO.mp4` instead of downloaded `.aac`, and its video frame-count check.
-        * Fixed image-sequence tests failing when `sudo` steps aborted `prepare_dataset.sh` before test images were extracted.
     - [x] **Docs:**
         * Fixed stale `added-new-attributes` anchor in advanced recipes index.
 
 ??? question "Pull Requests"
+    * PR #88
     * PR #87
     * PR #84
     * PR #82
