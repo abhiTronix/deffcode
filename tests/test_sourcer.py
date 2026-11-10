@@ -281,11 +281,15 @@ def test_orientation_and_relative_path(tmp_path: Any, monkeypatch: Any) -> None:
     ffmpeg = return_static_ffmpeg()
     monkeypatch.chdir(tmp_path)
     os.makedirs("dash")
-    for cmd in (
-        ["-display_rotation", "90", "-i", return_testvideo_path(fmt="vo"), "-c", "copy", "rot.mp4"],
-        ["-i", return_testvideo_path(fmt="vo"), "-c", "copy", "-f", "dash", "dash/a.mpd"],
-    ):
-        subprocess.run([ffmpeg, "-hide_banner", "-loglevel", "error", "-y", *cmd], check=True)
+    video = return_testvideo_path(fmt="vo")
+
+    def run(*cmd: str) -> int:
+        return subprocess.run([ffmpeg, "-hide_banner", "-loglevel", "error", "-y", *cmd]).returncode
+
+    # `-display_rotation` needs FFmpeg 6.0+, older ones only honor the legacy `rotate` tag
+    if run("-display_rotation", "90", "-i", video, "-c", "copy", "rot.mp4"):
+        run("-i", video, "-c", "copy", "-metadata:s:v:0", "rotate=90", "rot.mp4")
+    assert not run("-i", video, "-c", "copy", "-f", "dash", "dash/a.mpd")
 
     rot = Sourcer("rot.mp4", custom_ffmpeg=ffmpeg).probe_stream().retrieve_metadata()
     assert rot["source_video_orientation"] == 90.0
