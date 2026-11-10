@@ -729,6 +729,13 @@ class FFdecoder:
             ):
                 # calculate raw-frame resolution/dimensions based on source.
                 self.__raw_frame_resolution = self.__sourcer_metadata["source_video_resolution"]
+                # FFmpeg auto-rotates ±90° sources upright, so swap the coded size
+                if (
+                    abs(self.__sourcer_metadata.get("source_video_orientation") or 0) % 180 == 90
+                    and "-noautorotate" not in self.__ffmpeg_prefixes
+                ):
+                    self.__raw_frame_resolution = self.__raw_frame_resolution[::-1]
+                    self.__missing_prop["output_frames_resolution"] = self.__raw_frame_resolution
             else:
                 # otherwise raise error
                 raise RuntimeError(

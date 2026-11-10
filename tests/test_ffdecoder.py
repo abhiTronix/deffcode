@@ -1399,6 +1399,32 @@ def test_filter_output_pixfmt(
 
 
 @pytest.mark.parametrize(
+    "ffparams, shape",
+    [
+        ({}, (320, 240, 3)),  # auto-rotated upright, not squeezed into coded size
+        ({"-custom_resolution": "null"}, (320, 240, 3)),
+        ({"-ffprefixes": ["-noautorotate"]}, (240, 320, 3)),
+    ],
+)
+def test_rotated_source(ffparams: dict[str, Any], shape: tuple[int, ...]) -> None:
+    """Testing ±90° sources decode with FFmpeg's own auto-rotated frames"""
+    path = _side_path("rot.mkv")
+    if not os.path.isfile(path):
+        cmd = [return_static_ffmpeg(), "-y", "-i", _testsrc("yuv420p"), "-c", "copy"]
+        # `-display_rotation` needs FFmpeg 6.0+, older ones only honor the legacy `rotate` tag
+        if subprocess.run([*cmd[:2], "-display_rotation", "90", *cmd[2:], path]).returncode:
+            subprocess.run([*cmd, "-metadata:s:v:0", "rotate=90", path], check=True)
+    with FFdecoder(path, **ffparams) as decoder:
+        metadata = json.loads(decoder.metadata)
+        frames = [f for f in decoder.generateFrame() if f is not None]
+    assert metadata["output_frames_resolution"] == list(shape[1::-1])
+    assert len(frames) == 25 and frames[0].shape == shape
+    cmd = [metadata["ffmpeg_binary_path"], "-v", "error", *ffparams.get("-ffprefixes", [])]
+    cmd += ["-i", path, "-pix_fmt", "rgb24", "-f", "rawvideo", "-"]
+    assert b"".join(f.tobytes() for f in frames) == subprocess.run(cmd, capture_output=True).stdout
+
+
+@pytest.mark.parametrize(
     "pixfmt, ratio, dtype",
     [
         ("yuv420p", 1.5, "u1"),

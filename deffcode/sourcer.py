@@ -307,7 +307,7 @@ class Sourcer:
         This method Parses/Probes FFmpeg `subprocess` pipe's Standard Output for given input source and Populates the information in private class variables.
 
         Parameters:
-            default_stream_indexes (list, tuple): selects specific video and audio stream index in case of multiple ones. Value can be of format: `(int,int)`. For example `(0,1)` is ("0th video stream", "1st audio stream"). Indexes are per stream type (same as FFmpeg's `0:v:N`/`0:a:N` specifiers), not the absolute `Stream #0:N`. Out-of-range values fall back to stream `0` with a warning.
+            default_stream_indexes (list, tuple): selects specific video and audio stream index in case of multiple ones. Value can be of format: `(int,int)`. For example `(0,1)` is ("0th video stream", "1st audio stream"). Indexes are per stream type (same as FFmpeg's `0:v:N`/`0:a:N` specifiers), not the absolute `Stream #0:N`. Out-of-range values fall back to stream `0` with a warning. Stream `0` may be cover art (e.g. `udta` before `trak` in MP4); pick a real video index from `source_video_attached_pics` metadata then.
 
         **Returns:** Reference to the instance object.
         """
