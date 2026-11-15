@@ -39,7 +39,7 @@ on:
 jobs:
   test:
     name: CI Linux
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     strategy:
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14"]
